@@ -50,6 +50,11 @@ namespace PFire
             return sessions[sessionId];
         }
 
+        public Context GetSession(User user)
+        {
+            return sessions.ToList().FirstOrDefault(a => a.Value.User == user).Value;
+        }
+
         public int AddSession(Context session)
         {
             if (sessions.ContainsKey(session.SessionId))

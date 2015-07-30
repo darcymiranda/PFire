@@ -27,8 +27,6 @@ namespace PFire.Protocol
             Add(new Groups());
             Add(new GroupsFriends());
             Add(new ServerList());
-            Add(new FriendsList());
-            Add(new FriendsStatus());
             Add(new ChatRooms());
             Add(new GameInformation());
             Add(new KeepAlive());
@@ -36,6 +34,8 @@ namespace PFire.Protocol
             Add(new ChatMessage());
             Add(new Unknown37());
             Add(new UserLookup());
+            Add(new FriendRequest());
+            Add(new FriendRequestAccept());
         }
 
         private void Add(IMessage message)

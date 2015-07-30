@@ -56,11 +56,11 @@ namespace PFire.Protocol.Messages.Inbound
             chatRooms.Process(context);
             context.SendMessage(chatRooms);
 
-            var friendsList = new FriendsList();
+            var friendsList = new FriendsList(context.User);
             friendsList.Process(context);
             context.SendMessage(friendsList);
 
-            var friendsStatus = new FriendsStatus();
+            var friendsStatus = new FriendsStatus(context.User);
             friendsStatus.Process(context);
             context.SendMessage(friendsStatus);
         }

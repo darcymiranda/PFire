@@ -23,13 +23,24 @@ namespace PFire.Protocol.Messages.Outbound
             get { return 132; }
         }
 
-        public void Process(Context context)
+        private User owner;
+        public FriendsStatus(User owner)
         {
+            this.owner = owner;
             UserIds = new List<int>();
             SessionIds = new List<Guid>();
-            // TODO: Need to get friends from db
-            UserIds.Add(1);
-            SessionIds.Add(context.SessionId);
+        }
+
+        public void Process(Context context)
+        {
+            var friends = context.Server.Database.QueryFriends(context.User);
+            friends.ForEach(a =>
+            {
+                UserIds.Add(a.UserId);
+
+                var otherSession = context.Server.GetSession(a);
+                SessionIds.Add(otherSession == null ? Guid.Empty : otherSession.SessionId);
+            });
         }
     }
 }

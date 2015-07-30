@@ -19,7 +19,6 @@ namespace PFire.Session
 
         public string Salt { get; private set; }
 
-        [Ignore]
         public string Nickname { get; private set; }
 
         public static User New(string username, string password, string salt)
@@ -30,6 +29,33 @@ namespace PFire.Session
             user.Password = password;
             user.Salt = salt;
             return user;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as User);
+        }
+
+        public virtual bool Equals(User other)
+        {
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return UserId;
+        }
+
+        public static bool operator ==(User user1, User user2)
+        {
+            if ((object)user2 == null) return false;
+            if (object.ReferenceEquals(user1, user2)) return true;
+            return user1.UserId == user2.UserId;
+        }
+
+        public static bool operator !=(User user1, User user2)
+        {
+            return !(user1 == user2);
         }
     }
 }
