@@ -42,6 +42,14 @@ namespace PFire.Protocol.Messages.Inbound
                 user = context.Server.Database.InsertUser(Username, Password, context.Salt);
             }
 
+            // Remove any older sessions from this user (duplicate logins)
+            var otherSession = context.Server.GetSession(user);
+            if (otherSession != null)
+            {
+                context.Server.RemoveSession(otherSession);
+                otherSession.TcpClient.Close();
+            }
+
             context.User = user;
 
             var success = new LoginSuccess();

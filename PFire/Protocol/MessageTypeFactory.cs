@@ -32,7 +32,6 @@ namespace PFire.Protocol
             Add(new KeepAlive());
             Add(new Did());
             Add(new ChatMessage());
-            Add(new Unknown37());
             Add(new UserLookup());
             Add(new FriendRequest());
             Add(new FriendRequestAccept());

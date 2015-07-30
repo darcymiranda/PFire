@@ -46,13 +46,17 @@ namespace PFire
 
         public Context GetSession(Guid sessionId)
         {
-            
             return sessions[sessionId];
         }
 
         public Context GetSession(User user)
         {
-            return sessions.ToList().FirstOrDefault(a => a.Value.User == user).Value;
+            var keyValuePair = sessions.ToList().FirstOrDefault(a => a.Value.User == user);
+            if (!keyValuePair.Equals(default(KeyValuePair<Guid, Context>)))
+            {
+                return keyValuePair.Value;
+            }
+            return null;
         }
 
         public int AddSession(Context session)
@@ -74,6 +78,15 @@ namespace PFire
         public void RemoveSession(Guid sessionId)
         {
             sessions.Remove(sessionId);
+        }
+
+        public void RemoveSession(User user)
+        {
+            var keyValuePair = sessions.ToList().FirstOrDefault(a => a.Value.User == user);
+            if (!keyValuePair.Equals(default(KeyValuePair<Guid, Context>)))
+            {
+                sessions.Remove(keyValuePair.Key);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PFire.Protocol.XFireAttributes;
 using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
+using System.Diagnostics;
 
 namespace PFire.Protocol.Messages.Inbound
 {
@@ -63,6 +64,21 @@ namespace PFire.Protocol.Messages.Inbound
             var friendsStatus = new FriendsStatus(context.User);
             friendsStatus.Process(context);
             context.SendMessage(friendsStatus);
+
+            // Tell friends this user came online
+            // TODO: Need to rethink design. FriendsStatus/FriendsList makes a lot of redudent calls to the database for friends
+            //if (context.User.Username == "graaal") Debugger.Break();
+            var friends = context.Server.Database.QueryFriends(context.User);
+            friends.ForEach(user =>
+            {
+                var otherSession = context.Server.GetSession(user);
+                if (otherSession != null)
+                {
+                    var status = new FriendsStatus(user);
+                    status.Process(context);
+                    otherSession.SendMessage(status);
+                }
+            });
         }
     }
 }

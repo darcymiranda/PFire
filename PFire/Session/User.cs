@@ -48,7 +48,7 @@ namespace PFire.Session
 
         public static bool operator ==(User user1, User user2)
         {
-            if ((object)user2 == null) return false;
+            if ( (object)user1 == null || (object)user2 == null) return false;
             if (object.ReferenceEquals(user1, user2)) return true;
             return user1.UserId == user2.UserId;
         }

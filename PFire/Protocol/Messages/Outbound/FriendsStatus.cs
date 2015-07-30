@@ -1,6 +1,7 @@
 ﻿using PFire.Session;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,13 +34,17 @@ namespace PFire.Protocol.Messages.Outbound
 
         public void Process(Context context)
         {
-            var friends = context.Server.Database.QueryFriends(context.User);
-            friends.ForEach(a =>
-            {
-                UserIds.Add(a.UserId);
+            var friends = context.Server.Database.QueryFriends(owner);
 
-                var otherSession = context.Server.GetSession(a);
-                SessionIds.Add(otherSession == null ? Guid.Empty : otherSession.SessionId);
+            // offline friends are just not sent
+            var friendsSessions = friends.Select(a => context.Server.GetSession(a))
+                                         .Where(a => a != null)
+                                         .ToList();
+            friendsSessions.ForEach(session =>
+            {
+                UserIds.Add(session.User.UserId);
+                SessionIds.Add(session.SessionId);
+                Debug.WriteLine("Context: {0} -- {1} {2}", context.User.Username, session.User.UserId, session.User.Username);
             });
         }
     }

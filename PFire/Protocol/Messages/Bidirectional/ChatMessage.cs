@@ -33,9 +33,9 @@ namespace PFire.Protocol.Messages.Bidirectional
             {
                 case 0:
                     var responseAck = BuildAckResponse(otherSession.SessionId);
-                    otherSession.SendMessage(responseAck);
+                    context.SendMessage(responseAck);
 
-                    var chatMsg = BuildChatMessageResponse(otherSession.SessionId);
+                    var chatMsg = BuildChatMessageResponse(context.SessionId);
                     otherSession.SendMessage(chatMsg);
                     break;
 
@@ -48,7 +48,7 @@ namespace PFire.Protocol.Messages.Bidirectional
                     break;
 
                 case 3:
-                    var typingMsg = BuildChatMessageResponse(otherSession.SessionId);
+                    var typingMsg = BuildChatMessageResponse(context.SessionId);
                     otherSession.SendMessage(typingMsg);
                     break;
             }
