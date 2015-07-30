@@ -35,6 +35,7 @@ namespace PFire.Protocol
             Add(new Did());
             Add(new ChatMessage());
             Add(new Unknown37());
+            Add(new UserLookup());
         }
 
         private void Add(IMessage message)

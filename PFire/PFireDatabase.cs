@@ -35,5 +35,10 @@ namespace PFire
         {
             return Table<User>().FirstOrDefault(a => a.Username == username);
         }
+
+        public List<User> QueryUsers(string username)
+        {
+            return Table<User>().Where(a => a.Username.Contains(username)).ToList();
+        }
     }
 }

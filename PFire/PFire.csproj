@@ -54,10 +54,12 @@
     <Compile Include="Protocol\Messages\Inbound\KeepAlive.cs" />
     <Compile Include="Protocol\Messages\Inbound\GameInformation.cs" />
     <Compile Include="Protocol\Messages\Inbound\Unknown37.cs" />
+    <Compile Include="Protocol\Messages\Inbound\UserLookup.cs" />
     <Compile Include="Protocol\Messages\Outbound\ChatRooms.cs" />
     <Compile Include="Protocol\Messages\Outbound\FriendsStatus.cs" />
     <Compile Include="Protocol\Messages\Outbound\GroupsFriends.cs" />
     <Compile Include="Protocol\Messages\Outbound\ServerList.cs" />
+    <Compile Include="Protocol\Messages\Outbound\UserLookupResult.cs" />
     <Compile Include="Protocol\XFireAttributes\Int8Attribute.cs" />
     <Compile Include="Protocol\XFireAttributeDef.cs" />
     <Compile Include="Protocol\Messages\Inbound\ClientConfiguration.cs" />
