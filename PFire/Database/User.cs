@@ -38,6 +38,7 @@ namespace PFire.Database
 
         public virtual bool Equals(User other)
         {
+            if (other == null) return false;
             return this.UserId == other.UserId;
         }
 
@@ -46,20 +47,16 @@ namespace PFire.Database
             return UserId;
         }
 
-        public static bool operator == (User user1, User user2)
+        public static bool operator ==(User user1, User user2)
         {
             if (object.ReferenceEquals(user1, null))
             {
-                if (object.ReferenceEquals(user2, null))
-                {
-                    return true;
-                }
-                return false;
+                return object.ReferenceEquals(user2, null);
             }
             return user1.Equals(user2);
         }
 
-        public static bool operator != (User user1, User user2)
+        public static bool operator !=(User user1, User user2)
         {
             return !(user1 == user2);
         }
