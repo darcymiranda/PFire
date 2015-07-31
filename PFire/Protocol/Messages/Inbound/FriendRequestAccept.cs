@@ -1,4 +1,5 @@
 ﻿using PFire.Protocol.Messages.Outbound;
+using PFire.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,26 @@ namespace PFire.Protocol.Messages.Inbound
         public void Process(Context context)
         {
             var friend = context.Server.Database.QueryUser(FriendUsername);
-            var friendSession = context.Server.GetSession(friend);
-            context.Server.Database.InsertMutualFriend(context.User, friendSession.User);
+
+            context.Server.Database.InsertMutualFriend(context.User, friend);
 
             var friendsList = new FriendsList(context.User);
             context.SendAndProcessMessage(friendsList);
 
-            var otherFriendsList = new FriendsList(friendSession.User);
-            friendSession.SendAndProcessMessage(otherFriendsList);
+            // It's possible to accept a friend request where the inviter is not online
+            var friendSession = context.Server.GetSession(friend);
+            if (friendSession != null)
+            {
+                var otherFriendsList = new FriendsList(friend);
+                friendSession.SendAndProcessMessage(otherFriendsList);
+            }
+
+            var pendingRequests = context.Server.Database.QueryPendingFriendRequests(context.User);
+            var pq = pendingRequests.FirstOrDefault(a => a.FriendUserId == context.User.UserId);
+            if (pq != null)
+            {
+                context.Server.Database.DeletePendingFriendRequest(pq.SequenceId);
+            }
         }
     }
 }

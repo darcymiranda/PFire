@@ -12,6 +12,7 @@ using System.Diagnostics;
 using PFire.Protocol.XFireAttributes;
 using PFire.Session;
 using SQLite;
+using PFire.Database;
 
 namespace PFire
 {

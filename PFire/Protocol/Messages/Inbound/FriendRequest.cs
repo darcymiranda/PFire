@@ -1,4 +1,5 @@
 ﻿using PFire.Protocol.Messages.Outbound;
+using PFire.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,8 @@ namespace PFire.Protocol.Messages.Inbound
             var recipient = context.Server.Database.QueryUser(Username);
             var invite = new FriendInvite(context.User.Username, context.User.Nickname, Message);
             invite.Process(context);
+
+            context.Server.Database.InsertFriendRequest(context.User, Username, Message);
 
             var recipientSession = context.Server.GetSession(recipient);
             if (recipientSession != null)

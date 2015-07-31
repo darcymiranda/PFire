@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\PendingFriendRequest.cs" />
     <Compile Include="Database\PFireDatabase.cs" />
     <Compile Include="Extensions\BinaryReaderExtensions.cs" />
     <Compile Include="Protocol\Messages\Bidirectional\ChatAcknowledgement.cs" />

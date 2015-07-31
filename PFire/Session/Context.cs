@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PFire.Protocol;
 using PFire.Protocol.Messages;
 using System.Net.Sockets;
-using PFire.Session;
+using PFire.Database;
 
-namespace PFire
+namespace PFire.Session
 {
     public class Context
     {
