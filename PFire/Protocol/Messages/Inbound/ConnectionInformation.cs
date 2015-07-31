@@ -38,32 +38,25 @@ namespace PFire.Protocol.Messages.Inbound
         public void Process(Context context)
         {
             var clientPrefs = new ClientPreferences();
-            clientPrefs.Process(context);
-            context.SendMessage(clientPrefs);
+            context.SendAndProcessMessage(clientPrefs);
 
             var groups = new Groups();
-            groups.Process(context);
-            context.SendMessage(groups);
+            context.SendAndProcessMessage(groups);
 
             var groupsFriends = new GroupsFriends();
-            groupsFriends.Process(context);
-            context.SendMessage(groupsFriends);
+            context.SendAndProcessMessage(groupsFriends);
 
             var serverList = new ServerList();
-            serverList.Process(context);
-            context.SendMessage(serverList);
+            context.SendAndProcessMessage(serverList);
 
             var chatRooms = new ChatRooms();
-            chatRooms.Process(context);
-            context.SendMessage(chatRooms);
+            context.SendAndProcessMessage(chatRooms);
 
             var friendsList = new FriendsList(context.User);
-            friendsList.Process(context);
-            context.SendMessage(friendsList);
+            context.SendAndProcessMessage(friendsList);
 
             var friendsStatus = new FriendsStatus(context.User);
-            friendsStatus.Process(context);
-            context.SendMessage(friendsStatus);
+            context.SendAndProcessMessage(friendsStatus);
 
             // Tell friends this user came online
             // TODO: Need to rethink design. FriendsStatus/FriendsList makes a lot of redudent calls to the database for friends
@@ -74,9 +67,7 @@ namespace PFire.Protocol.Messages.Inbound
                 var otherSession = context.Server.GetSession(user);
                 if (otherSession != null)
                 {
-                    var status = new FriendsStatus(user);
-                    status.Process(context);
-                    otherSession.SendMessage(status);
+                    otherSession.SendAndProcessMessage(new FriendsStatus(user));
                 }
             });
         }

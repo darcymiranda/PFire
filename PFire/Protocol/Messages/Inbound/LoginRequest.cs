@@ -53,8 +53,7 @@ namespace PFire.Protocol.Messages.Inbound
             context.User = user;
 
             var success = new LoginSuccess();
-            success.Process(context);
-            context.SendMessage(success);
+            context.SendAndProcessMessage(success);
         }
     }
 }

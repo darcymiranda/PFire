@@ -29,9 +29,7 @@ namespace PFire.Protocol.Messages.Inbound
 
         public void Process(Context context)
         {
-            var did = new Did();
-            did.Process(context);
-            context.SendMessage(did);
+            context.SendAndProcessMessage(new Did());
         }
     }
 }

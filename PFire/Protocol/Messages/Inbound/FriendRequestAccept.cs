@@ -24,12 +24,10 @@ namespace PFire.Protocol.Messages.Inbound
             context.Server.Database.InsertMutualFriend(context.User, friendSession.User);
 
             var friendsList = new FriendsList(context.User);
-            friendsList.Process(context);
-            context.SendMessage(friendsList);
+            context.SendAndProcessMessage(friendsList);
 
             var otherFriendsList = new FriendsList(friendSession.User);
-            friendSession.SendMessage(otherFriendsList);
-            otherFriendsList.Process(context);
+            friendSession.SendAndProcessMessage(otherFriendsList);
         }
     }
 }

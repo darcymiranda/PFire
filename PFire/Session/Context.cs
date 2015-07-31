@@ -35,6 +35,11 @@ namespace PFire
         {
             Initialized = true;
         }
+        public void SendAndProcessMessage(IMessage message)
+        {
+            message.Process(this);
+            SendMessage(message);
+        }
 
         public void SendMessage(IMessage message)
         {

@@ -29,10 +29,8 @@ namespace PFire.Protocol.Messages.Inbound
 
         public void Process(Context context)
         {
-            Debug.WriteLine("U: " + Username + " F: " + FirstName + " L: " + LastName + " E: " + Email);
             var result = new UserLookupResult(Username);
-            result.Process(context);
-            context.SendMessage(result);
+            context.SendAndProcessMessage(result);
         }
     }
 }
