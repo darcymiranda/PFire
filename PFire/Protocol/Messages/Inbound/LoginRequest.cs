@@ -31,9 +31,7 @@ namespace PFire.Protocol.Messages.Inbound
             {
                 if (user.Password != Password)
                 {
-                    var failure = new LoginFailure();
-                    failure.Process(context);
-                    context.SendMessage(failure);
+                    context.SendAndProcessMessage(new LoginFailure());
                     return;
                 }
             }
