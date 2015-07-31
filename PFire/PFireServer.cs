@@ -13,6 +13,7 @@ using PFire.Protocol.XFireAttributes;
 using PFire.Session;
 using SQLite;
 using PFire.Database;
+using PFire.Protocol.Messages.Outbound;
 
 namespace PFire
 {
@@ -30,7 +31,24 @@ namespace PFire
             server = new TcpServer(IPAddress.Any, 25999);
             server.OnReceive += HandleRequest;
             server.OnConnection += HandleNewConnection;
+            server.OnDisconnection += OnDisconnection;
             server.StartListening();
+        }
+
+        void OnDisconnection(Context sessionContext)
+        {
+            RemoveSession(sessionContext);
+
+            var friends = Database.QueryFriends(sessionContext.User);
+            friends.ForEach(friend =>
+            {
+                var friendSession = GetSession(friend);
+                if (friendSession != null)
+                {
+                    // Not working
+                    sessionContext.SendAndProcessMessage(new FriendsStatus(friend));
+                }
+            });
         }
 
         void HandleNewConnection(Context sessionContext)

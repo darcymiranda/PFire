@@ -22,6 +22,9 @@ namespace PFire
         public delegate void OnConnectionHandler(Context sessionContext);
         public event OnConnectionHandler OnConnection;
 
+        public delegate void OnDisconnectionHandler(Context sessionContext);
+        public event OnDisconnectionHandler OnDisconnection;
+
         private TcpListener listener;
 
         public TcpServer(IPEndPoint endPoint)
@@ -66,6 +69,10 @@ namespace PFire
                 var read = await stream.ReadAsync(headerBuffer, 0, headerBuffer.Length);
                 if (read == 0)
                 {
+                    if (OnDisconnection != null)
+                    {
+                        OnDisconnection(context);
+                    }
                     break;
                 }
 
