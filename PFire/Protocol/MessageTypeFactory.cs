@@ -35,6 +35,7 @@ namespace PFire.Protocol
             Add(new UserLookup());
             Add(new FriendRequest());
             Add(new FriendRequestAccept());
+            Add(new FriendRequestDecline());
         }
 
         private void Add(IMessage message)

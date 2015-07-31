@@ -70,6 +70,13 @@ namespace PFire.Protocol.Messages.Inbound
                     otherSession.SendAndProcessMessage(new FriendsStatus(user));
                 }
             });
+
+            var pendingFriendRequests = context.Server.Database.QueryPendingFriendRequests(context.User);
+            pendingFriendRequests.ForEach(request =>
+            {
+                var requester = context.Server.Database.QueryUser(request.UserId);
+                context.SendAndProcessMessage(new FriendInvite(requester.Username, requester.Nickname, request.Message));
+            });
         }
     }
 }

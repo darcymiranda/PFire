@@ -54,6 +54,7 @@
     <Compile Include="Protocol\Messages\Bidirectional\ChatTypingNotification.cs" />
     <Compile Include="Protocol\Messages\Inbound\FriendRequestAccept.cs" />
     <Compile Include="Protocol\Messages\Inbound\FriendRequest.cs" />
+    <Compile Include="Protocol\Messages\Inbound\FriendRequestDecline.cs" />
     <Compile Include="Protocol\Messages\Inbound\KeepAlive.cs" />
     <Compile Include="Protocol\Messages\Inbound\GameInformation.cs" />
     <Compile Include="Protocol\Messages\Inbound\Unknown37.cs" />
