@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PFireDatabase.cs" />
+    <Compile Include="Database\PFireDatabase.cs" />
     <Compile Include="Extensions\BinaryReaderExtensions.cs" />
     <Compile Include="Protocol\Messages\Bidirectional\ChatAcknowledgement.cs" />
     <Compile Include="Protocol\Messages\Bidirectional\ChatContent.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="Protocol\MessageTypeFactory.cs" />
     <Compile Include="Protocol\Messages\UnknownMessageTypeException.cs" />
     <Compile Include="Session\Context.cs" />
-    <Compile Include="Session\Friend.cs" />
+    <Compile Include="Database\Friend.cs" />
     <Compile Include="SQLite\SQLite.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -103,7 +103,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TcpServer.cs" />
-    <Compile Include="Session\User.cs" />
+    <Compile Include="Database\User.cs" />
     <Compile Include="Util\ByteHelpers.cs" />
     <Compile Include="PFireServer.cs" />
     <Compile Include="Util\MessageSplitter.cs" />
