@@ -59,15 +59,14 @@ namespace PFire.Protocol.Messages.Inbound
             context.SendAndProcessMessage(friendsStatus);
 
             // Tell friends this user came online
-            // TODO: Need to rethink design. FriendsStatus/FriendsList makes a lot of redudent calls to the database for friends
-            //if (context.User.Username == "graaal") Debugger.Break();
+            //if (context.User.Username == "test") Debugger.Break();
             var friends = context.Server.Database.QueryFriends(context.User);
-            friends.ForEach(user =>
+            friends.ForEach(friend =>
             {
-                var otherSession = context.Server.GetSession(user);
+                var otherSession = context.Server.GetSession(friend);
                 if (otherSession != null)
                 {
-                    otherSession.SendAndProcessMessage(new FriendsStatus(user));
+                    otherSession.SendAndProcessMessage(new FriendsStatus(friend));
                 }
             });
 

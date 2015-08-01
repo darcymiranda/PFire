@@ -85,6 +85,10 @@ namespace PFire
                 try
                 {
                     IMessage message = MessageSerializer.Deserialize(messageBuffer);
+                    Console.WriteLine("Recv message[{0},{1}]: {2}",
+                        context.User != null ? context.User.Username : "unknown",
+                        context.User != null ? context.User.UserId : -1,
+                        message);
                     if (OnReceive != null)
                     {
                         OnReceive(context, message);

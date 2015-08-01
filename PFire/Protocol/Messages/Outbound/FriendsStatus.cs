@@ -11,10 +11,10 @@ namespace PFire.Protocol.Messages.Outbound
 {
     public class FriendsStatus : IMessage
     {
-        [XFireAttributeDef(0x01)]
+        [XFireAttributeDef("userid")]
         public List<int> UserIds { get; private set; }
 
-        [XFireAttributeDef(0x03)]
+        [XFireAttributeDef("sid")]
         public List<Guid> SessionIds { get; private set; }
 
         [XFireAttributeDef(0x0b)]
@@ -45,8 +45,10 @@ namespace PFire.Protocol.Messages.Outbound
             {
                 UserIds.Add(session.User.UserId);
                 SessionIds.Add(session.SessionId);
-                Debug.WriteLine("Context: {0} -- {1} {2}", context.User.Username, session.User.UserId, session.User.Username);
+                Debug.WriteLine("Status: For:{0} -- FriendId:{1} Friend:{2} FriendSession:{3}", context.User.Username, session.User.UserId, session.User.Username, session.SessionId);
             });
+            //friendsSessions.OrderBy(a => a.User.UserId);
+            //friendsSessions.ForEach(session => Debug.WriteLine("Context: For:{0} -- FriendId:{1} Friend:{2} FriendSession:{3}", context.User.Username, session.User.UserId, session.User.Username, session.SessionId));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using PFire.Session;
+﻿using PFire.Database;
+using PFire.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;

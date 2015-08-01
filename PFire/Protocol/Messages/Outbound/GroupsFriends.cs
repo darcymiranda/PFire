@@ -25,8 +25,6 @@ namespace PFire.Protocol.Messages.Outbound
         {
             UserIds = new List<int>();
             GroupIds = new List<int>();
-            //UserIds.Add(11);
-            //GroupIds.Add(1);
         }
     }
 }

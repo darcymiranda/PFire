@@ -24,8 +24,6 @@ namespace PFire.Protocol.Messages.Outbound
         {
             GroupIds = new List<int>();
             GroupNames = new List<string>();
-            //GroupIds.Add(1);
-            //GroupNames.Add("Test");
         }
     }
 }

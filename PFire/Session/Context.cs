@@ -45,7 +45,10 @@ namespace PFire.Session
         {
             var payload = MessageSerializer.Serialize(message);
             TcpClient.Client.Send(payload);
-            Console.WriteLine("Sent message: " + message);
+            Console.WriteLine("Sent message[{0},{1}]: {2}",
+                User != null ? User.Username : "unknown",
+                User != null ? User.UserId : -1,
+                message);
         }
 
         public void TestSend(byte[] data)
