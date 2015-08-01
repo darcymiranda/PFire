@@ -14,6 +14,7 @@ using PFire.Session;
 using SQLite;
 using PFire.Database;
 using PFire.Protocol.Messages.Outbound;
+using System.Reflection;
 
 namespace PFire
 {
@@ -26,13 +27,24 @@ namespace PFire
 
         public PFireServer()
         {
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
             Database = new PFireDatabase();
             sessions = new Dictionary<Guid, Context>();
             server = new TcpServer(IPAddress.Any, 25999);
             server.OnReceive += HandleRequest;
             server.OnConnection += HandleNewConnection;
             server.OnDisconnection += OnDisconnection;
-            server.StartListening();
+        }
+
+        public void Start()
+        {
+            server.Listen();
+        }
+
+        public void Stop()
+        {
+            server.Shutdown();
         }
 
         void OnDisconnection(Context sessionContext)

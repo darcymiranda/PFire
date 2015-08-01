@@ -26,6 +26,7 @@ namespace PFire
         public event OnDisconnectionHandler OnDisconnection;
 
         private TcpListener listener;
+        private bool running;
 
         public TcpServer(IPEndPoint endPoint)
         {
@@ -34,10 +35,22 @@ namespace PFire
 
         public TcpServer(IPAddress ip, int port) : this(new IPEndPoint(ip, port)) { }
 
-        public async void StartListening()
+        public void Listen()
         {
+            running = true;
             listener.Start();
-            while (true)
+            Task.Run(() => Accept().ConfigureAwait(false));
+        }
+
+        public void Shutdown()
+        {
+            listener.Stop();
+            running = false;
+        }
+
+        private async Task Accept()
+        {
+            while (running)
             {
                 Context session = new Context(await listener.AcceptTcpClientAsync().ConfigureAwait(false));
                 Debug.WriteLine("Client connected {0} and assigned session id {1}", session.TcpClient.Client.RemoteEndPoint, session.SessionId);
@@ -54,13 +67,13 @@ namespace PFire
         private async Task Receive(Context context)
         {
             var stream = context.TcpClient.GetStream();
-            while (true)
+            while (running)
             {
                 // First time the client connects, an opening statement of 4 bytes is sent that needs to be ignored
                 if (!context.Initialized)
                 {
                     var openingStatementBuffer = new byte[4];
-                    stream.Read(openingStatementBuffer, 0, openingStatementBuffer.Length);
+                    await stream.ReadAsync(openingStatementBuffer, 0, openingStatementBuffer.Length);
                     context.InitializeClient();
                 }
 

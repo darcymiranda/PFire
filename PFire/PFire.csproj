@@ -43,6 +43,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf">
+      <HintPath>..\packages\Topshelf.3.2.0\lib\net40-full\Topshelf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\PendingFriendRequest.cs" />
@@ -98,7 +101,6 @@
     <Compile Include="Protocol\Messages\UnknownMessageTypeException.cs" />
     <Compile Include="Session\Context.cs" />
     <Compile Include="Database\Friend.cs" />
-    <Compile Include="Session\FriendsList.cs" />
     <Compile Include="SQLite\SQLite.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -15,6 +15,7 @@ namespace PFire.Database
             CreateTable<User>();
             CreateTable<Friend>();
             CreateTable<PendingFriendRequest>();
+            System.IO.File.WriteAllText(@"C:\test.txt", System.IO.Directory.GetCurrentDirectory());
         }
 
         public bool QueryUsernameExists(string username)
