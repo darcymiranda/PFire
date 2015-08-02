@@ -76,5 +76,10 @@ namespace PFire.Database
         {
             sequenceIds.ToList().ForEach(a => Delete<PendingFriendRequest>(a));
         }
+
+        public void UpdateNickname(User user, string nickname)
+        {
+            Execute("UPDATE User SET Nickname = ? WHERE UserId = ?", nickname, user.UserId);
+        }
     }
 }

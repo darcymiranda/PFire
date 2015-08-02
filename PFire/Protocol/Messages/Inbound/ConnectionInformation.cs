@@ -37,7 +37,7 @@ namespace PFire.Protocol.Messages.Inbound
 
         public void Process(Context context)
         {
-            var clientPrefs = new ClientPreferences();
+            var clientPrefs = new Unknown10();
             context.SendAndProcessMessage(clientPrefs);
 
             var groups = new Groups();

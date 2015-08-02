@@ -22,7 +22,7 @@ namespace PFire.Protocol
             Add(new LoginFailure());
             Add(new LoginSuccess());
             Add(new ClientConfiguration());
-            Add(new ClientPreferences());
+            Add(new Unknown10());
             Add(new ConnectionInformation());
             Add(new Groups());
             Add(new GroupsFriends());
@@ -36,6 +36,7 @@ namespace PFire.Protocol
             Add(new FriendRequest());
             Add(new FriendRequestAccept());
             Add(new FriendRequestDecline());
+            Add(new NicknameChange());
         }
 
         private void Add(IMessage message)

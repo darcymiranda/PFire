@@ -19,7 +19,7 @@ namespace PFire.Database
 
         public string Salt { get; private set; }
 
-        public string Nickname { get; private set; }
+        public string Nickname { get; set; }
 
         public static User New(string username, string password, string salt)
         {
