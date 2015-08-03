@@ -93,7 +93,7 @@ namespace PFire
                 var messageBuffer = new byte[messageLength];
                 read = await stream.ReadAsync(messageBuffer, 0, messageLength);
 
-                //Debug.WriteLine("RECEIVED RAW: " + BitConverter.ToString(messageBuffer));
+                Debug.WriteLine("RECEIVED RAW: " + BitConverter.ToString(messageBuffer));
 
                 try
                 {

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using PFire.Protocol.XFireAttributes;
 using PFire.Protocol.Messages;
 using PFire.Util;
+using PFire.Protocol.Messages.Inbound;
 
 namespace PFire.Protocol
 {
@@ -47,8 +48,19 @@ namespace PFire.Protocol
 
             for (int i = 0; i < attributeCount; i++)
             {
-                var attributeNameLength = reader.ReadByte();
-                var attributeName = Encoding.UTF8.GetString(reader.ReadBytes(attributeNameLength));
+                // TODO: Be brave enough to find an elegant fix for this
+                // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
+                // and breaks this code. Assume first byte after the attribute count as the attribute name
+                string attributeName = null;
+                if (messageType == typeof(StatusChange))
+                {
+                    attributeName = Encoding.UTF8.GetString(reader.ReadBytes(1));
+                }
+                else
+                {
+                    var attributeNameLength = reader.ReadByte();
+                    attributeName = Encoding.UTF8.GetString(reader.ReadBytes(attributeNameLength));
+                }
                 var attributeType = reader.ReadByte();
 
                 dynamic value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);

@@ -37,6 +37,7 @@ namespace PFire.Protocol
             Add(new FriendRequestAccept());
             Add(new FriendRequestDecline());
             Add(new NicknameChange());
+            Add(new StatusChange());
         }
 
         private void Add(IMessage message)
