@@ -67,7 +67,7 @@
     <Compile Include="Protocol\Messages\Inbound\UserLookup.cs" />
     <Compile Include="Protocol\Messages\Outbound\ChatRooms.cs" />
     <Compile Include="Protocol\Messages\Outbound\FriendInvite.cs" />
-    <Compile Include="Protocol\Messages\Outbound\FriendsStatus.cs" />
+    <Compile Include="Protocol\Messages\Outbound\FriendsSessionAssign.cs" />
     <Compile Include="Protocol\Messages\Outbound\FriendStatusChange.cs" />
     <Compile Include="Protocol\Messages\Outbound\GroupsFriends.cs" />
     <Compile Include="Protocol\Messages\Outbound\ServerList.cs" />

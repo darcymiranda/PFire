@@ -10,7 +10,7 @@ namespace PFire.Database
     public class Friend
     {
         [PrimaryKey, AutoIncrement]
-        public int MatchId { get; private set; }
+        public int FriendId { get; private set; }
         public int UserId { get; private set; }
         public int FriendUserId { get; private set; }
 

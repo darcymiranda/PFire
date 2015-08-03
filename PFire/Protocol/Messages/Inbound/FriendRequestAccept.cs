@@ -39,7 +39,7 @@ namespace PFire.Protocol.Messages.Inbound
             var pq = pendingRequests.FirstOrDefault(a => a.FriendUserId == context.User.UserId);
             if (pq != null)
             {
-                context.Server.Database.DeletePendingFriendRequest(pq.SequenceId);
+                context.Server.Database.DeletePendingFriendRequest(pq.PendingFriendRequestId);
             }
         }
     }

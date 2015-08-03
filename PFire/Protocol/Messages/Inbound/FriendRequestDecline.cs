@@ -22,7 +22,7 @@ namespace PFire.Protocol.Messages.Inbound
             var requseterUser = context.Server.Database.QueryUser(RequesterUsername);
             var pendingRequests = context.Server.Database.QueryPendingFriendRequestsSelf(requseterUser);
             var requestsIds = pendingRequests.Where(a => a.UserId == requseterUser.UserId && a.FriendUserId == context.User.UserId)
-                                             .Select(a => a.SequenceId).ToArray();
+                                             .Select(a => a.PendingFriendRequestId).ToArray();
             context.Server.Database.DeletePendingFriendRequest(requestsIds);
         }
     }
