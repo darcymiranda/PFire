@@ -25,14 +25,14 @@ namespace PFire.Protocol.Messages.Inbound
             context.Server.Database.InsertMutualFriend(context.User, friend);
 
             context.SendAndProcessMessage(new FriendsList(context.User));
-            context.SendAndProcessMessage(new FriendsStatus(context.User));
+            context.SendAndProcessMessage(new FriendsSessionAssign(context.User));
 
             // It's possible to accept a friend request where the inviter is not online
             var friendSession = context.Server.GetSession(friend);
             if (friendSession != null)
             {
                 friendSession.SendAndProcessMessage(new FriendsList(friend));
-                friendSession.SendAndProcessMessage(new FriendsStatus(friend));
+                friendSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
             }
 
             var pendingRequests = context.Server.Database.QueryPendingFriendRequests(context.User);

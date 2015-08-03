@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class FriendsStatus : IMessage
+    public class FriendsSessionAssign : IMessage
     {
         [XFireAttributeDef("userid")]
         public List<int> UserIds { get; private set; }
@@ -26,7 +26,7 @@ namespace PFire.Protocol.Messages.Outbound
         }
 
         private User owner;
-        public FriendsStatus(User owner)
+        public FriendsSessionAssign(User owner)
         {
             this.owner = owner;
             UserIds = new List<int>();

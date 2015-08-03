@@ -55,7 +55,7 @@ namespace PFire.Protocol.Messages.Inbound
             var friendsList = new FriendsList(context.User);
             context.SendAndProcessMessage(friendsList);
 
-            var friendsStatus = new FriendsStatus(context.User);
+            var friendsStatus = new FriendsSessionAssign(context.User);
             context.SendAndProcessMessage(friendsStatus);
 
             // Tell friends this user came online
@@ -66,7 +66,7 @@ namespace PFire.Protocol.Messages.Inbound
                 var otherSession = context.Server.GetSession(friend);
                 if (otherSession != null)
                 {
-                    otherSession.SendAndProcessMessage(new FriendsStatus(friend));
+                    otherSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
                 }
             });
 

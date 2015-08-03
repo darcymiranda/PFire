@@ -58,7 +58,7 @@ namespace PFire
                 if (friendSession != null)
                 {
                     // Not working
-                    sessionContext.SendAndProcessMessage(new FriendsStatus(friend));
+                    sessionContext.SendAndProcessMessage(new FriendsSessionAssign(friend));
                 }
             });
         }
