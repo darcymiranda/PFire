@@ -11,7 +11,7 @@ namespace PFire.Protocol
 {
     public class XFireAttributeFactory
     {
-        private static XFireAttributeFactory instance;
+        private static XFireAttributeFactory instance = null;
 
         private Dictionary<byte, XFireAttribute> attributeTypes = new Dictionary<byte, XFireAttribute>();
 

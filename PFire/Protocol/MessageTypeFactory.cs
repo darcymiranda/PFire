@@ -12,7 +12,7 @@ namespace PFire.Protocol
 {
     public class MessageTypeFactory
     {
-        private static MessageTypeFactory instance;
+        private static MessageTypeFactory instance = null;
 
         private Dictionary<short, IMessage> messages = new Dictionary<short, IMessage>();
 
