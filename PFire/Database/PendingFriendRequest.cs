@@ -10,7 +10,7 @@ namespace PFire.Database
     public class PendingFriendRequest
     {
         [PrimaryKey, AutoIncrement]
-        public int SequenceId { get; private set; }
+        public int MatchId { get; private set; }
         public int UserId { get; private set; }
         public int FriendUserId { get; private set; }
         public string Message { get; private set; }
