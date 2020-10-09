@@ -9,16 +9,16 @@ With .NET 5
 
 `dotnet build`
 
-
 ### Run & Connect:
 1. Add cs.xfire.com to your hosts file with your IP
 2. Within the PFire.Console directory, use command `dotnet run`
 3. Login with your desired XFire client (I've only tested with v1.127), an account will be created automatically
-
-
 
 # Working features:
 * Friend search
 * Friend requests
 * Statuses
 * 1 to 1 chat messaging
+
+### Screenshots
+![Screenshot of XFire connecting to PFire](readme-screenshot.png)
