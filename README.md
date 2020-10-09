@@ -5,7 +5,7 @@ Emulated XFire server (Client 1.127)
 [![Discord](https://img.shields.io/discord/619547253702393856.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/zxSwN8Z)
 
 ## Build
-With .NET 5
+Using .NET 5
 
 `dotnet build`
 
