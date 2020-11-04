@@ -2,7 +2,7 @@
 Emulated XFire server (Client 1.127)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Discord](https://img.shields.io/discord/619547253702393856.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/zxSwN8Z)
+[![Discord](https://img.shields.io/discord/619547253702393856.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/jWPWZu8DPy)
 
 ## Build
 Using .NET 5
