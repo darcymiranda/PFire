@@ -17,7 +17,7 @@ namespace PFire.Core.Protocol.XFireAttributes
         */
         public override Type AttributeType => typeof(Dictionary<T, dynamic>);
 
-        public override abstract byte AttributeTypeId { get; }
+        public abstract override byte AttributeTypeId { get; }
 
         public override dynamic ReadValue(BinaryReader reader)
         {

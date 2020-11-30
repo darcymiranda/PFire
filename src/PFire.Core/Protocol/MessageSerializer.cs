@@ -75,7 +75,7 @@ namespace PFire.Core.Protocol
 
             Debug.WriteLine("Deserialized [{0}]: {1}", messageType, messageBase.ToString());
 
-            return messageBase as IMessage;
+            return messageBase;
         }
 
         public static byte[] Serialize(IMessage message)

@@ -9,7 +9,7 @@ namespace PFire.Core.Protocol.XFireAttributes
 {
     public class MessageAttribute : XFireAttribute
     {
-        private readonly static Dictionary<int, IMessage> MESSAGE_TYPES = new Dictionary<int, IMessage>()
+        private static readonly Dictionary<int, IMessage> MESSAGE_TYPES = new Dictionary<int, IMessage>()
         {
             { 0, new ChatMessage() },
             { 1, new ChatAcknowledgement() }
