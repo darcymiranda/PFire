@@ -8,8 +8,8 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
 {
     public sealed class ChatMessage : XFireMessage
     {
-        // the id of this message is the one that the orignal code base used
-        // technically this is a server rotued chat message
+        // the id of this message is the one that the original code base used
+        // technically this is a server routed chat message
         public ChatMessage() : base(XFireMessageType.ServerChatMessage) { } 
 
         [XMessageField("sid")]

@@ -16,7 +16,7 @@ namespace PFire.Core.Protocol.Messages
 
         public virtual void Process(XFireClient client)
         {
-            // base implmenetation is to do nothing
+            // base implementation is to do nothing
             Console.WriteLine($" *** Unimplemented processing for message type {MessageTypeId}");
         }
     }
