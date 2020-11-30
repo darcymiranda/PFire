@@ -1,10 +1,10 @@
 ﻿using System;
-using System.IO;
-using PFire.Protocol;
 using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
+using PFire.Core.Protocol;
 
-namespace PFireTest
+namespace PFire.Tests
 {
     public class AttributeReaders
     {

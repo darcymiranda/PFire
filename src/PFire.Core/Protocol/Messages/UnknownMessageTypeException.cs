@@ -1,7 +1,6 @@
-﻿using PFire.Core.Protocol.Messages;
-using System;
+﻿using System;
 
-namespace PFire.Protocol
+namespace PFire.Core.Protocol.Messages
 {
     public sealed class UnknownMessageTypeException : Exception
     {

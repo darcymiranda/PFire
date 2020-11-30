@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Numerics;
 using System.Reflection;
-using System.Runtime.Remoting;
 using System.Text;
-using System.Threading.Tasks;
-using PFire.Protocol.XFireAttributes;
-using PFire.Protocol.Messages;
-using PFire.Util;
-using PFire.Protocol.Messages.Inbound;
 using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.Messages.Inbound;
+using PFire.Core.Util;
 
-namespace PFire.Protocol
+namespace PFire.Core.Protocol
 {
     public static class MessageSerializer
     {
@@ -81,7 +75,7 @@ namespace PFire.Protocol
 
             Debug.WriteLine("Deserialized [{0}]: {1}", messageType, messageBase.ToString());
 
-            return messageBase as IMessage;
+            return messageBase;
         }
 
         public static byte[] Serialize(IMessage message)

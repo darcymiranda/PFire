@@ -1,8 +1,7 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Protocol.Messages.Outbound;
-using PFire.Session;
+﻿using PFire.Core.Protocol.Messages.Outbound;
+using PFire.Core.Session;
 
-namespace PFire.Protocol.Messages.Inbound
+namespace PFire.Core.Protocol.Messages.Inbound
 {
     public sealed class FriendRequest : XFireMessage
     {

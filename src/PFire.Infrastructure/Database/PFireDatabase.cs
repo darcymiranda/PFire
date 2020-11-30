@@ -1,13 +1,13 @@
-﻿using SQLite;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SQLite;
 
-namespace PFire.Database
+namespace PFire.Infrastructure.Database
 {
     public class PFireDatabase : SQLiteConnection
     {
-        private const string DatabaseName = "pfiredb";
+        private const string DatabaseName = "pfiredb.sqlite";
         public PFireDatabase(string baseDirectory) : base(Path.Combine(baseDirectory, DatabaseName))
         {
             CreateTable<User>();

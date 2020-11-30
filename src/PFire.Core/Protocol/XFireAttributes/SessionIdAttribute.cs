@@ -1,23 +1,13 @@
-﻿using PFire.Util;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     class SessionIdAttribute : XFireAttribute
     {
-        public override byte AttributeTypeId
-        {
-            get { return 0x03; }
-        }
-        public override Type AttributeType
-        {
-            get { return typeof(Guid); }
-        }
+        public override byte AttributeTypeId => 0x03;
+
+        public override Type AttributeType => typeof(Guid);
 
         public override dynamic ReadValue(BinaryReader reader)
         {

@@ -1,16 +1,15 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Core.Protocol.Messages.MessageEnums;
-using PFire.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using PFire.Core.Protocol.Messages.MessageEnums;
+using PFire.Core.Session;
 
-namespace PFire.Protocol.Messages.Bidirectional
+namespace PFire.Core.Protocol.Messages.Bidirectional
 {
     public sealed class ChatMessage : XFireMessage
     {
-        // the id of this message is the one that the orignal code base used
-        // technically this is a server rotued chat message
+        // the id of this message is the one that the original code base used
+        // technically this is a server routed chat message
         public ChatMessage() : base(XFireMessageType.ServerChatMessage) { } 
 
         [XMessageField("sid")]

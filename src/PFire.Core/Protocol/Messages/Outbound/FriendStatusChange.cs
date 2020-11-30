@@ -1,8 +1,7 @@
-﻿using PFire.Core.Protocol.Messages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace PFire.Protocol.Messages.Outbound
+namespace PFire.Core.Protocol.Messages.Outbound
 {
     public sealed class FriendStatusChange : XFireMessage
     {

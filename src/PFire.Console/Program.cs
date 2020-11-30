@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
+using PFire.Core;
 
-namespace PFire
+namespace PFire.Console
 {
     internal static class Program
     {
@@ -11,8 +11,8 @@ namespace PFire
             var baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var server = new PFireServer(baseDirectory);
             server.Start();
-            Console.WriteLine("Emulated XFire Server \"PFire\", started.");
-            Console.Read();
+            System.Console.WriteLine("Emulated XFire Server \"PFire\", started.");
+            System.Console.Read();
         }
     }
 }

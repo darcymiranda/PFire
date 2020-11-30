@@ -1,18 +1,15 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Protocol.Messages;
-using PFire.Protocol.Messages.Bidirectional;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.Messages.Bidirectional;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public class MessageAttribute : XFireAttribute
     {
-        private readonly static Dictionary<int, IMessage> MESSAGE_TYPES = new Dictionary<int, IMessage>()
+        private static readonly Dictionary<int, IMessage> MESSAGE_TYPES = new Dictionary<int, IMessage>()
         {
             { 0, new ChatMessage() },
             { 1, new ChatAcknowledgement() }
@@ -27,15 +24,9 @@ namespace PFire.Protocol.XFireAttributes
             return (IMessage)Activator.CreateInstance(MESSAGE_TYPES[type].GetType());
         }
 
-        public override Type AttributeType
-        {
-            get { return typeof(Dictionary<string, IMessage>); }
-        }
+        public override Type AttributeType => typeof(Dictionary<string, IMessage>);
 
-        public override byte AttributeTypeId
-        {
-            get { return 0x15; }
-        }
+        public override byte AttributeTypeId => 0x15;
 
         public override dynamic ReadValue(BinaryReader reader)
         {

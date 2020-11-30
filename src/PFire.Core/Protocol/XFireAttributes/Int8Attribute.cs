@@ -1,24 +1,13 @@
-﻿using PFire.Protocol.XFireAttributes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public class Int8Attribute : XFireAttribute
     {
-        public override Type AttributeType
-        {
-            get { return typeof(byte); }
-        }
+        public override Type AttributeType => typeof(byte);
 
-        public override byte AttributeTypeId
-        {
-            get { return 0x08; }
-        }
+        public override byte AttributeTypeId => 0x08;
 
         public override dynamic ReadValue(BinaryReader reader)
         {

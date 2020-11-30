@@ -1,6 +1,4 @@
-﻿using PFire.Core.Protocol.Messages;
-
-namespace PFire.Protocol.Messages.Outbound
+﻿namespace PFire.Core.Protocol.Messages.Outbound
 {
     public sealed class LoginFailure : XFireMessage
     {
