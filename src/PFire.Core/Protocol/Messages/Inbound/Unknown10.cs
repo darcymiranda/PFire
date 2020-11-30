@@ -1,18 +1,9 @@
-﻿using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class Unknown10 : IMessage
+    public sealed class Unknown10 : XFireMessage
     {
-        public short MessageTypeId => 10;
-
-        public void Process(Context context)
-        {
-        }
+        public Unknown10() : base(XFireMessageType.Unknown10) { }
     }
 }

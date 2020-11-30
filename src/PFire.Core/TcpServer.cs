@@ -12,13 +12,13 @@ namespace PFire
 {
     public class TcpServer
     {
-        public delegate void OnReceiveHandler(Context sessionContext, IMessage message);
+        public delegate void OnReceiveHandler(XFireClient sessionContext, IMessage message);
         public event OnReceiveHandler OnReceive;
 
-        public delegate void OnConnectionHandler(Context sessionContext);
+        public delegate void OnConnectionHandler(XFireClient sessionContext);
         public event OnConnectionHandler OnConnection;
 
-        public delegate void OnDisconnectionHandler(Context sessionContext);
+        public delegate void OnDisconnectionHandler(XFireClient sessionContext);
         public event OnDisconnectionHandler OnDisconnection;
 
         private readonly TcpListener _listener;
@@ -48,7 +48,7 @@ namespace PFire
         {
             while (_running)
             {
-                Context session = new Context(await _listener.AcceptTcpClientAsync().ConfigureAwait(false));
+                XFireClient session = new XFireClient(await _listener.AcceptTcpClientAsync().ConfigureAwait(false));
                 Debug.WriteLine("Client connected {0} and assigned session id {1}", session.TcpClient.Client.RemoteEndPoint, session.SessionId);
 
                 OnConnection?.Invoke(session);
@@ -60,7 +60,7 @@ namespace PFire
             }
         }
 
-        private async Task Receive(Context context)
+        private async Task Receive(XFireClient context)
         {
             var stream = context.TcpClient.GetStream();
             while (_running)

@@ -1,43 +1,36 @@
-﻿using PFire.Database;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Database;
 using PFire.Session;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class FriendsList : IMessage
+    public sealed class FriendsList : XFireMessage
     {
-        [XFireAttributeDef("userid")]
-        public List<int> UserIds { get; private set; }
-
-        [XFireAttributeDef("friends")]
-        public List<string> Usernames { get; private set; }
-
-        [XFireAttributeDef("nick")]
-        public List<string> Nicks { get; private set; }
-
-        public short MessageTypeId
-        {
-            get { return 131; }
-        }
-
-        private User owner;
+        private readonly User _ownerUser;
 
         public FriendsList(User owner)
+            : base(XFireMessageType.FriendsList)
         {
-            this.owner = owner;
+            _ownerUser = owner;
+
             UserIds = new List<int>();
             Usernames = new List<string>();
             Nicks = new List<string>();
         }
 
-        public void Process(Context context)
+        [XMessageField("userid")]
+        public List<int> UserIds { get; private set; }
+
+        [XMessageField("friends")]
+        public List<string> Usernames { get; private set; }
+
+        [XMessageField("nick")]
+        public List<string> Nicks { get; private set; }
+
+        public override void Process(XFireClient context)
         {
-            var friends = context.Server.Database.QueryFriends(owner);
+            var friends = context.Server.Database.QueryFriends(_ownerUser);
             friends.ForEach(f =>
             {
                 UserIds.Add(f.UserId);

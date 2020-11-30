@@ -1,25 +1,15 @@
-﻿using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 
 namespace PFire.Protocol.Messages.Bidirectional
 {
-    public class ChatContent : IMessage
+    public sealed class ChatContent : XFireMessage
     {
-        [XFireAttributeDef("imindex")]
-        public int MessageOrderIndex { get; private set; }
+        public ChatContent() : base(XFireMessageType.ServerChatMessage) { }
 
-        [XFireAttributeDef("im")]
-        public string MessageContent { get; private set; }
+        [XMessageField("imindex")]
+        public int MessageOrderIndex { get; }
 
-        public short MessageTypeId => 0;
-
-        public void Process(Context context)
-        {
-
-        }
+        [XMessageField("im")]
+        public string MessageContent { get; }
     }
 }

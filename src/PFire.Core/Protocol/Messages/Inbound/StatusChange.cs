@@ -1,22 +1,17 @@
-﻿using PFire.Protocol.Messages.Outbound;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class StatusChange : IMessage
+    public sealed class StatusChange : XFireMessage
     {
-        [XFireAttributeDef(0x2e)]
+        public StatusChange() : base(XFireMessageType.StatusChange) { } 
+
+        [XMessageField(0x2e)]
         public string Message { get; private set; }
 
-        public short MessageTypeId => 32;
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             var statusChange = new FriendStatusChange(context.SessionId, Message);
             var friends = context.Server.Database.QueryFriends(context.User);

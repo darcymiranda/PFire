@@ -1,70 +1,66 @@
-﻿using PFire.Session;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Session;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class LoginSuccess : IMessage
+    public sealed class LoginSuccess : XFireMessage
     {
-        [XFireAttributeDef("userid")]
+        public LoginSuccess() : base(XFireMessageType.LoginSuccess) {  }
+
+        [XMessageField("userid")]
         public int UserId { get; private set; }
 
-        [XFireAttributeDef("sid")]
+        [XMessageField("sid")]
         public Guid SessionId { get; private set; }
 
-        [XFireAttributeDef("nick")]
+        [XMessageField("nick")]
         public string Nickname { get; private set; }
 
-        [XFireAttributeDef("status")]
+        [XMessageField("status")]
         public int Status { get; private set; }
 
-        [XFireAttributeDef("dlset")]
+        [XMessageField("dlset")]
         public string DlSet { get; private set; }
 
-        [XFireAttributeDef("p2pset")]
+        [XMessageField("p2pset")]
         public string P2PSet { get; private set; }
 
-        [XFireAttributeDef("clntset")]
+        [XMessageField("clntset")]
         public string ClientSet { get; private set; }
 
-        [XFireAttributeDef("minrect")]
+        [XMessageField("minrect")]
         public int MinRect { get; private set; }
 
-        [XFireAttributeDef("maxrect")]
+        [XMessageField("maxrect")]
         public int MaxRect { get; private set; }
 
-        [XFireAttributeDef("ctry")]
+        [XMessageField("ctry")]
         public int Country { get; private set; }
 
-        [XFireAttributeDef("n1")]
+        [XMessageField("n1")]
         public int N1 { get; private set; }
 
-        [XFireAttributeDef("n2")]
+        [XMessageField("n2")]
         public int N2 { get; private set; }
 
-        [XFireAttributeDef("n3")]
+        [XMessageField("n3")]
         public int N3 { get; private set; }
 
-        [XFireAttributeDef("pip")]
+        [XMessageField("pip")]
         public int PublicIp { get; private set; }
 
-        [XFireAttributeDef("salt")]
+        [XMessageField("salt")]
         public string Salt { get; private set; }
 
-        [XFireAttributeDef("reason")]
+        [XMessageField("reason")]
         public string Reason { get; private set; }
 
-        public short MessageTypeId
-        {
-            get { return 130; }
-        }
+   
 
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             UserId = context.User.UserId;
             SessionId = context.SessionId;
@@ -85,7 +81,7 @@ namespace PFire.Protocol.Messages.Outbound
             //N3 = BitConverter.ToInt32(new byte[] { 0x3e, 0xb2, 0x58, 0xd0 }, 0);
         }
 
-        private string StripPortFromIPAddress(string address)
+        private static string StripPortFromIPAddress(string address)
         {
             return address.Substring(0, address.IndexOf(":"));
         }

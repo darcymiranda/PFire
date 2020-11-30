@@ -8,10 +8,11 @@ using PFire.Protocol;
 using PFire.Protocol.Messages;
 using System.Net.Sockets;
 using PFire.Database;
+using PFire.Core.Protocol.Messages;
 
 namespace PFire.Session
 {
-    public class Context
+    public class XFireClient
     {
         public PFireServer Server { get; set; }
 
@@ -22,7 +23,7 @@ namespace PFire.Session
         public Guid SessionId { get; private set; }
         public TcpClient TcpClient { get; private set; }
 
-        public Context(TcpClient tcpClient)
+        public XFireClient(TcpClient tcpClient)
         {
             TcpClient = tcpClient;
             
@@ -35,13 +36,13 @@ namespace PFire.Session
         {
             Initialized = true;
         }
-        public void SendAndProcessMessage(IMessage message)
+        public void SendAndProcessMessage(XFireMessage message)
         {
             message.Process(this);
             SendMessage(message);
         }
 
-        public void SendMessage(IMessage message)
+        public void SendMessage(XFireMessage message)
         {
             var payload = MessageSerializer.Serialize(message);
             TcpClient.Client.Send(payload);

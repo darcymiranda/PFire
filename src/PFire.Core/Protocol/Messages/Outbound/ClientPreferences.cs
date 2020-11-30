@@ -1,38 +1,33 @@
-﻿using PFire.Session;
-using System;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Session;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class ClientPreferences : IMessage
+    public sealed class ClientPreferences : XFireMessage
     {
-        [XFireAttributeDef(0x4c)]
+        public ClientPreferences() : base(XFireMessageType.ClientPreferences) { }
+
+        [XMessageField(0x4c)]
         public Dictionary<byte, string> preferences { get; private set; }
 
-
-        public short MessageTypeId
+        public override void Process(XFireClient context)
         {
-            get { return 141; }
-        }
-
-        public void Process(Context context)
-        {
-            preferences = new Dictionary<byte, string>();
-            preferences.Add(1, "0");
-            preferences.Add(4, "0");
-            preferences.Add(5, "0");
-            preferences.Add(6, "1");
-            preferences.Add(7, "0");
-            preferences.Add(8, "0");
-            preferences.Add(11, "0");
-            preferences.Add(17, "0");
-            preferences.Add(18, "0");
-            preferences.Add(19, "0");
-            preferences.Add(20, "0");
-            preferences.Add(21, "0");
+            preferences = new Dictionary<byte, string>
+            {
+                { 1, "0" },
+                { 4, "0" },
+                { 5, "0" },
+                { 6, "1" },
+                { 7, "0" },
+                { 8, "0" },
+                { 11, "0" },
+                { 17, "0" },
+                { 18, "0" },
+                { 19, "0" },
+                { 20, "0" },
+                { 21, "0" }
+            };
         }
     }
 }

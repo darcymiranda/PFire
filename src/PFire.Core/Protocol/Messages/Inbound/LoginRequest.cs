@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class LoginRequest : IMessage
+    public sealed class LoginRequest : XFireMessage
     {
-        [XFireAttributeDef("name")]
+        public LoginRequest() : base(XFireMessageType.LoginRequest) { }
+
+        [XMessageField("name")]
         public string Username { get; private set; }
 
-        [XFireAttributeDef("password")]
+        [XMessageField("password")]
         public string Password { get; private set; }
 
-        [XFireAttributeDef("flags")]
+        [XMessageField("flags")]
         public int Flags { get; private set; }
 
-        public short MessageTypeId => 1;
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             var user = context.Server.Database.QueryUser(Username);
             if (user != null)

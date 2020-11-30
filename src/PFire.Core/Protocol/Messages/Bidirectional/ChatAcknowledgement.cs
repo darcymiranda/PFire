@@ -1,19 +1,11 @@
-﻿﻿using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 
 namespace PFire.Protocol.Messages.Bidirectional
 {
-    public class ChatAcknowledgement : IMessage
+    public sealed class ChatAcknowledgement : XFireMessage
     {
-        public short MessageTypeId => 1;
-
-        public void Process(Context context)
+        public ChatAcknowledgement() : base(XFireMessageType.ServerChatMessage) 
         {
-            throw new NotImplementedException();
         }
     }
 }

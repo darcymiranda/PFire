@@ -1,35 +1,23 @@
-﻿using PFire.Session;
+﻿using PFire.Core.Protocol.Messages;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class FriendStatusChange : IMessage
+    public sealed class FriendStatusChange : XFireMessage
     {
-        [XFireAttributeDef("sid")]
-        public List<Guid> SessionIds { get; private set; }
-
-        [XFireAttributeDef("msg")]
-        public List<string> Messages { get; private set; }
-
-        public short MessageTypeId
-        {
-            get { return 154; }
-        }
-
         public FriendStatusChange(Guid sessionId, string message)
+           : base(XFireMessageType.FriendStatusChange)
         {
             SessionIds = new List<Guid>() { sessionId };
             Messages = new List<string>() { message };
 
         }
 
-        public void Process(Context context)
-        {
+        [XMessageField("sid")]
+        public List<Guid> SessionIds { get; private set; }
 
-        }
+        [XMessageField("msg")]
+        public List<string> Messages { get; private set; }
     }
 }

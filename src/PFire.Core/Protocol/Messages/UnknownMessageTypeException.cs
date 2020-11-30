@@ -1,13 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
+using System;
 
 namespace PFire.Protocol
 {
-    public class UnknownMessageTypeException : Exception
+    public sealed class UnknownMessageTypeException : Exception
     {
-        public UnknownMessageTypeException(short messageType) : base("Unknown message type " + messageType) { }
+        public UnknownMessageTypeException(XFireMessageType messageType) :
+            base($"Unknown message type: {messageType}") 
+        {
+        }
+
+        public UnknownMessageTypeException() : base()
+        {
+        }
+
+        public UnknownMessageTypeException(string message) : base(message)
+        {
+        }
+
+        public UnknownMessageTypeException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }

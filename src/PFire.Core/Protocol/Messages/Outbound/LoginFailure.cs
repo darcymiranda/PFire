@@ -1,24 +1,12 @@
-﻿using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class LoginFailure : IMessage
+    public sealed class LoginFailure : XFireMessage
     {
-        [XFireAttributeDef("reason")]
+        public LoginFailure() : base(XFireMessageType.LoginFailure) {  }
+
+        [XMessageField("reason")]
         public int Reason { get; private set; }
-
-        public short MessageTypeId
-        {
-            get { return 129; }
-        }
-
-        public void Process(Context context)
-        {
-        }
     }
 }

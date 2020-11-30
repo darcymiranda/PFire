@@ -1,25 +1,18 @@
-﻿using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 
 namespace PFire.Protocol.Messages.Bidirectional
 {
-    public class ChatTypingNotification : IMessage
+    // the typing notification is a sub message from the chat message and 
+    // not a seperate message in of itself
+
+    public sealed class ChatTypingNotification : XFireMessage
     {
-        [XFireAttributeDef("imindex")]
+        public ChatTypingNotification() : base(XFireMessageType.ServerChatMessage) { }
+
+        [XMessageField("imindex")]
         public int OrderIndex { get; private set; }
 
-        [XFireAttributeDef("typing")]
+        [XMessageField("typing")]
         public int Typing { get; private set; }
-
-        public short MessageTypeId => 3;
-
-        public void Process(Context context)
-        {
-            
-        }
     }
 }

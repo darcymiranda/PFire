@@ -1,25 +1,20 @@
-﻿using PFire.Protocol.Messages.Outbound;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class FriendRequest : IMessage
+    public sealed class FriendRequest : XFireMessage
     {
+        public FriendRequest() : base(XFireMessageType.FriendRequest) { }
 
-        [XFireAttributeDef("name")]
-        public string Username { get; private set;}
+        [XMessageField("name")]
+        public string Username { get; private set; }
 
-        [XFireAttributeDef("msg")]
+        [XMessageField("msg")]
         public string Message { get; private set; }
 
-        public short MessageTypeId => 6;
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             var recipient = context.Server.Database.QueryUser(Username);
             var invite = new FriendInvite(context.User.Username, context.User.Nickname, Message);
