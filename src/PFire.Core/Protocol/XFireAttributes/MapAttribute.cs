@@ -1,11 +1,9 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public abstract class MapAttribute<T> : XFireAttribute
     {
@@ -17,12 +15,9 @@ namespace PFire.Protocol.XFireAttributes
             cachedKeyAttribute = XFireAttributeFactory.Instance.GetAttribute(typeof(T));
         }
         */
-        public override Type AttributeType
-        {
-            get { return typeof(Dictionary<T, dynamic>); }
-        }
+        public override Type AttributeType => typeof(Dictionary<T, dynamic>);
 
-        public override abstract byte AttributeTypeId { get; }
+        public abstract override byte AttributeTypeId { get; }
 
         public override dynamic ReadValue(BinaryReader reader)
         {

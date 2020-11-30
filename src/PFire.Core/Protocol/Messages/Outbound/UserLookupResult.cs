@@ -1,13 +1,12 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Session;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using PFire.Core.Session;
 
-namespace PFire.Protocol.Messages.Outbound
+namespace PFire.Core.Protocol.Messages.Outbound
 {
     public sealed  class UserLookupResult : XFireMessage
     {
-        private string _queryByUsername;
+        private readonly string _queryByUsername;
 
         public UserLookupResult(string username)
             : base(XFireMessageType.UserLookupResult)

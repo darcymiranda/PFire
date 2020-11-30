@@ -1,7 +1,6 @@
-﻿using PFire.Core.Protocol.Messages;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace PFire.Protocol.Messages.Outbound
+namespace PFire.Core.Protocol.Messages.Outbound
 {
     public sealed class GroupsFriends : XFireMessage
     {

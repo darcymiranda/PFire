@@ -1,8 +1,7 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Session;
-using System.Linq;
+﻿using System.Linq;
+using PFire.Core.Session;
 
-namespace PFire.Protocol.Messages.Inbound
+namespace PFire.Core.Protocol.Messages.Inbound
 {
     public sealed class FriendRequestDecline : XFireMessage
     {

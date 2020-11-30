@@ -1,16 +1,11 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PFire.Protocol;
-using PFire.Protocol.Messages;
 using System.Net.Sockets;
-using PFire.Database;
+using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
+using PFire.Infrastructure.Database;
 
-namespace PFire.Session
+namespace PFire.Core.Session
 {
     public class XFireClient
     {

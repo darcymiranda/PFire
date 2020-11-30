@@ -1,9 +1,9 @@
-﻿using SQLite;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SQLite;
 
-namespace PFire.Database
+namespace PFire.Infrastructure.Database
 {
     public class PFireDatabase : SQLiteConnection
     {

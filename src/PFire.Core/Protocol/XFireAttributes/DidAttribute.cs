@@ -1,24 +1,14 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PFire.Protocol.XFireAttributes;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     // TODO: Should have its own type and not byte[]
     class DidAttribute : XFireAttribute
     {
-        public override byte AttributeTypeId
-        {
-            get { return 0x06; }
-        }
-        public override Type AttributeType
-        {
-            get { return typeof(byte[]); }
-        }
+        public override byte AttributeTypeId => 0x06;
+
+        public override Type AttributeType => typeof(byte[]);
 
         public override dynamic ReadValue(BinaryReader reader)
         {

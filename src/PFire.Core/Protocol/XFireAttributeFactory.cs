@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PFire.Protocol.XFireAttributes;
+using PFire.Core.Protocol.XFireAttributes;
 
-namespace PFire.Protocol
+namespace PFire.Core.Protocol
 {
     public class XFireAttributeFactory
     {
@@ -37,11 +34,12 @@ namespace PFire.Protocol
 
         public XFireAttribute GetAttribute(byte type)
         {
-            if (!_attributeTypes.ContainsKey(type))
+            if(_attributeTypes.TryGetValue(type, out var xFireAttribute))
             {
-                throw new UnknownXFireAttributeTypeException(type);
+                return xFireAttribute;
             }
-            return _attributeTypes[type];
+
+            throw new UnknownXFireAttributeTypeException(type);
         }
 
         public XFireAttribute GetAttribute(Type type)
