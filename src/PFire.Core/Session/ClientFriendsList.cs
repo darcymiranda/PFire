@@ -1,11 +1,6 @@
-﻿using PFire.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Infrastructure.Database;
 
-namespace PFire.Session
+namespace PFire.Core.Session
 {
     public class ClientFriendsList
     {

@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using PFire.Protocol;
-using PFire.Protocol.Messages;
-using PFire.Protocol.XFireAttributes;
-using PFire.Session;
+using PFire.Core.Protocol;
+using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.XFireAttributes;
+using PFire.Core.Session;
 
-namespace PFire
+namespace PFire.Core
 {
     public class TcpServer
     {

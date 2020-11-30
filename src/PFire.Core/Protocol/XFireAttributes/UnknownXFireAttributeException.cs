@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public class UnknownXFireAttributeTypeException : Exception
     {

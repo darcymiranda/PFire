@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace PFire.Protocol
+namespace PFire.Core.Protocol
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = true)]
     internal sealed class XMessageField : Attribute

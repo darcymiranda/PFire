@@ -1,17 +1,11 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Core.Util;
-using PFire.Database;
-using PFire.Protocol;
-using System;
-using System.IO;
+﻿using System;
+using System.Diagnostics;
 using System.Net.Sockets;
-using PFire.Database;
 using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
 using PFire.Infrastructure.Database;
-using System.Threading;
 
-namespace PFire.Session
+namespace PFire.Core.Session
 {
     public sealed class XFireClient : Disposable
     {

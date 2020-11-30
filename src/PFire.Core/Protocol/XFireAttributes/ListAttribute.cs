@@ -1,23 +1,13 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public class ListAttribute : XFireAttribute
     {
 
-        public override byte AttributeTypeId
-        {
-            get
-            {
-                return 0x04;
-            }
-        }
+        public override byte AttributeTypeId => 0x04;
 
         public override dynamic ReadValue(BinaryReader reader)
         {
@@ -50,9 +40,6 @@ namespace PFire.Protocol.XFireAttributes
         }
 
         // TODO: Refactor must be able to generic
-        public override Type AttributeType
-        {
-            get { return typeof(List<>);  }
-        }
+        public override Type AttributeType => typeof(List<>);
     }
 }

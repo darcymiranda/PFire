@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace PFire.Util
+namespace PFire.Core.Util
 {
     public static class ByteHelper
     {
