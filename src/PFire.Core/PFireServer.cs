@@ -7,7 +7,7 @@ using PFire.Session;
 using System;
 using System.Net;
 
-namespace PFire
+namespace PFire.Core
 {
     public sealed class PFireServer
     {

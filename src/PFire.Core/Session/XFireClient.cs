@@ -5,6 +5,10 @@ using PFire.Protocol;
 using System;
 using System.IO;
 using System.Net.Sockets;
+using PFire.Database;
+using PFire.Core.Protocol;
+using PFire.Core.Protocol.Messages;
+using PFire.Infrastructure.Database;
 using System.Threading;
 
 namespace PFire.Session
