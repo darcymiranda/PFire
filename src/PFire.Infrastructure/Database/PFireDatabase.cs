@@ -7,7 +7,7 @@ namespace PFire.Infrastructure.Database
 {
     public class PFireDatabase : SQLiteConnection
     {
-        private const string DatabaseName = "pfiredb";
+        private const string DatabaseName = "pfiredb.sqlite";
         public PFireDatabase(string baseDirectory) : base(Path.Combine(baseDirectory, DatabaseName))
         {
             CreateTable<User>();
