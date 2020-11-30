@@ -67,7 +67,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             Nickname = String.IsNullOrEmpty(context.User.Nickname) ? context.User.Username : context.User.Nickname;
             MinRect = 1;
             MaxRect = 164867;
-            var ipAddress = StripPortFromIPAddress(context.TcpClient.Client.RemoteEndPoint.ToString());
+            var ipAddress = StripPortFromIPAddress(context.RemoteEndPoint.ToString());
             PublicIp = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
             Salt = context.Salt;
             Reason = "Mq_P8Ad3aMEUvFinw0ceu6FITnZTWXxg46XU8xHW";

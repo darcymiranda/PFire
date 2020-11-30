@@ -33,12 +33,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
 
             // Remove any older sessions from this user (duplicate logins)
-            var otherSession = context.Server.GetSession(user);
-            if (otherSession != null)
-            {
-                context.Server.RemoveSession(otherSession);
-                otherSession.TcpClient.Close();
-            }
+            context.RemoveDuplicatedSessions(user);
 
             context.User = user;
 

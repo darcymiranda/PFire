@@ -1,6 +1,5 @@
 ﻿using PFire.Core.Protocol.Interfaces;
-using PFire.Database;
-using PFire.Session;
+using PFire.Infrastructure.Database;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace PFire.Core.Session
 
         public void AddSession(XFireClient session)
         {
-            if (!_sessions.TryAdd(session.SessionId, session);)
+            if (!_sessions.TryAdd(session.SessionId, session))
             {
                 Console.WriteLine("Tried to add a user with session id {0} that already existed", "WARN", session.SessionId);
             }
@@ -51,6 +50,7 @@ namespace PFire.Core.Session
             XFireClient currentSesson;
             if (_sessions.TryRemove(sessionId, out currentSesson))
             {
+                currentSesson.DisconnectAndStop();
                 currentSesson.Dispose();
             }
         }

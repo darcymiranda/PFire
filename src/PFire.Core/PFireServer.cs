@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
@@ -26,7 +27,7 @@ namespace PFire.Core
             
             _clientManager = new XFileClientManager();
 
-            _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999));
+            _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), _clientManager);
             _server.OnReceive += HandleRequest;
             _server.OnConnection += HandleNewConnection;
             _server.OnDisconnection += OnDisconnection;
