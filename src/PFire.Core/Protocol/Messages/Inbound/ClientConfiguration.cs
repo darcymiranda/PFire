@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class ClientConfiguration : IMessage
+    public sealed class ClientConfiguration : XFireMessage
     {
-        [XFireAttributeDef("lang")]
+        public ClientConfiguration() : base(XFireMessageType.ClientConfiguration) { }
+
+        [XMessageField("lang")]
         public string Language { get; set; }
 
-        [XFireAttributeDef("skin")]
+        [XMessageField("skin")]
         public string Skin { get; set; }
 
-        [XFireAttributeDef("theme")]
+        [XMessageField("theme")]
         public string Theme { get; set; }
 
-        [XFireAttributeDef("partner")]
+        [XMessageField("partner")]
         public string Partner { get; set; }
 
-        public short MessageTypeId => 16;
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             context.SendAndProcessMessage(new Did());
         }

@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class ClientVersion : IMessage
+    public sealed class ClientVersion : XFireMessage
     {
-        [XFireAttributeDef("version")]
-        public int Version { get; private set;}
+        public ClientVersion() : base(XFireMessageType.ClientVersion) { }
 
-        [XFireAttributeDef("major_version")]
+        [XMessageField("version")]
+        public int Version { get; private set; }
+
+        [XMessageField("major_version")]
         public int MajorVersion { get; private set; }
 
-        public short MessageTypeId => 3;
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             var loginChallenge = new LoginChallenge();
             loginChallenge.Process(context);
@@ -27,9 +23,7 @@ namespace PFire.Protocol.Messages.Inbound
 
         public override string ToString()
         {
-            return new StringBuilder().Append("[").Append(GetType().Name).Append("] ")
-                .Append("version: ").Append(Convert.ToString(Version)).Append(", ")
-                .Append("major_version: ").Append(Convert.ToString(MajorVersion)).ToString();
+            return $"[ClientVersion] v: {Version} mv: {MajorVersion}";
         }
     }
 }

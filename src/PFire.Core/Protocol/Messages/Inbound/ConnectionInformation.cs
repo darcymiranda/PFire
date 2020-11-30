@@ -1,36 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
 using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
-using FriendsList = PFire.Protocol.Messages.Outbound.FriendsList;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class ConnectionInformation : IMessage
+    public sealed class ConnectionInformation : XFireMessage
     {
-        [XFireAttributeDef("conn")]
+        public ConnectionInformation() : base(XFireMessageType.ConnectionInformation) { }
+
+        [XMessageField("conn")]
         public int Connection { get; private set; }
 
-        [XFireAttributeDef("nat")]
+        [XMessageField("nat")]
         public int Nat { get; private set; }
 
-        [XFireAttributeDef("naterr")]
+        [XMessageField("naterr")]
         public int NatError { get; private set; }
 
-        [XFireAttributeDef("sec")]
+        [XMessageField("sec")]
         public int Sec { get; private set; }
 
-        [XFireAttributeDef("clientip")]
+        [XMessageField("clientip")]
         public int ClientIp { get; private set; }
 
-        [XFireAttributeDef("upnpinfo")]
+        [XMessageField("upnpinfo")]
         public string UpnpInfo { get; private set; }
 
-        public short MessageTypeId => 17;
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             var clientPrefs = new Unknown10();
             context.SendAndProcessMessage(clientPrefs);

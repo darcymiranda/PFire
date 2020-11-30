@@ -1,15 +1,12 @@
-﻿using PFire.Session;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Session;
 
 namespace PFire.Protocol.Messages
 {
-    public interface IMessage
+    public interface IMessage 
     {
-        short MessageTypeId { get; }
+        XFireMessageType MessageTypeId { get; }
 
-        void Process(Context context);
+        void Process(XFireClient client);
     }
 }

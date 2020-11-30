@@ -1,26 +1,21 @@
-﻿using PFire.Session;
-using System;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Session;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class Groups : IMessage
+    public sealed class Groups : XFireMessage
     {
-        [XFireAttributeDef(0x19)]
+        public Groups() : base(XFireMessageType.Groups) { }
+
+        [XMessageField(0x19)]
         public List<int> GroupIds { get; private set; }
 
-        [XFireAttributeDef(0x1a)]
+        [XMessageField(0x1a)]
         public List<string> GroupNames { get; private set; }
+         
 
-        public short MessageTypeId
-        {
-            get { return 151; }
-        }
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             GroupIds = new List<int>();
             GroupNames = new List<string>();

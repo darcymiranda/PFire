@@ -1,31 +1,26 @@
-﻿using PFire.Protocol.Messages.Outbound;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Inbound
 {
-    public class UserLookup : IMessage
+    public sealed class UserLookup : XFireMessage
     {
-        [XFireAttributeDef("name")]
+        public UserLookup() : base(XFireMessageType.UserLookup) { }
+
+        [XMessageField("name")]
         public string Username { get; private set; }
 
-        [XFireAttributeDef("fname")]
+        [XMessageField("fname")]
         public string FirstName { get; private set; }
 
-        [XFireAttributeDef("lname")]
+        [XMessageField("lname")]
         public string LastName { get; private set; }
 
-        [XFireAttributeDef("email")]
+        [XMessageField("email")]
         public string Email { get; private set; }
 
-        public short MessageTypeId => 12;
-
-        public void Process(Context context)
+        public override void Process(XFireClient context)
         {
             var result = new UserLookupResult(Username);
             context.SendAndProcessMessage(result);
