@@ -34,11 +34,12 @@ namespace PFire.Core.Protocol
 
         public XFireAttribute GetAttribute(byte type)
         {
-            if (!_attributeTypes.ContainsKey(type))
+            if(_attributeTypes.TryGetValue(type, out var xFireAttribute))
             {
-                throw new UnknownXFireAttributeTypeException(type);
+                return xFireAttribute;
             }
-            return _attributeTypes[type];
+
+            throw new UnknownXFireAttributeTypeException(type);
         }
 
         public XFireAttribute GetAttribute(Type type)
