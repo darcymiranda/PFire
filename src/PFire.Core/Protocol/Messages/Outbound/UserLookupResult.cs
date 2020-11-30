@@ -6,7 +6,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
 {
     public sealed  class UserLookupResult : XFireMessage
     {
-        private string _queryByUsername;
+        private readonly string _queryByUsername;
 
         public UserLookupResult(string username)
             : base(XFireMessageType.UserLookupResult)
