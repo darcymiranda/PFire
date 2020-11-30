@@ -18,7 +18,10 @@ namespace PFire.Core.Protocol.Messages
         public virtual void Process(XFireClient client)
         {
             // base implmenetation is to do nothing
+            var oldColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine($" *** Unimplemented processing for message type {MessageTypeId}");
+            Console.ForegroundColor = oldColor;
         }
     }
 }

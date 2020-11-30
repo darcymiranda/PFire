@@ -2,6 +2,7 @@
 using PFire.Database;
 using PFire.Session;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,26 +10,17 @@ namespace PFire.Core.Session
 {
     internal sealed class XFileClientManager : IXFireClientManager
     {
-        // the Dictionary<> is thread safe when read, but not when modified
-        private readonly Dictionary<Guid, XFireClient> _sessions;
-        private readonly  object _lock;
+        private readonly ConcurrentDictionary<Guid, XFireClient> _sessions;
         public XFileClientManager()
         {
-            _sessions = new Dictionary<Guid, XFireClient>();
-            _lock = new object();
+            _sessions = new ConcurrentDictionary<Guid, XFireClient>();
         }
 
         public void AddSession(XFireClient session)
         {
-            if (_sessions.ContainsKey(session.SessionId))
+            if (!_sessions.TryAdd(session.SessionId, session);)
             {
                 Console.WriteLine("Tried to add a user with session id {0} that already existed", "WARN", session.SessionId);
-                return;
-            }
-
-            lock (_lock)
-            {
-                _sessions.Add(session.SessionId, session);
             }
         }
 
@@ -56,9 +48,10 @@ namespace PFire.Core.Session
 
         public void RemoveSession(Guid sessionId)
         {
-            lock (_lock)
+            XFireClient currentSesson;
+            if (_sessions.TryRemove(sessionId, out currentSesson))
             {
-                _sessions.Remove(sessionId);
+                currentSesson.Dispose();
             }
         }
     }
