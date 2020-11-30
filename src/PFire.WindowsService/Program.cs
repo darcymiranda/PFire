@@ -5,11 +5,12 @@ using Topshelf;
 
 namespace PFire.WindowsService
 {
-    class Program
+    static class Program
     {
         public static void Main(string[] args)
         {
             var baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
             HostFactory.Run(x =>
             {
                 x.Service<PFireServer>(s =>
@@ -18,8 +19,8 @@ namespace PFire.WindowsService
                     s.WhenStarted(pf => pf.Start());
                     s.WhenStopped(pf => pf.Stop());
                 });
-                x.RunAsLocalSystem();
 
+                x.RunAsLocalSystem();
                 x.SetDescription("Emulated XFire Server");
                 x.SetDisplayName("PFire Server");
                 x.SetServiceName("PFireServer");

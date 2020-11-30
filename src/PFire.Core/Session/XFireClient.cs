@@ -9,10 +9,11 @@ using PFire.Protocol.Messages;
 using System.Net.Sockets;
 using PFire.Database;
 using PFire.Core.Protocol.Messages;
+using PFire.Core.Util;
 
 namespace PFire.Session
 {
-    public class XFireClient
+    public sealed class XFireClient : Disposable
     {
         public PFireServer Server { get; set; }
 
@@ -21,12 +22,13 @@ namespace PFire.Session
         public bool Initialized { get; private set; }
         public string Salt { get; private set; }
         public Guid SessionId { get; private set; }
+
         public TcpClient TcpClient { get; private set; }
 
         public XFireClient(TcpClient tcpClient)
         {
             TcpClient = tcpClient;
-            
+
             // TODO: be able to use unique salts
             Salt = "4dc383ea21bf4bca83ea5040cb10da62";//Guid.NewGuid().ToString().Replace("-", string.Empty);
             SessionId = Guid.NewGuid();
