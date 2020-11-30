@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PFire.Protocol.XFireAttributes;
+﻿using PFire.Core.Protocol.Messages;
 using PFire.Session;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class LoginChallenge : IMessage
+    public sealed class LoginChallenge : XFireMessage
     {
-        [XFireAttributeDef("salt")]
+        public LoginChallenge() : base(XFireMessageType.LoginChallenge) {  }
+
+        [XMessageField("salt")]
         public string Salt { get; private set; }
 
-        public short MessageTypeId
-        {
-            get { return 128; }
-        }
-
-        public void Process(Context context)
+      
+        public override void Process(XFireClient context)
         {
             Salt = context.Salt;
         }

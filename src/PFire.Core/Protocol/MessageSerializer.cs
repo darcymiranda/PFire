@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +13,7 @@ using PFire.Protocol.XFireAttributes;
 using PFire.Protocol.Messages;
 using PFire.Util;
 using PFire.Protocol.Messages.Inbound;
+using PFire.Core.Protocol.Messages;
 
 namespace PFire.Protocol
 {
@@ -24,8 +25,10 @@ namespace PFire.Protocol
         {
             using (var reader = new BinaryReader(new MemoryStream(data)))
             {
-                var messageTypeId = reader.ReadInt16();
-                var messageType = MessageTypeFactory.Instance.GetMessageType(messageTypeId);
+                short messageTypeId = reader.ReadInt16();
+                var xMessageType = (XFireMessageType)messageTypeId;
+
+                var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
                 var message = Activator.CreateInstance(messageType) as IMessage;
                 return Deserialize(reader, message);
             }
@@ -63,8 +66,8 @@ namespace PFire.Protocol
 
                 dynamic value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
 
-                var field = fieldInfo.Where(a => a.GetCustomAttribute<XFireAttributeDef>() != null)
-                    .FirstOrDefault(a => a.GetCustomAttribute<XFireAttributeDef>()?.Name == attributeName);
+                var field = fieldInfo.Where(a => a.GetCustomAttribute<XMessageField>() != null)
+                    .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
 
                 if (field != null)
                 {
@@ -97,16 +100,16 @@ namespace PFire.Protocol
         private static byte[] WritePayloadFromMessage(IMessage message)
         {
             var propertyInfo = message.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-            var attributesToBeWritten = new List<Tuple<XFireAttributeDef, byte, dynamic>>();
-            propertyInfo.Where(a => Attribute.IsDefined(a, typeof(XFireAttributeDef))).ToList()
+            var attributesToBeWritten = new List<Tuple<XMessageField, byte, dynamic>>();
+            propertyInfo.Where(a => Attribute.IsDefined(a, typeof(XMessageField))).ToList()
                 .ForEach(property =>
                 {
                     var propertyValue = property.GetValue(message);
-                    var attributeDefinition = property.GetCustomAttribute<XFireAttributeDef>();
+                    var attributeDefinition = property.GetCustomAttribute<XMessageField>();
                     var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
 
                     attributesToBeWritten.Add(
-                        Tuple.Create<XFireAttributeDef, byte, dynamic>(
+                        Tuple.Create<XMessageField, byte, dynamic>(
                             attributeDefinition,
                             attribute.AttributeTypeId,
                             propertyValue
@@ -117,7 +120,7 @@ namespace PFire.Protocol
             byte[] payload = { };
             using var ms = new MemoryStream();
             using var writer = new BinaryWriter(ms);
-            writer.Write(message.MessageTypeId);
+            writer.Write((short)message.MessageTypeId);
             writer.Write((byte)attributesToBeWritten.Count);
             attributesToBeWritten.ForEach(a =>
             {

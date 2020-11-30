@@ -1,26 +1,16 @@
-﻿using PFire.Database;
-using PFire.Session;
-using System;
+﻿using PFire.Core.Protocol.Messages;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PFire.Protocol.Messages.Outbound
 {
-    public class ChatRooms : IMessage
+    public sealed class ChatRooms : XFireMessage
     {
-        [XFireAttributeDef(0x04)]
-        public List<int> ChatIds { get; private set; }
-
-        public short MessageTypeId
-        {
-            get { return 155; }
-        }
-
-        public void Process(Context context)
+        public ChatRooms() : base(XFireMessageType.ChatRooms) 
         {
             ChatIds = new List<int>();
         }
+
+        [XMessageField(0x04)]
+        public List<int> ChatIds { get; }
     }
 }

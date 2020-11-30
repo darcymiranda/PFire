@@ -7,6 +7,7 @@ using PFire.Protocol.Messages;
 using PFire.Protocol.Messages.Inbound;
 using PFire.Protocol.Messages.Outbound;
 using PFire.Protocol.Messages.Bidirectional;
+using PFire.Core.Protocol.Messages;
 
 namespace PFire.Protocol
 {
@@ -42,22 +43,27 @@ namespace PFire.Protocol
 
         private void Add(IMessage message)
         {
-            _messages.Add(message.MessageTypeId, message);
+            _messages.Add((short)message.MessageTypeId, message);
         }
 
-        public Type GetMessageType(short type)
+        public Type GetMessageType(XFireMessageType messageType)
         {
+            var sType = (short)messageType;
+
             // Hack: Client sends message type of 2 for chat messages but expects message type of 133 on receive...
-            if (type == 2)
+            // this is because the client to client message (type 2) is send via UDP to the clients directly,
+            // whereas 133 is a message routed via the server to the client
+            if (sType == 2)
             {
                 return _messages[133].GetType();
             }
 
-            if (!_messages.ContainsKey(type))
+            if (!_messages.ContainsKey(sType))
             {
-                throw new UnknownMessageTypeException(type);
+                throw new UnknownMessageTypeException(messageType);
             }
-            return _messages[type].GetType();
+
+            return _messages[sType].GetType();
         }
 
         public static MessageTypeFactory Instance => instance ?? new MessageTypeFactory();

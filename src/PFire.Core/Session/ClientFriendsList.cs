@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PFire.Session
 {
-    public class FriendsList
+    public class ClientFriendsList
     {
         public User Owner { get; private set; }
     }

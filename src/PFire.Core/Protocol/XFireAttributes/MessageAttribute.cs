@@ -1,4 +1,5 @@
-﻿using PFire.Protocol.Messages;
+﻿using PFire.Core.Protocol.Messages;
+using PFire.Protocol.Messages;
 using PFire.Protocol.Messages.Bidirectional;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,11 @@ namespace PFire.Protocol.XFireAttributes
             { 1, new ChatAcknowledgement() }
         };
 
-        private IMessage CreateMessage(int type)
+        private IMessage CreateMessage(short type)
         {
             if (!MESSAGE_TYPES.ContainsKey(type))
             {
-                throw new UnknownMessageTypeException((short)type);
+                throw new UnknownMessageTypeException((XFireMessageType)type);
             }
             return (IMessage)Activator.CreateInstance(MESSAGE_TYPES[type].GetType());
         }

@@ -17,13 +17,13 @@ namespace PFire
         public PFireDatabase Database { get; }
 
         private readonly TcpServer _server;
-        private readonly Dictionary<Guid, Context> _sessions;
+        private readonly Dictionary<Guid, XFireClient> _sessions;
 
         public PFireServer(string baseDirectory, IPEndPoint endPoint = null)
         {
             
             Database = new PFireDatabase(baseDirectory);
-            _sessions = new Dictionary<Guid, Context>();
+            _sessions = new Dictionary<Guid, XFireClient>();
             _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999));
             _server.OnReceive += HandleRequest;
             _server.OnConnection += HandleNewConnection;
@@ -40,7 +40,7 @@ namespace PFire
             _server.Shutdown();
         }
 
-        void OnDisconnection(Context sessionContext)
+        void OnDisconnection(XFireClient sessionContext)
         {
             RemoveSession(sessionContext);
 
@@ -56,33 +56,33 @@ namespace PFire
             });
         }
 
-        private void HandleNewConnection(Context sessionContext)
+        private void HandleNewConnection(XFireClient sessionContext)
         {
             AddSession(sessionContext);
         }
 
-        private void HandleRequest(Context context, IMessage message)
+        private void HandleRequest(XFireClient context, IMessage message)
         {
             context.Server = this;
             message.Process(context);
         }
 
-        public Context GetSession(Guid sessionId)
+        public XFireClient GetSession(Guid sessionId)
         {
             return _sessions[sessionId];
         }
 
-        public Context GetSession(User user)
+        public XFireClient GetSession(User user)
         {
             var keyValuePair = _sessions.ToList().FirstOrDefault(a => a.Value.User == user);
-            if (!keyValuePair.Equals(default(KeyValuePair<Guid, Context>)))
+            if (!keyValuePair.Equals(default(KeyValuePair<Guid, XFireClient>)))
             {
                 return keyValuePair.Value;
             }
             return null;
         }
 
-        private void AddSession(Context session)
+        private void AddSession(XFireClient session)
         {
             if (_sessions.ContainsKey(session.SessionId))
             {
@@ -92,7 +92,7 @@ namespace PFire
             _sessions.Add(session.SessionId, session);
         }
 
-        public void RemoveSession(Context session)
+        public void RemoveSession(XFireClient session)
         {
             RemoveSession(session.SessionId);
         }
@@ -105,7 +105,7 @@ namespace PFire
         public void RemoveSession(User user)
         {
             var keyValuePair = _sessions.ToList().FirstOrDefault(a => a.Value.User == user);
-            if (!keyValuePair.Equals(default(KeyValuePair<Guid, Context>)))
+            if (!keyValuePair.Equals(default(KeyValuePair<Guid, XFireClient>)))
             {
                 _sessions.Remove(keyValuePair.Key);
             }
