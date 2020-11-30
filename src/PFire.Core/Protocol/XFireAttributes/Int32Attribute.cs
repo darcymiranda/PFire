@@ -5,14 +5,9 @@ namespace PFire.Core.Protocol.XFireAttributes
 {
     class Int32Attribute : XFireAttribute
     {
-        public override byte AttributeTypeId
-        {
-            get { return 0x02; }
-        }
-        public override Type AttributeType
-        {
-            get { return typeof(int); }
-        }
+        public override byte AttributeTypeId => 0x02;
+
+        public override Type AttributeType => typeof(int);
 
         public override dynamic ReadValue(BinaryReader reader)
         {

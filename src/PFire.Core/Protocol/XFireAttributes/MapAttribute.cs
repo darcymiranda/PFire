@@ -15,10 +15,7 @@ namespace PFire.Core.Protocol.XFireAttributes
             cachedKeyAttribute = XFireAttributeFactory.Instance.GetAttribute(typeof(T));
         }
         */
-        public override Type AttributeType
-        {
-            get { return typeof(Dictionary<T, dynamic>); }
-        }
+        public override Type AttributeType => typeof(Dictionary<T, dynamic>);
 
         public override abstract byte AttributeTypeId { get; }
 

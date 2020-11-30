@@ -2,9 +2,6 @@
 {
     public class Int8KeyMapAttribute : MapAttribute<byte>
     {
-        public override byte AttributeTypeId
-        {
-            get { return 0x09; }
-        }
+        public override byte AttributeTypeId => 0x09;
     }
 }

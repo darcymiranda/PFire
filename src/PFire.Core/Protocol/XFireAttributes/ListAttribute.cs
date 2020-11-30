@@ -7,13 +7,7 @@ namespace PFire.Core.Protocol.XFireAttributes
     public class ListAttribute : XFireAttribute
     {
 
-        public override byte AttributeTypeId
-        {
-            get
-            {
-                return 0x04;
-            }
-        }
+        public override byte AttributeTypeId => 0x04;
 
         public override dynamic ReadValue(BinaryReader reader)
         {
@@ -46,9 +40,6 @@ namespace PFire.Core.Protocol.XFireAttributes
         }
 
         // TODO: Refactor must be able to generic
-        public override Type AttributeType
-        {
-            get { return typeof(List<>);  }
-        }
+        public override Type AttributeType => typeof(List<>);
     }
 }

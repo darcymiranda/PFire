@@ -24,15 +24,9 @@ namespace PFire.Core.Protocol.XFireAttributes
             return (IMessage)Activator.CreateInstance(MESSAGE_TYPES[type].GetType());
         }
 
-        public override Type AttributeType
-        {
-            get { return typeof(Dictionary<string, IMessage>); }
-        }
+        public override Type AttributeType => typeof(Dictionary<string, IMessage>);
 
-        public override byte AttributeTypeId
-        {
-            get { return 0x15; }
-        }
+        public override byte AttributeTypeId => 0x15;
 
         public override dynamic ReadValue(BinaryReader reader)
         {
