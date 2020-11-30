@@ -1,6 +1,4 @@
-﻿using PFire.Core.Protocol.Messages;
-
-namespace PFire.Protocol.Messages.Bidirectional
+﻿namespace PFire.Core.Protocol.Messages.Bidirectional
 {
     // the typing notification is a sub message from the chat message and 
     // not a seperate message in of itself

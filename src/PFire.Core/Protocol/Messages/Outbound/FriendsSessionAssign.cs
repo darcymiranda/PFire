@@ -1,12 +1,11 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Database;
-using PFire.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using PFire.Core.Session;
+using PFire.Infrastructure.Database;
 
-namespace PFire.Protocol.Messages.Outbound
+namespace PFire.Core.Protocol.Messages.Outbound
 {
     public sealed class FriendsSessionAssign : XFireMessage
     {

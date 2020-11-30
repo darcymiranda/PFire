@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PFire.Protocol.XFireAttributes;
+using PFire.Core.Protocol.XFireAttributes;
 
-namespace PFire.Protocol
+namespace PFire.Core.Protocol
 {
     public class XFireAttributeFactory
     {

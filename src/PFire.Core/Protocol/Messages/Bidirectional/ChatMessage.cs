@@ -1,11 +1,10 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Core.Protocol.Messages.MessageEnums;
-using PFire.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using PFire.Core.Protocol.Messages.MessageEnums;
+using PFire.Core.Session;
 
-namespace PFire.Protocol.Messages.Bidirectional
+namespace PFire.Core.Protocol.Messages.Bidirectional
 {
     public sealed class ChatMessage : XFireMessage
     {

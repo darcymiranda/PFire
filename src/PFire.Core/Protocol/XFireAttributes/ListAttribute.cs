@@ -1,12 +1,8 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public class ListAttribute : XFireAttribute
     {

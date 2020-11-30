@@ -1,12 +1,7 @@
-﻿using PFire.Protocol.XFireAttributes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public class Int8Attribute : XFireAttribute
     {

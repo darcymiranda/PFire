@@ -1,6 +1,4 @@
-﻿using PFire.Core.Protocol.Messages;
-
-namespace PFire.Protocol.Messages.Bidirectional
+﻿namespace PFire.Core.Protocol.Messages.Bidirectional
 {
     public sealed class ChatAcknowledgement : XFireMessage
     {

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PFire.Protocol.Messages;
-using PFire.Protocol.Messages.Inbound;
-using PFire.Protocol.Messages.Outbound;
-using PFire.Protocol.Messages.Bidirectional;
 using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.Messages.Bidirectional;
+using PFire.Core.Protocol.Messages.Inbound;
+using PFire.Core.Protocol.Messages.Outbound;
 
-namespace PFire.Protocol
+namespace PFire.Core.Protocol
 {
     public class MessageTypeFactory
     {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using PFire.Protocol;
-using PFire.Util;
+using PFire.Core.Protocol;
+using PFire.Core.Util;
 
-namespace PFireTest
+namespace PFire.Tests
 {
     public class AttributeWriters
     {

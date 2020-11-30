@@ -1,6 +1,5 @@
-﻿using PFire.Protocol.Messages;
-using PFire.Session;
-using System;
+﻿using System;
+using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages
 {

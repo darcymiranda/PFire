@@ -1,7 +1,6 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Session;
+﻿using PFire.Core.Session;
 
-namespace PFire.Protocol.Messages
+namespace PFire.Core.Protocol.Messages
 {
     public interface IMessage 
     {

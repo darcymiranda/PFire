@@ -1,14 +1,11 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Protocol.Messages;
-using PFire.Protocol.Messages.Bidirectional;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.Messages.Bidirectional;
 
-namespace PFire.Protocol.XFireAttributes
+namespace PFire.Core.Protocol.XFireAttributes
 {
     public class MessageAttribute : XFireAttribute
     {

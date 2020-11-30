@@ -1,10 +1,9 @@
-﻿using PFire.Core.Protocol.Messages;
-using PFire.Session;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Net;
+using PFire.Core.Session;
 
-namespace PFire.Protocol.Messages.Outbound
+namespace PFire.Core.Protocol.Messages.Outbound
 {
     public sealed class LoginSuccess : XFireMessage
     {

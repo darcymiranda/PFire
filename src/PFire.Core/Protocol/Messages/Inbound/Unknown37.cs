@@ -1,6 +1,4 @@
-﻿using PFire.Core.Protocol.Messages;
-
-namespace PFire.Protocol.Messages.Inbound
+﻿namespace PFire.Core.Protocol.Messages.Inbound
 {
     public sealed class Unknown37 : XFireMessage
     {
