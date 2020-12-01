@@ -4,13 +4,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using PFire.Core.Protocol;
+using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Session;
 
 namespace PFire.Core
 {
-    public class TcpServer
+    public sealed class TcpServer
     {
         public delegate void OnReceiveHandler(XFireClient sessionContext, IMessage message);
         public event OnReceiveHandler OnReceive;
@@ -23,13 +24,16 @@ namespace PFire.Core
 
         private readonly TcpListener _listener;
         private bool _running;
+        private readonly IXFireClientManager _clientManager;
 
-        public TcpServer(IPEndPoint endPoint)
+        public TcpServer(IPEndPoint endPoint, IXFireClientManager clientManager)
         {
             _listener = new TcpListener(endPoint);
+            _clientManager = clientManager;
         }
 
-        public TcpServer(IPAddress ip, int port) : this(new IPEndPoint(ip, port)) { }
+        public TcpServer(IPAddress ip, int port, IXFireClientManager clientManager) 
+            : this(new IPEndPoint(ip, port), clientManager) { }
 
         public void Listen()
         {
@@ -48,63 +52,10 @@ namespace PFire.Core
         {
             while (_running)
             {
-                XFireClient session = new XFireClient(await _listener.AcceptTcpClientAsync().ConfigureAwait(false));
-                Debug.WriteLine("Client connected {0} and assigned session id {1}", session.TcpClient.Client.RemoteEndPoint, session.SessionId);
+                var tcpClient = await _listener.AcceptTcpClientAsync().ConfigureAwait(false);
+                XFireClient session = new XFireClient(tcpClient, _clientManager, OnReceive, OnDisconnection);
 
                 OnConnection?.Invoke(session);
-
-#pragma warning disable 4014
-                // Fire and forget. Can't be bothered to fix right now. This whole class needs to be rewritten and decoupled
-                Receive(session);
-#pragma warning restore 4014
-            }
-        }
-
-        private async Task Receive(XFireClient context)
-        {
-            var stream = context.TcpClient.GetStream();
-            while (_running)
-            {
-                // First time the client connects, an opening statement of 4 bytes is sent that needs to be ignored
-                if (!context.Initialized)
-                {
-                    var openingStatementBuffer = new byte[4];
-                    await stream.ReadAsync(openingStatementBuffer, 0, openingStatementBuffer.Length);
-                    context.InitializeClient();
-                }
-
-                // Header determines size of message
-                var headerBuffer = new byte[2];
-                var read = await stream.ReadAsync(headerBuffer, 0, headerBuffer.Length);
-                if (read == 0)
-                {
-                    OnDisconnection?.Invoke(context);
-                    break;
-                }
-
-                var messageLength = BitConverter.ToInt16(headerBuffer, 0) - headerBuffer.Length;
-                var messageBuffer = new byte[messageLength];
-                read = await stream.ReadAsync(messageBuffer, 0, messageLength);
-
-                Debug.WriteLine("RECEIVED RAW: " + BitConverter.ToString(messageBuffer));
-
-                try
-                {
-                    IMessage message = MessageSerializer.Deserialize(messageBuffer);
-                    Console.WriteLine("Recv message[{0},{1}]: {2}",
-                        context.User != null ? context.User.Username : "unknown",
-                        context.User != null ? context.User.UserId : -1,
-                        message);
-                    OnReceive?.Invoke(context, message);
-                }
-                catch (UnknownMessageTypeException messageTypeEx)
-                {
-                    Debug.WriteLine(messageTypeEx.ToString());
-                }
-                catch (UnknownXFireAttributeTypeException attributeTypeEx)
-                {
-                    Debug.WriteLine(attributeTypeEx.ToString());
-                }
             }
         }
     }
