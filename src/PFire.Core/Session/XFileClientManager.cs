@@ -47,11 +47,10 @@ namespace PFire.Core.Session
 
         public void RemoveSession(Guid sessionId)
         {
-            XFireClient currentSesson;
-            if (_sessions.TryRemove(sessionId, out currentSesson))
+            if (_sessions.TryRemove(sessionId, out var currentSession))
             {
-                currentSesson.Disconnect();
-                currentSesson.Dispose();
+                currentSession.Disconnect();
+                currentSession.Dispose();
             }
         }
     }

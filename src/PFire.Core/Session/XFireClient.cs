@@ -24,7 +24,7 @@ namespace PFire.Core.Session
         private readonly TcpServer.OnReceiveHandler _receiveHandler;
         private bool _connected;
         private bool _initialized;
-        private DateTime _lastRecivedFrom;
+        private DateTime _lastReceivedFrom;
         private TcpClient _tcpClient;
 
         public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
@@ -58,7 +58,7 @@ namespace PFire.Core.Session
 
             _clientWaitEvent = new AutoResetEvent(false);
 
-            _lastRecivedFrom = DateTime.UtcNow;
+            _lastReceivedFrom = DateTime.UtcNow;
 
             ConsoleLogger.Log($"Client connected {_tcpClient.Client.RemoteEndPoint} and assigned session id {SessionId}", ConsoleColor.Green);
 
@@ -70,7 +70,7 @@ namespace PFire.Core.Session
             _connected = false;
         }
 
-        // A login has been successfull, and as part of the login processing
+        // A login has been successful, and as part of the login processing
         // we should remove any duplicate/old sessions
         public void RemoveDuplicatedSessions(User user)
         {
@@ -125,9 +125,9 @@ namespace PFire.Core.Session
 
         private void CheckForLifetimeExpiry()
         {
-            if (DateTime.UtcNow - _lastRecivedFrom > new TimeSpan(0, ClientTimeoutInMinutes, 0))
+            if (DateTime.UtcNow - _lastReceivedFrom > new TimeSpan(0, ClientTimeoutInMinutes, 0))
             {
-                ConsoleLogger.Log($"Client: {User.Username}-{SessionId} has timed out -> {_lastRecivedFrom}", ConsoleColor.Red);
+                ConsoleLogger.Log($"Client: {User.Username}-{SessionId} has timed out -> {_lastReceivedFrom}", ConsoleColor.Red);
                 _clientManager.RemoveSession(this);
             }
         }
@@ -154,7 +154,7 @@ namespace PFire.Core.Session
                             }
 
                             // as we read something (i.e we're still here) we can update the last read time
-                            _lastRecivedFrom = DateTime.UtcNow;
+                            _lastReceivedFrom = DateTime.UtcNow;
                         }
                         else
                         {
@@ -175,7 +175,7 @@ namespace PFire.Core.Session
                 if (_connected)
                 {
                     // if the client hasn't disconnected 
-                    // we check lifetime and go araound again
+                    // we check lifetime and go around again
                     _clientWaitEvent.WaitOne(100);
                     CheckForLifetimeExpiry();
                 }
