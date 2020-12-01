@@ -1,1 +1,2 @@
-PFire uninstall
+sc.exe stop "PFireServer"
+sc.exe delete "PFireServer"

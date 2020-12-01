@@ -3,17 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>PFire.WindowsService</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Topshelf" Version="4.2.1" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PFire.Core\PFire.Core.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Include="install-service.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -21,6 +16,12 @@
     <Content Include="uninstall-service.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
