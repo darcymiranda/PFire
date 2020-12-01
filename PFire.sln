@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.WindowsService", "src\PFire.WindowsService\PFire.WindowsService.csproj", "{D1ED9EB7-85DE-4D74-8D38-676F95A40442}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Console", "src\PFire.Console\PFire.Console.csproj", "{D1ED9EB7-85DE-4D74-8D38-676F95A40442}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Core", "src\PFire.Core\PFire.Core.csproj", "{62FD083C-F667-44FA-99E7-7A35F363886B}"
 EndProject

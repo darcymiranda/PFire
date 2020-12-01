@@ -14,14 +14,14 @@ Emulated XFire server (Client 1.127)
 1. `cd src\PFire.WindowsService`
 2. `dotnet build`
 
-## Run & Connect:
+## Run & Connect
 1. Add `cs.xfire.com` to your hosts file with your IP
    * On Windows it's located at `C:\Windows\System32\drivers\etc\hosts`
    * `127.0.0.1 cs.xfire.com`
 > _Note: This is a workaround to redirect the XFire client to point to your localhost address (127.0.0.1) instead of the real server_
 
 2. Open a command line and run the following commands from the root directory
-   * `cd src\PFire.WindowsService`
+   * `cd src\PFire.Console`
    * `dotnet run`
 
 3. Login with the XFire client (only tested with v1.127) and an account will be created automatically if it doesn't exist
@@ -30,7 +30,7 @@ Emulated XFire server (Client 1.127)
 1. `cd tests\PFire.Tests`
 2. `dotnet test`
 
-# Working features:
+# Working Features
 * Friend search
 * Friend requests
 * Statuses
