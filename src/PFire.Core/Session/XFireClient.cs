@@ -29,11 +29,11 @@ namespace PFire.Core.Session
 
         public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
 
-        public string Salt { get; }
+        public string Salt { get; private set;}
 
         public PFireServer Server { get; set; }
 
-        public Guid SessionId { get; }
+        public Guid SessionId { get; private set;}
 
         public User User { get; set; }
 
@@ -95,8 +95,8 @@ namespace PFire.Core.Session
 
                 _tcpClient.Client.Send(payload);
 
-                var username = (User != null ? User.Username : "unknown");
-                var userId = (User != null ? User.UserId : -1);
+                var username = User != null ? User.Username : "unknown";
+                var userId = User != null ? User.UserId : -1;
 
                 ConsoleLogger.Log($"Sent message[{username},{userId}]: {message}", ConsoleColor.Gray);
             }
@@ -204,8 +204,8 @@ namespace PFire.Core.Session
             {
                 var message = MessageSerializer.Deserialize(messageBuffer);
 
-                var username = (User != null ? User.Username : "unknown");
-                var userId = (User != null ? User.UserId : -1);
+                var username = User != null ? User.Username : "unknown";
+                var userId = User != null ? User.UserId : -1;
 
                 ConsoleLogger.Log($"Recv message[{username},{userId}]: {message}", ConsoleColor.Gray);
 

@@ -6,7 +6,6 @@ namespace PFire.Core.Protocol.XFireAttributes
 {
     public class ListAttribute : XFireAttribute
     {
-
         public override byte AttributeTypeId => 0x04;
 
         public override dynamic ReadValue(BinaryReader reader)
@@ -16,10 +15,11 @@ namespace PFire.Core.Protocol.XFireAttributes
             var itemAttribute = XFireAttributeFactory.Instance.GetAttribute(listItemType);
 
             var values = new List<dynamic>();
-            for (int i = 0; i < listLength; i++)
+            for(var i = 0; i < listLength; i++)
             {
                 values.Add(itemAttribute.ReadValue(reader));
             }
+
             return values;
         }
 
@@ -33,7 +33,7 @@ namespace PFire.Core.Protocol.XFireAttributes
             attribute.WriteType(writer);
             writer.Write(listLength);
 
-            for(int i = 0; i < listLength; i++)
+            for(var i = 0; i < listLength; i++)
             {
                 attribute.WriteValue(writer, data[i]);
             }

@@ -6,8 +6,8 @@ namespace PFire.Core.Protocol.XFireAttributes
 {
     public abstract class XFireAttribute
     {
-        public abstract Type AttributeType {get;}
-        public abstract byte AttributeTypeId {get;}
+        public abstract Type AttributeType { get; }
+        public abstract byte AttributeTypeId { get; }
         public abstract dynamic ReadValue(BinaryReader reader);
         public abstract void WriteValue(BinaryWriter writer, dynamic data);
 

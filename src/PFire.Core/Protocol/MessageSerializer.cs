@@ -17,21 +17,13 @@ namespace PFire.Core.Protocol
 
         public static IMessage Deserialize(byte[] data)
         {
-            using (var reader = new BinaryReader(new MemoryStream(data)))
-            {
-                var messageTypeId = reader.ReadInt16();
-                var xMessageType = (XFireMessageType)messageTypeId;
-
-                var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
-                var message = Activator.CreateInstance(messageType) as IMessage;
-                return Deserialize(reader, message);
-            }
-        }
-
-        public static IMessage Deserialize(byte[] data, IMessage messageType)
-        {
             using var reader = new BinaryReader(new MemoryStream(data));
-            return Deserialize(reader, messageType);
+            var messageTypeId = reader.ReadInt16();
+            var xMessageType = (XFireMessageType)messageTypeId;
+
+            var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
+            var message = Activator.CreateInstance(messageType) as IMessage;
+            return Deserialize(reader, message);
         }
 
         public static IMessage Deserialize(BinaryReader reader, IMessage messageBase)
@@ -103,7 +95,7 @@ namespace PFire.Core.Protocol
                             var propertyValue = property.GetValue(message);
                             var attributeDefinition = property.GetCustomAttribute<XMessageField>();
                             var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
-
+                            
                             attributesToBeWritten.Add(
                                 Tuple.Create<XMessageField, byte, dynamic>(
                                     attributeDefinition,

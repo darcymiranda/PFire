@@ -38,10 +38,11 @@ namespace PFire.Infrastructure.Database
 
         public static bool operator ==(User user1, User user2)
         {
-            if (object.ReferenceEquals(user1, null))
+            if (ReferenceEquals(user1, null))
             {
-                return object.ReferenceEquals(user2, null);
+                return ReferenceEquals(user2, null);
             }
+
             return user1.Equals(user2);
         }
 
