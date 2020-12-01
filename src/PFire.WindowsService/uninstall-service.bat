@@ -1,1 +1,0 @@
-PFire uninstall
