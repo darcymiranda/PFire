@@ -17,6 +17,7 @@ namespace PFire.WindowsService
         {
             return Host.CreateDefaultBuilder(args)
                        .UseWindowsService()
+                       .UseSystemd()
                        .ConfigureServices((hostBuilderContext, serviceCollection) =>
                            serviceCollection.RegisterAll(hostBuilderContext.HostingEnvironment, hostBuilderContext.Configuration));
         }
