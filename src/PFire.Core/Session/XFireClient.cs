@@ -17,30 +17,27 @@ namespace PFire.Core.Session
     {
         private const int ClientTimeoutInMinutes = 5;
 
-        public PFireServer Server { get; set; }
-
-        public User User { get; set; }
-
-        public string Salt { get; private set; }
-        public Guid SessionId { get; private set; }
-
+        private readonly IXFireClientManager _clientManager;
+        private readonly AutoResetEvent _clientWaitEvent;
+        private readonly TcpServer.OnDisconnectionHandler _disconnectionHandler;
         private readonly object _lock;
-
+        private readonly TcpServer.OnReceiveHandler _receiveHandler;
+        private bool _connected;
+        private bool _initialized;
+        private DateTime _lastRecivedFrom;
         private TcpClient _tcpClient;
 
-        private bool _connected;
-        private readonly AutoResetEvent _threadSutdownEvent;
-        private readonly AutoResetEvent _clientWaitEvent;
+        public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
+        
+        public string Salt { get; private set; }
+        
+        public PFireServer Server { get; set; }
 
-        private DateTime _lastRecivedFrom;
-        private bool _initialized;
+        public Guid SessionId { get; private set; }
+        
+        public User User { get; set; }
 
-        private readonly IXFireClientManager _clientManager;
-
-        private readonly TcpServer.OnReceiveHandler _receiveHandler;
-        private readonly TcpServer.OnDisconnectionHandler _disconnectionHandler;
-
-        public XFireClient(TcpClient tcpClient, 
+        public XFireClient(TcpClient tcpClient,
                            IXFireClientManager clientManager,
                            TcpServer.OnReceiveHandler receiveHandler,
                            TcpServer.OnDisconnectionHandler disconnectionHandler)
@@ -59,7 +56,6 @@ namespace PFire.Core.Session
             Salt = "4dc383ea21bf4bca83ea5040cb10da62";//Guid.NewGuid().ToString().Replace("-", string.Empty);
             SessionId = Guid.NewGuid();
 
-            _threadSutdownEvent = new AutoResetEvent(false);
             _clientWaitEvent = new AutoResetEvent(false);
 
             _lastRecivedFrom = DateTime.UtcNow;
@@ -68,13 +64,72 @@ namespace PFire.Core.Session
 
             ThreadPool.QueueUserWorkItem(ClientThreadWorker);
         }
-
-        public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
-
-        public void DisconnectAndStop()
+     
+        public void Disconnect()
         {
             _connected = false;
-            _threadSutdownEvent.WaitOne(300);  // wait for 300 ms, in the case of client disconnect
+        }
+
+        // A login has been successfull, and as part of the login processing
+        // we should remove any duplicate/old sessions
+        public void RemoveDuplicatedSessions(User user)
+        {
+            var otherSession = _clientManager.GetSession(user);
+            if (otherSession != null)
+            {
+                _clientManager.RemoveSession(otherSession);
+            }
+        }
+
+        public void SendAndProcessMessage(XFireMessage message)
+        {
+            message.Process(this);
+            SendMessage(message);
+        }
+
+        public void SendMessage(XFireMessage message)
+        {
+            if (_initialized)
+            {
+                var payload = MessageSerializer.Serialize(message);
+
+                _tcpClient.Client.Send(payload);
+
+                ConsoleLogger.Log(string.Format("Sent message[{0},{1}]: {2}",
+                    User != null ? User.Username : "unknown",
+                    User != null ? User.UserId : -1,
+                    message), ConsoleColor.Gray);
+            }
+        }
+
+        protected override void DisposeManagedResources()
+        {
+            _clientWaitEvent.Dispose();
+
+            try
+            {
+                if (_tcpClient.Connected)
+                {
+                    _tcpClient.Close();
+                }
+                else
+                {
+                    _tcpClient.Dispose();
+                }
+            }
+            finally
+            {
+                _tcpClient = null;
+            }
+        }
+
+        private void CheckForLifetimeExpiry()
+        {
+            if (DateTime.UtcNow - _lastRecivedFrom > new TimeSpan(0, ClientTimeoutInMinutes, 0))
+            {
+                ConsoleLogger.Log($"Client: {User.Username}-{SessionId} has timed out -> {_lastRecivedFrom}", ConsoleColor.Red);
+                _clientManager.RemoveSession(this);
+            }
         }
 
         private void ClientThreadWorker(object sender)
@@ -125,22 +180,7 @@ namespace PFire.Core.Session
                     CheckForLifetimeExpiry();
                 }
             }
-
-            if (!Disposed)
-            {
-                _threadSutdownEvent.Set();
-            }
         }
-
-        private void CheckForLifetimeExpiry()
-        {
-            if (DateTime.UtcNow - _lastRecivedFrom > new TimeSpan(0, ClientTimeoutInMinutes,0))
-            {
-                ConsoleLogger.Log($"Client: {User.Username}-{SessionId} has timed out -> {_lastRecivedFrom}", ConsoleColor.Red);
-                _clientManager.RemoveSession(this);
-            }
-        }
-
         private void ReadMessage(NetworkStream stream)
         {
             // Header determines size of message
@@ -191,62 +231,6 @@ namespace PFire.Core.Session
             if (!_initialized)
             {
                 ConsoleLogger.Log($"Failed to read header bytes from {SessionId}", ConsoleColor.Red);
-            }
-        }
-
-
-        public void SendAndProcessMessage(XFireMessage message)
-        {
-            message.Process(this);
-            SendMessage(message);
-        }
-
-        public void SendMessage(XFireMessage message)
-        {
-            if (_initialized)
-            {
-                var payload = MessageSerializer.Serialize(message);
-
-                _tcpClient.Client.Send(payload);
-
-                ConsoleLogger.Log(string.Format("Sent message[{0},{1}]: {2}",
-                    User != null ? User.Username : "unknown",
-                    User != null ? User.UserId : -1,
-                    message), ConsoleColor.Gray);
-            }
-        }
-
-
-        // A login has been successfull, and as part of the login processing
-        // we should remove any duplicate/old sessions
-        public void RemoveDuplicatedSessions(User user) 
-        {
-            var otherSession = _clientManager.GetSession(user);
-            if (otherSession != null)
-            {
-                _clientManager.RemoveSession(otherSession);
-            }
-        }
-
-        protected override void DisposeManagedResources()
-        {
-            _threadSutdownEvent.Dispose();
-            _clientWaitEvent.Dispose();
-
-            try
-            {
-                if (_tcpClient.Connected)
-                {
-                    _tcpClient.Close();
-                }
-                else
-                {
-                    _tcpClient.Dispose();
-                }
-            }
-            finally
-            {
-                _tcpClient = null;
             }
         }
     }

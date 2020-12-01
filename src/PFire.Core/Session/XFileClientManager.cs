@@ -50,7 +50,7 @@ namespace PFire.Core.Session
             XFireClient currentSesson;
             if (_sessions.TryRemove(sessionId, out currentSesson))
             {
-                currentSesson.DisconnectAndStop();
+                currentSesson.Disconnect();
                 currentSesson.Dispose();
             }
         }
