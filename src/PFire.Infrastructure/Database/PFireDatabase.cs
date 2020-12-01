@@ -22,8 +22,9 @@ namespace PFire.Infrastructure.Database
 
         public User InsertUser(string username, string password, string salt)
         {
-            var id = Insert(User.New(username, password, salt));
-            return QueryUser(id);
+            var newUser = User.New(username, password, salt);
+            Insert(newUser);
+            return QueryUser(newUser.UserId);
         }
 
         public void InsertMutualFriend(User user1, User user2)
