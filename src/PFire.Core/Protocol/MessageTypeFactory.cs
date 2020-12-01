@@ -11,9 +11,10 @@ namespace PFire.Core.Protocol
     {
         private static readonly MessageTypeFactory instance = null;
 
-        private readonly Dictionary<short, IMessage> _messages = new Dictionary<short, IMessage>();
+        private readonly Dictionary<XFireMessageType, IMessage> _messages = new Dictionary<XFireMessageType, IMessage>();
 
-        private MessageTypeFactory() {
+        private MessageTypeFactory()
+        {
             Add(new ClientVersion());
             Add(new LoginRequest());
             Add(new LoginFailure());
@@ -39,27 +40,25 @@ namespace PFire.Core.Protocol
 
         private void Add(IMessage message)
         {
-            _messages.Add((short)message.MessageTypeId, message);
+            _messages.Add(message.MessageTypeId, message);
         }
 
         public Type GetMessageType(XFireMessageType messageType)
         {
-            var sType = (short)messageType;
-
             // Hack: Client sends message type of 2 for chat messages but expects message type of 133 on receive...
             // this is because the client to client message (type 2) is send via UDP to the clients directly,
             // whereas 133 is a message routed via the server to the client
-            if (sType == 2)
+            if(messageType == XFireMessageType.UDPChatMessage)
             {
-                return _messages[133].GetType();
+                return _messages[XFireMessageType.ServerChatMessage].GetType();
             }
 
-            if (!_messages.ContainsKey(sType))
+            if(!_messages.TryGetValue(messageType, out var message))
             {
                 throw new UnknownMessageTypeException(messageType);
             }
 
-            return _messages[sType].GetType();
+            return message.GetType();
         }
 
         public static MessageTypeFactory Instance => instance ?? new MessageTypeFactory();
