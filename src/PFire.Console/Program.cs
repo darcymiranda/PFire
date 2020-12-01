@@ -1,18 +1,25 @@
-﻿using System.IO;
-using System.Reflection;
-using PFire.Core;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using PFire.WindowsService.Extensions;
 
-namespace PFire.Console
+namespace PFire.WindowsService
 {
-    internal static class Program
+    public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var server = new PFireServer(baseDirectory);
-            server.Start();
-            System.Console.WriteLine("Emulated XFire Server \"PFire\", started.");
-            System.Console.Read();
+            var host = CreateHostBuilder(args).Build();
+
+            await host.RunAsync();
+        }
+
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                       .UseWindowsService()
+                       .UseSystemd()
+                       .ConfigureServices((hostBuilderContext, serviceCollection) =>
+                           serviceCollection.RegisterAll(hostBuilderContext.HostingEnvironment, hostBuilderContext.Configuration));
         }
     }
 }
