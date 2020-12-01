@@ -18,8 +18,7 @@ namespace PFire.Infrastructure.Database
 
         public static User New(string username, string password, string salt)
         {
-            var user = new User {Username = username, Nickname = username, Password = password, Salt = salt};
-            return user;
+            return new User {Username = username, Nickname = username, Password = password, Salt = salt};
         }
 
         public override bool Equals(object obj)
@@ -29,8 +28,7 @@ namespace PFire.Infrastructure.Database
 
         public virtual bool Equals(User other)
         {
-            if (other == null) return false;
-            return this.UserId == other.UserId;
+            return other != null && UserId == other.UserId;
         }
 
         public override int GetHashCode()

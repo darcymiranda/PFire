@@ -113,8 +113,6 @@ namespace PFire.Core.Protocol
                             );
                         });
 
-            byte[] payload = {};
-
             using var ms = new MemoryStream();
             using var writer = new BinaryWriter(ms);
             writer.Write((short)message.MessageTypeId);
@@ -134,9 +132,7 @@ namespace PFire.Core.Protocol
                 }
             });
 
-            payload = ms.ToArray();
-
-            return payload;
+            return ms.ToArray();
         }
     }
 }
