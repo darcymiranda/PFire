@@ -19,7 +19,7 @@ namespace PFire.Core.Protocol
         {
             using (var reader = new BinaryReader(new MemoryStream(data)))
             {
-                short messageTypeId = reader.ReadInt16();
+                var messageTypeId = reader.ReadInt16();
                 var xMessageType = (XFireMessageType)messageTypeId;
 
                 var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
@@ -56,12 +56,13 @@ namespace PFire.Core.Protocol
                     var attributeNameLength = reader.ReadByte();
                     attributeName = Encoding.UTF8.GetString(reader.ReadBytes(attributeNameLength));
                 }
+
                 var attributeType = reader.ReadByte();
 
-                dynamic value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
+                var value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
 
                 var field = fieldInfo.Where(a => a.GetCustomAttribute<XMessageField>() != null)
-                    .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
+                                     .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
 
                 if (field != null)
                 {
@@ -69,7 +70,7 @@ namespace PFire.Core.Protocol
                 }
                 else
                 {
-                    Debug.WriteLine(string.Format("WARN: No attribute defined for {0} on class {1}", attributeName, messageType.Name));
+                    Debug.WriteLine($"WARN: No attribute defined for {attributeName} on class {messageType.Name}");
                 }
             }
 
@@ -95,23 +96,25 @@ namespace PFire.Core.Protocol
         {
             var propertyInfo = message.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             var attributesToBeWritten = new List<Tuple<XMessageField, byte, dynamic>>();
-            propertyInfo.Where(a => Attribute.IsDefined(a, typeof(XMessageField))).ToList()
-                .ForEach(property =>
-                {
-                    var propertyValue = property.GetValue(message);
-                    var attributeDefinition = property.GetCustomAttribute<XMessageField>();
-                    var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
+            propertyInfo.Where(a => Attribute.IsDefined(a, typeof(XMessageField)))
+                        .ToList()
+                        .ForEach(property =>
+                        {
+                            var propertyValue = property.GetValue(message);
+                            var attributeDefinition = property.GetCustomAttribute<XMessageField>();
+                            var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
 
-                    attributesToBeWritten.Add(
-                        Tuple.Create<XMessageField, byte, dynamic>(
-                            attributeDefinition,
-                            attribute.AttributeTypeId,
-                            propertyValue
-                        )
-                    );
-                });
+                            attributesToBeWritten.Add(
+                                Tuple.Create<XMessageField, byte, dynamic>(
+                                    attributeDefinition,
+                                    attribute.AttributeTypeId,
+                                    propertyValue
+                                )
+                            );
+                        });
 
-            byte[] payload = { };
+            byte[] payload = {};
+
             using var ms = new MemoryStream();
             using var writer = new BinaryWriter(ms);
             writer.Write((short)message.MessageTypeId);
@@ -119,7 +122,7 @@ namespace PFire.Core.Protocol
             attributesToBeWritten.ForEach(a =>
             {
                 var attribute = XFireAttributeFactory.Instance.GetAttribute(a.Item2);
-                if (a.Item1.NonTextualName)
+                if(a.Item1.NonTextualName)
                 {
                     attribute.WriteNameWithoutLengthPrefix(writer, a.Item1.NameAsBytes);
                     attribute.WriteType(writer);
@@ -130,6 +133,7 @@ namespace PFire.Core.Protocol
                     attribute.WriteAll(writer, a.Item1.Name, a.Item3);
                 }
             });
+
             payload = ms.ToArray();
 
             return payload;
