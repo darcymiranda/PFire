@@ -1,0 +1,1753 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <title>XFire Protocol Specification - by Iain McGinniss</title>
+    <style type="text/css">
+      h2, h3, h4, h5, h6 {
+        text-align: left
+      }
+      
+      /* background should be transparent, but WebTV has a bug */
+      h1, h2, h3 {
+        color: #005A9C;
+        background: white
+      }
+      
+      h1 {
+        font: 170% sans-serif;
+        text-align: center;
+      }
+      
+      h2 {
+        font: 140% sans-serif;
+        counter-increment: chapter; /* Add 1 to chapter */
+        counter-reset: section 0;   /* Set section to 0 */
+      }
+      
+      h2:before {
+        content: counter(chapter) ". ";
+      }
+      
+      h3 {
+        font: 120% sans-serif;
+        counter-increment: section;
+      }
+      
+      h4 {
+        font: bold 100% sans-serif
+      }
+      
+      h5 {
+        font: italic 100% sans-serif
+      }
+      
+      h6 {
+        font: small-caps 100% sans-serif
+      }
+      
+      h3:before {
+        content: counter(chapter) "." counter(section) " ";
+      }
+      
+      table {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+      
+      th {
+        border: 1px solid black;
+        background: #ccc;
+      }
+      
+      td {
+        border: 1px solid #444;
+      }
+      
+      td.int8 {
+        background: #dfe;
+      }
+      
+      td.int16 {
+        background: #ced;
+      }
+      
+      td.int16-start {
+        background: #ced;
+        border-right: 1px solid #bce;
+      }
+      
+      td.int16-end {
+        background: #ced;
+        border-left: 1px solid #bce;
+      }
+      
+      td.int32 {
+        background: #bdc;
+      }
+      
+      td.int32-start {
+        background: #bdc;
+        border-right: 1px solid #acb;
+      }
+      
+      td.int32-middle {
+        background: #bdc;
+        border-left: 1px solid #acb;
+        border-right: 1px solid #acb;
+      }
+      
+      td.int32-end {
+        background: #bdc;
+        border-left: 1px solid #acb;
+      }
+      
+      td.string {
+        background: #cef;
+      }
+      
+      td.string-start {
+        background: #cef;
+        border-right: 1px solid #bde;
+      }
+      
+      td.string-middle {
+        background: #cef;
+        border-left: 1px solid #bde;
+        border-right: 1px solid #bde;
+      }
+      
+      td.string-end {
+        background: #cef;
+        border-left: 1px solid #bde;
+      }
+      
+      td.indeterminate {
+        background: #fe6;
+      }
+      
+      td.end {
+        background: #ccc;
+      }
+      
+      td.center {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>XFire Protocol Specification<br/>Iain McGinniss, 2007/08/16</h1>
+    <p>This document aims to provide a full specification for the XFire instant messaging protocol. A lot of the information found in this document would not be available if it were not for the hard work of the xfirelib project team (<a href="http://xfirelib.sphene.net">http://xfirelib.sphene.net</a>), who reverse engineered the protocol to write xfirelib. This information, along with some of my own findings from writing the <a href="http://code.google.com/p/openfire">OpenFire</a> library and suite of tools, provide the basis for this document which aims to formally document what we discovered, and to be provided as a basis for implementing XFire communication libraries in alternative languages.</p>
+    <h2>High level details</h2>
+    <p>The XFire protocol uses a mix of client/server communication and peer to peer communication. Client/server communication is carried out over a TCP/IP connection, with the client connecting to the XFire central server (cs.xfire.com) on port 25999. Peer to peer communication is performed using UDP datagrams, with the ports involved negotiated between the two peers.</p>
+    <p>As a rule, XFire uses little endian byte ordering and UTF-8 encoding for strings.</p>
+    <h3>Message structure</h3>
+    <p>The messages between client and server follow a common pattern:</p>
+    <table style="text-align: center">
+      <tr>
+        <th style="width: 1em"></th>
+        <th style="width: 6em">0</th>
+        <th style="width: 6em">1</th>
+        <th style="width: 6em">2</th>
+        <th style="width: 6em">3</th>
+        <th style="width: 6em">4</th>
+        <th style="width: 6em">5</th>
+        <th style="width: 6em">...</th>
+      </tr>
+      <tr>
+        <th>0</th>
+        <td class="int16" colspan="2">MSG SIZE</td>
+        <td class="int16" colspan="2">MSG TYPE ID</td>
+        <td class="int8">NUM ATTRS</td>
+        <td class="indeterminate" colspan="2">ATTRIBUTES...</td>
+      </tr>
+    </table>
+    <ol>
+      <li>The message size, as a 16-bit integer.</li>
+      <li>The message type id. Each message type, from a login request to a chat message, has a unique 16-bit integer ID.</li>
+      <li>The number of attributes within the message, as an 8-bit integer.</li>
+      <li>The list of attributes for the message with their associated values.</li>
+    </ol>
+    <p>Message attributes are formatted as follows:</p>
+    <table style="text-align: center">
+      <tr>
+        <th style="width: 2em"></th>
+        <th style="width: 6em">0</th>
+        <th style="width: 6em">1</th>
+        <th style="width: 6em">...</th>
+        <th style="width: 6em">n+1</th>
+        <th style="width: 6em">n+2</th>
+        <th style="width: 6em">...</th>
+      </tr>
+      <tr>
+        <th>0</th>
+        <td class="int8">ATTR NAME LEN (n)</td>
+        <td class="string" colspan="2">ATTRIBUTE NAME</td>
+        <td class="int8">ATTR VALUE TYPE</td>
+        <td class="indeterminate" colspan="2">ATTR VALUE DATA...</td>
+      </tr>
+    </table>
+    <ol>
+      <li>The attribute name length, as an 8-bit integer.</li>
+      <li>The attribute name, as an ISO/IEC 8859-1 encoded string (i.e. 8 bits per character).</li>
+      <li>1.The attribute value.</li>
+    </ol>
+    <p>The attribute value can be one of a set of predefined attribute types:</p>
+    <table>
+      <tr>
+        <th>Type ID</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>0x01</td>
+        <td>A variable length string. The first two bytes of the data contain a 16-bit integer indicating the length of the string, followed by the string data.</td>
+      </tr>
+      <tr>
+        <td>0x02</td>
+        <td>A 32-bit integer</td>
+      </tr>
+      <tr>
+        <td>0x03</td>
+        <td>A 128-bit session identifier, used to identify a particular user's session on the xfire network.</td>
+      </tr>
+      <tr>
+        <td>0x04</td>
+        <td>A list. The first byte indicates the type of the items in the list, for instance 0x01 for a string list. The next two bytes indicate the number of items in the list, followed by each consecutive value.</td>
+      </tr>
+      <tr>
+        <td>0x05</td>
+        <td>A string keyed map. The first byte indicates the number of entries, followed by each entry, with a string name (prefixed by 8-bit string length) and type (the same format for messages as a whole).</td>
+      </tr>
+      <tr>
+        <td>0x06</td>
+        <td>A DID value. As yet, the purpose of this value is unknown (See <a href="#msg400">DID Message</a> for more information).</td>
+      </tr>
+      <tr>
+        <td>0x09</td>
+        <td>An integer keyed map (type 0x09). The first byte indicates the number of entries, followed by each entry, with an 8-bit integer key and type.</td>
+      </tr>
+    </table>
+    <p>An example of a simple message is the <a href="#msg3">client version message</a>, which has a single attribute named "version". It looks like this (with each bytes value displayed in hexadecimal, or the character equivalent where appropriate):</p>
+    <table>
+      <tr>
+        <th>Position (hex)</th>
+        <th>00</th>
+        <th>01</th>
+        <th>02</th>
+        <th>03</th>
+        <th>04</th>
+        <th>05</th>
+        <th>06</th>
+        <th>07</th>
+        <th>08</th>
+        <th>09</th>
+        <th>0A</th>
+        <th>0B</th>
+        <th>0C</th>
+        <th>0D</th>
+        <th>0E</th>
+        <th>0F</th>
+        <th>10</th>
+        <th>11</th>
+      </tr>
+      <tr>
+        <th>Value (hex)</th>
+        <td class="int16-start">12</td>
+        <td class="int16-end">00</td>
+        <td class="int16-start">03</td>
+        <td class="int16-end">00</td>
+        <td class="int8">01</td>
+        <td class="int8">07</td>
+        <td class="string-start">76</td>
+        <td class="string-middle">65</td>
+        <td class="string-middle">72</td>
+        <td class="string-middle">73</td>
+        <td class="string-middle">69</td>
+        <td class="string-middle">6f</td>
+        <td class="string-end">6e</td>
+        <td class="int8">02<br/></td>
+        <td class="int32-start">43<br/></td>
+        <td class="int32-middle">00<br/></td>
+        <td class="int32-middle">00<br/></td>
+        <td class="int32-end">00<br/></td>
+      </tr>
+      <tr>
+        <th>Value (literal)</th>
+        <td colspan="6"></td>
+        <td class="string-start">v</td>
+        <td class="string-middle">e</td>
+        <td class="string-middle">r</td>
+        <td class="string-middle">s</td>
+        <td class="string-middle">i</td>
+        <td class="string-middle">o</td>
+        <td class="string-end">n</td>
+      </tr>
+    </table>
+    <p>As you can see from the above, the message length is 18 (0x0012), the packet id is 3 (0x0003), there is a single attribute with name of length 7 ("version"), with a 32-bit value 0x00000043 (67 represented as a 32-bit integer). Remember that because the protocol is little endian, the integers will appear with the least significant byte first, i.e. the message length will appear as 12 00 in the message.</p>
+    <h3><a id="handshake">Connection Handshake</a></h3>
+    <p>When initiating a new connection, the sequence of events is as follows:</p>
+    <ol>
+      <li>The client opens a TCP/IP connection with the server, first sending the hexadecimal code 55 41 30 31 (or, as a string, "UA01") as an opening statement.</li>
+      <li>
+        The client then sends a <a href="#msg18">client information message</a>, followed by a <a href="#msg3">client version message</a>. 
+        <ol>
+          <li>If this version is older than the current XFire version, a <a href="#msg134">new version message</a> will be sent and the server will send no more messages. The client should disconnect at this point.</li>
+        </ol>
+     </li>
+      <li>The server will then send an <a href="#msg128">authentication challenge message</a> to the client.</li>
+      <li>In response to this, the client will send a <a href="#msg1">login request message</a>, containing the user name and a SHA-1 hashed version of the password, combined with a salt string and constant for extra security.</li>
+      <li>The server will either respond with a <a href="#130">login success</a> or <a href="#msg129">failure message</a>.</li>
+    </ol>
+    <p>Once a client has successfully logged in, the server will send a flurry of messages used to initialise the client (who the <a href="#msg131">user's friends are</a>, <a href="#msg132">who is online</a>, and so on). Other messages follow a request / response model, where the client must send a message which triggers the server to send a matching response message (for instance, checking to see what friends of friends are online).</p>
+    <h2>Message Types</h2>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <th>Description</th>
+        <th>Key type</th>
+        <th>To Server</th>
+        <th>From Server</th>
+        <th>From Peer (UDP)</th>
+      </tr>
+      <tr>
+        <td><a href="#msg1">1</a></td>
+        <td>Login request</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg2">2</a></td>
+        <td>Chat message</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg3">3</a></td>
+        <td>Client version</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg5">5</a></td>
+        <td>Friends of online friend request</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg6">6</a></td>
+        <td>Outgoing friend invitation</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg7">7</a></td>
+        <td>Accept Invitation</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg8">8</a></td>
+        <td>Reject Invitation</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg12">12</a></td>
+        <td>User lookup</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg13">13</a></td>
+        <td>Connection keepalive</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg16">16</a></td>
+        <td>Client configuration</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg17">17</a></td>
+        <td>Connection information</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg18">18</a></td>
+        <td>Client information</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg23">23</a></td>
+        <td>???</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg24">24</a></td>
+        <td>???</td>
+        <td>String</td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg128">128</a></td>
+        <td>Login challenge</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg129">129</a></td>
+        <td>Login failure</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg130">130</a></td>
+        <td>Login success</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg131">131</a></td>
+        <td>Friend list</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg132">132</a></td>
+        <td>Session ID list</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg133">133</a></td>
+        <td>Server routed chat message</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg134">134</a></td>
+        <td>New version available</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg135">135</a></td>
+        <td>Friend game information</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg136">136</a></td>
+        <td>Friends of friends</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg137">137</a></td>
+        <td>Outgoing friend invitation confirmation</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg138">138</a></td>
+        <td>Incoming friend invitation</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg141">141</a></td>
+        <td>???</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg143">143</a></td>
+        <td>User search results</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg147">147</a></td>
+        <td>Friend VoIP information</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg148">148</a></td>
+        <td>???</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg154">154</a></td>
+        <td>Friend status</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg151">151</a></td>
+        <td>???</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg152">152</a></td>
+        <td>???</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg155">155</a></td>
+        <td>???</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg156">156</a></td>
+        <td>Extra friend game information</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg157">157</a></td>
+        <td>???</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg163">163</a></td>
+        <td>???</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg400">400</a></td>
+        <td>DID (?)</td>
+        <td>String</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+      <tr>
+        <td><a href="#msg450">450</a></td>
+        <td>Channel information (?)</td>
+        <td>Int8</td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+        <td class="center"><img src="tick.png" alt="yes" title="yes"/></td>
+        <td class="center"><img src="cross.png" alt="no" title="no"/></td>
+      </tr>
+    </table>
+    <h3><a id="msg1">Login Request Message</a></h3>
+    <p>This message is sent by the client to the server in response to a <a href="#msg128">Login Challenge Message</a> in order to authenticate the user. The server will respond with either a <a href="#msg130">Login Success Message</a> or a <a href="#msg129">Login Failure Message</a>.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>1</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string</td>
+        <td>The user name of the user that is attempting to log in.</td>
+      </tr>
+      <tr>
+        <td>password</td>
+        <td>string (128 bit SHA-1 hash as a hex string)</td>
+        <td>
+		  The salted username and password of the user that is attempting to log in. This is constructed as follows: 
+          <pre>
+String a = username + password + "UltimateArena";
+int128 a_hash = sha1(a);
+String b = toHexString(a_hash) + salt;
+int128 b_hash = sha1(b);
+String result = toHexString(b_hash);
+</pre>
+          Where the salt is a string that has been provided in the login challenge. 
+       </td>
+      </tr>
+      <tr>
+        <td>flags</td>
+        <td>32-bit integer</td>
+        <td>The purpose of this value is not known, in all data observed from the real XFire client it has been 0.</td>
+      </tr>
+    </table>
+    <h3><a id="msg2">Chat Message</a></h3>
+    <p>This message is sent by the client to the server, or directly to another user via UDP. The message can represent a number of things:</p>
+    <ul>
+      <li>An content message (e.g. "hi there")</li>
+      <li>An indication of whether the user is typing or not</li>
+      <li>A list of the client's details (IP address, open UDP port, etc)</li>
+      <li>An acknowledgement that a message from the peer was received</li>
+    </ul>
+    <p>When chat messages are sent via the server, they will be received by the peer as a <a href="#msg133">Server Routed Chat Message</a>.</p>
+    <p>If communication is to be routed via the XFire server, client information messages should be sent regularly to prevent "high latency warnings" where the peer is a real XFire client. In OpenFire, these are sent with each real message, up to once every 5 seconds. It has not been determined what the threshold is for the XFire client to start reporting latency warnings.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>2</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>Client to Server, Client to Client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>sid</td>
+        <td>Session ID</td>
+        <td>The session ID of the peer this message is intended for.</td>
+      </tr>
+      <tr>
+        <td>peermsg</td>
+        <td>string keyed map</td>
+        <td>Contains the real content of the message. See below for the structure of each payload.</td>
+      </tr>
+    </table>
+    <h4>Peermsg contents</h4>
+    <p>The contents of the peermsg map vary depending on what this chat message represents. What is represented is indicated in the "msgtype" attribute in the map, a 32-bit integer value.</p>
+    <ul>
+      <li>
+        <p><em>msgtype = 0</em> - a content message:</p>
+        <table>
+          <tr>
+            <th>Attribute name</th>
+            <th>Type</th>
+            <th>Details</th>
+          </tr>
+          <tr>
+            <td>imindex</td>
+            <td>32-bit integer</td>
+            <td>The "index" of this message within the conversation log. Used as a hint of message order, incremented for each message sent.</td>
+          </tr>
+          <tr>
+            <td>im</td>
+            <td>string</td>
+            <td>The actual message (e.g. "hello")</td>
+          </tr>
+        </table>
+     </li>
+      <li>
+        <p><em>msgtype = 1</em> - an acknowledgement message:</p>
+        <table>
+          <tr>
+            <th>Attribute name</th>
+            <th>Type</th>
+            <th>Details</th>
+          </tr>
+          <tr>
+            <td>imindex</td>
+            <td>32-bit integer</td>
+            <td>The "index" of the message we are acknowledging. Corresponds to the imindex in the message the peer sent.</td>
+          </tr>
+        </table>
+     </li>
+      <li>
+        <p><em>msgtype = 2</em> - a client information message:</p>
+        <table>
+          <tr>
+            <th>Attribute name</th>
+            <th>Type</th>
+            <th>Details</th>
+          </tr>
+          <tr>
+            <td>ip</td>
+            <td>IPv4 address (32-bit int)</td>
+            <td>The public IPv4 address of this user.</td>
+          </tr>
+          <tr>
+            <td>port</td>
+            <td>32-bit int (legal range 0-65535)</td>
+            <td>The public UDP port of this user.</td>
+          </tr>
+          <tr>
+            <td>localip</td>
+            <td>IPv4 address (32-bit int)</td>
+            <td>The LAN IPv4 address of this user.</td>
+          </tr>
+          <tr>
+            <td>localport</td>
+            <td>32-bit int (legal range 0-65535)</td>
+            <td>The LAN UDP port of this user (not necessarily the same as the public port, depending on how the use of NAT or firewall)</td>
+          </tr>
+          <tr>
+            <td>status</td>
+            <td>32-bit int</td>
+            <td>The purpose of this field has not been determined, in all analysed data to date it has been 0.</td>
+          </tr>
+          <tr>
+            <td>salt</td>
+            <td>string</td>
+            <td>A salt string; it is not known what this is used for (it is always present but does not appear to be used when communicating via the server)</td>
+          </tr>
+        </table>
+     </li>
+      <li>
+        <p><em>msgtype = 3</em> - a typing notification:</p>
+        <table>
+          <tr>
+            <th>Attribute name</th>
+            <th>Type</th>
+            <th>Details</th>
+          </tr>
+          <tr>
+            <td>imindex</td>
+            <td>32-bit integer</td>
+            <td>The "index" of the message that will be sent if the user sends the pending content message.</td>
+          </tr>
+          <tr>
+            <td>typing</td>
+            <td>32-bit integer</td>
+            <td>A boolean indicating whether the user is typing or not (1 is typing, 0 is not typing).</td>
+          </tr>
+        </table>
+     </li>
+    </ul>
+    <h3><a id="msg3">Client version Message</a></h3>
+    <p>This message is sent by the client to the server immediately after a <a href="#msg18">client information message</a> in order to report the version of the xfire client in use. This number changes frequently, incremented with each release of the XFire client (typically at least once a month). If the version number sent to the server is lower than the current released client, the server will send a <a href="#msg134">new version available</a> message and cease communicating with the client (the TCP connection will remain open until the client closes it, but it will ignore any further messages from the client).</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>3</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>version</td>
+        <td>32-bit integer</td>
+        <td>The version number of the client.</td>
+      </tr>
+    </table>
+    <h3><a id="msg5">Friends of Online Friend Request Message</a></h3>
+    <p>This message is sent by the client to the server to get a list of friends of friends who are online and currently playing a game. The client sends a list of session IDs of friends who are currently online, and the server will respond with a <a href="#msg136">friends of friends</a> message.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>5</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>sid</td>
+        <td>Session ID list</td>
+        <td>A list of session IDs of currently online friends, for whom we wish to acquire the list of second-degree online friends.</td>
+      </tr>
+    </table>
+    <h3><a id="msg6">Outgoing Friend Invitation Message</a></h3>
+    <p>This is the message sent by a client when it wishes to add another user to it's friend list. It contains the username of the user to invite and a personalised message which will be displayed to the other user.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>6</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string</td>
+        <td>The username of the user to invite.</td>
+      </tr>
+      <tr>
+        <td>msg</td>
+        <td>string</td>
+        <td>The personalised message typed by the user of the client, intended to be displayed to the recipient.</td>
+      </tr>
+    </table>
+    <h3><a id="msg7">Accept Invitation Message</a></h3>
+    <p>This is the message sent by a client when it wishes to accept an <a href="#msg138">invitation</a> received from another user. It simply contains the username of the other user.</p>
+    <p>This message type is identical to the <a href="#msg8">reject invitation message</a>, the message ID is the only difference.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>7</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string</td>
+        <td>The username of the user to accept the invitation from.</td>
+      </tr>
+    </table>
+    <h3><a id="msg8">Reject Invitation Message</a></h3>
+    <p>This is the message sent by a client when it wishes to reject an <a href="#msg138">invitation</a> received from another user. It simply contains the username of the other user.</p>
+    <p>This message type is identical to the <a href="#msg8">accept invitation message</a>, the message ID is the only difference.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>8</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string</td>
+        <td>The username of the user to reject the invitation from.</td>
+      </tr>
+    </table>
+    <h3><a id="msg12">User Lookup Message</a></h3>
+    <p>This is the message sent by a client when a search for friends is executed. Searches can be conducted using first name, last name, email address, or any combination thereof.</p>
+    <p>The server will respond to this message with a <a href="#msg143">user search results message</a></p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>12</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string</td>
+        <td>A search string, which will match against email addresses, first names and last names.</td>
+      </tr>
+      <tr>
+        <td>fname</td>
+        <td>string</td>
+        <td>A search string which will only match the first name of other users.</td>
+      </tr>
+      <tr>
+        <td>lname</td>
+        <td>string</td>
+        <td>A search string which will only match the last name of other users.</td>
+      </tr>
+      <tr>
+        <td>email</td>
+        <td>string</td>
+        <td>A search string which will only match the email addresses of other users.</td>
+      </tr>
+    </table>
+    <h3><a id="msg13">Connection Keep-alive Message</a></h3>
+    <p>This message is sent periodically by the client to notify the server it is still alive. It is not known how long a client can wait before sending a keepalive message, however the OpenFire library sends one every 60 seconds if there is no other outgoing connection activity.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>13</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>value</td>
+        <td>32-bit integer</td>
+        <td>An integer of unknown purpose. In all analysed data to date this has had the value "0".</td>
+      </tr>
+      <tr>
+        <td>stats</td>
+        <td>32-bit integer list</td>
+        <td>An integer list of unknown purpose. In all analysed data to date this has been an empty list.</td>
+      </tr>
+    </table>
+    <h3><a id="msg16">Client Configuration Message</a></h3>
+    <p>This is a message sent by the client immediately after a <a href="#msg130">successful login</a>, and describes some of the user's chosen configuration (skin, theme, etc) to the XFire server.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>16</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>lang</td>
+        <td>string</td>
+        <td>The locale string of the user, e.g. "en" for english or "de" for german.</td>
+      </tr>
+      <tr>
+        <td>skin</td>
+        <td>string</td>
+        <td>The skin currently being used by the user's client. In a vanilla XFire client, this will typically be "XFire".</td>
+      </tr>
+      <tr>
+        <td>theme</td>
+        <td>string</td>
+        <td>The theme currently being used by the user's client. In a vanilla XFire client, this will typically be "default".</td>
+      </tr>
+      <tr>
+        <td>partner</td>
+        <td>string</td>
+        <td>A string of unknown purpose. In all data analysed to date, this has been an empty string.</td>
+      </tr>
+    </table>
+    <h3><a id="msg18">Client Information Message</a></h3>
+    <p>This message is sent by the client to the server as the first message after the <a href="#handshake">initial handshake</a>. It contains a version number and the list of skins installed by the client.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>18</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From client to server</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>version</td>
+        <td>32-bit integer list</td>
+        <td>A version number, in 4 parts. As of writing, all observed messages have used the version number "3.2.0.0". It appears this may have been made redundant by the version number transmitted in the <a href="#msg3">client version message</a>.</td>
+      </tr>
+      <tr>
+        <td>skin</td>
+        <td>string list</td>
+        <td>
+		  The list of skins installed on the client. With a vanilla install of the XFire client, this contains the strings 
+          <ul>
+            <li>"Xfire"</li>
+            <li>"standard"</li>
+            <li>"Separator"</li>
+            <li>"XF_URL"</li>
+          </ul>
+          This corresponds to the XFire client's "Tools -&gt; Skin" menu, with string representations of the horizontal separator and the link to the XFire skins download page. 
+       </td>
+      </tr>
+    </table>
+    <h3><a id="msg128">Login Challenge Message</a></h3>
+    <p>This message is sent by the server to the client to initiate the authentication process as part of the <a href="#handshake">initial handshake</a>. It contains the salt that is to be used to obscure the user's password, preventing replay attacks.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>128</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>salt</td>
+        <td>string</td>
+        <td>A salt string which is to be used as part of the <a href="#msg1">login request</a>.</td>
+      </tr>
+    </table>
+    <h3><a id="msg129">Login Failure Message</a></h3>
+    <p>This message is sent in response to a <a href="#msg1">login request message</a> if the user's password was incorrect.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>129</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>reason</td>
+        <td>32-bit integer</td>
+        <td>A code perhaps used to indicate the reason for the failed login. In all analysed data this has had the value "0".</td>
+      </tr>
+    </table>
+    <h3><a id="msg130">Login Success Message</a></h3>
+    <p>This message is sent in response to a <a href="#msg1">login request message</a> if the user authenticated successfully. It contains a variety of information that is used to initialise the client.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>130</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>userid</td>
+        <td>32-bit integer</td>
+        <td>The user's unique identifier on the network, bound to their username. This is used in various other parts of the protocol instead of the username.</td>
+      </tr>
+      <tr>
+        <td>sid</td>
+        <td>Session ID</td>
+        <td>The unique session ID for this connection, distinct from all other connections this user or any other user's have had.</td>
+      </tr>
+      <tr>
+        <td>nick</td>
+        <td>string</td>
+        <td>The "nickname" or alias of this user last time they connected - this is what is displayed in the XFire UI if one has been set, otherwise the username is displayed.</td>
+      </tr>
+      <tr>
+        <td>status</td>
+        <td>32-bit integer</td>
+        <td>An integer of unknown purpose.</td>
+      </tr>
+      <tr>
+        <td>dlSet</td>
+        <td>string</td>
+        <td>A string of unknown purpose. In all observed data this has been an empty string.</td>
+      </tr>
+      <tr>
+        <td>p2pset</td>
+        <td>string</td>
+        <td>A string of unknown purpose. In all observed data this has been an empty string.</td>
+      </tr>
+      <tr>
+        <td>clntSet</td>
+        <td>string</td>
+        <td>A string of unknown purpose. In all observed data this has been an empty string.</td>
+      </tr>
+      <tr>
+        <td>minRect</td>
+        <td>32-bit integer</td>
+        <td>An integer of unknown purpose, presumably related in some way to the rectangular size of the client. In all observed data this has had the value "1".</td>
+      </tr>
+      <tr>
+        <td>maxRect</td>
+        <td>32-bit integer</td>
+        <td>An integer of unknown purpose, presumably related in some way to the rectangular size of the client. In all observed data this has had the value "1800", and the XFire client does seem restricted to roughly this size (it won't fill the width of a 1920x1200 monitor, for instance).</td>
+      </tr>
+      <tr>
+        <td>ctry</td>
+        <td>32-bit integer</td>
+        <td>An integer of unknown purpose.</td>
+      </tr>
+      <tr>
+        <td>n1</td>
+        <td>IPv4 address</td>
+        <td>An address of unknown purpose. In all observed data this has had the value "204.71.190.131", which resolves to "nat1.sv.xfire.com".</td>
+      </tr>
+      <tr>
+        <td>n2</td>
+        <td>IPv4 address</td>
+        <td>An address of unknown purpose. In all observed data this has had the value "204.71.190.132", which resolves to "nat2.sv.xfire.com".</td>
+      </tr>
+      <tr>
+        <td>n3</td>
+        <td>IPv4 address</td>
+        <td>An address of unknown purpose. In all observed data this has had the value "204.71.190.133", which resolves to "nat3.sv.xfire.com".</td>
+      </tr>
+      <tr>
+        <td>pip</td>
+        <td>IPv4 address</td>
+        <td>The public IPv4 address of this client, as detected by the server. This is useful for the client to discover it's public IP when it is not directly connected to the internet.</td>
+      </tr>
+    </table>
+    <h3><a id="msg131">Friend List Message</a></h3>
+    <p>This message provides the list of friends for the current user after a successful login, with some essential details for future operations dealing with these friends.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>131</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>userid</td>
+        <td>32-bit integer list</td>
+        <td>A list containing the unique ID of each friend.</td>
+      </tr>
+      <tr>
+        <td>friends</td>
+        <td>String list</td>
+        <td>A list containing the usernames of each friend.</td>
+      </tr>
+      <tr>
+        <td>nick</td>
+        <td>String list</td>
+        <td>A list containing the "nick name" of each friend, i.e. the name that will be displayed instead of the username if set. If no nick name has been set, this will be an empty string.</td>
+      </tr>
+    </table>
+    <h3><a id="msg132">Session ID List Message</a></h3>
+    <p>This message provides a list of session IDs for friends who are currently online, or for friends who have just come online mid-way through a session. This message type is also used to indicate when friends have gone offline.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>132</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>userid</td>
+        <td>32-bit integer list</td>
+        <td>A list containing the unique ID of each who has come online or gone offline.</td>
+      </tr>
+      <tr>
+        <td>sid</td>
+        <td>Session ID list</td>
+        <td>A list containing the session IDs for each user. If the session ID is 0, this indicates that the friend has gone offline. Otherwise, it is a real session ID and indicates the user is online.</td>
+      </tr>
+    </table>
+    <h3><a id="msg133">Server Routed Chat Message</a></h3>
+    <p>This message type is identical to a normal <a href="#msg2">chat message</a>, but is sent down to the client via the TCP link to the server. This allows clients to communicate where they cannot open a public UDP port and directly communicate with peers.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>133</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>Server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <p>See the description of the normal <a href="#msg2">chat message</a> for a full description of the contents of the message.</p>
+    <h3><a id="msg134">New Version Available Message</a></h3>
+    <p>This message is sent by the server to the client if it reports a version number which is lower than the currently released XFire client. It contains the details to download newer client versions. The message is composed of a number of string lists, where values at matching indices in these lists collectively represent a new version.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>134</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>version</td>
+        <td>32-bit integer list</td>
+        <td>The list of new version numbers available.</td>
+      </tr>
+      <tr>
+        <td>file</td>
+        <td>string list</td>
+        <td>The links to the new XFire client versions. An example of a URL sent is <a href="http://seed2.da.xfire.com/79.exe">http://seed2.da.xfire.com/79.exe</a>. All files observed to date have been .exe update installers which must be run within the XFire installation path.</td>
+      </tr>
+      <tr>
+        <td>command</td>
+        <td>32-bit integer list</td>
+        <td>An integer list of unknown purpose. In all data observed so far, the integers have had the value "1".</td>
+      </tr>
+      <tr>
+        <td>fileid</td>
+        <td>32-bit integer list</td>
+        <td>An integer list of unknown purpose. In all data observed so far, the integers have had the value "0".</td>
+      </tr>
+      <tr>
+        <td>flags</td>
+        <td>32-bit integer</td>
+        <td>A 32-bit integer of unknown purpose. In all data observed so far this has had the value 0.</td>
+      </tr>
+    </table>
+    <h3><a id="msg135">Friend Game Information Message</a></h3>
+    <p>This message contains a description of games that friends are currently playing.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>135</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>sid</td>
+        <td>Session ID list</td>
+        <td>A list containing the session IDs for each user that is playing a game.</td>
+      </tr>
+      <tr>
+        <td>gameid</td>
+        <td>32-bit integer list</td>
+        <td>A list containing the game ids currently being played by each user. These correspond to the game IDs contained in the xfire_games.ini</td>
+      </tr>
+      <tr>
+        <td>gip</td>
+        <td>IPv4 address list</td>
+        <td>A list containing the IP addresses of the servers for each game being played by each user. If the game has no server IP or it cannot be determined, then the value will be 0.</td>
+      </tr>
+      <tr>
+        <td>gport</td>
+        <td>32-bit integer list</td>
+        <td>A list containing the port of the servers for each game being played by each user. If the port cannot be determined, then the value will be 0.</td>
+      </tr>
+    </table>
+    <h3><a id="msg136">Friends of Friends Message</a></h3>
+    <p>This message contains a list of users who are friends of friends and are currently playing a game. This is sent in response to a <a href="#msg5">friends of online friend request message</a>.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>136</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>fnsid</td>
+        <td>Session ID list</td>
+        <td>A list containing the session ID of a friend of a friend.</td>
+      </tr>
+      <tr>
+        <td>userid</td>
+        <td>32-bit integer list</td>
+        <td>A list containing the user ID of a friend of a friend.</td>
+      </tr>
+      <tr>
+        <td>uname</td>
+        <td>string list</td>
+        <td>A list containing the user name of a friend of a friend.</td>
+      </tr>
+      <tr>
+        <td>nick</td>
+        <td>string list</td>
+        <td>A list containing the display name of a friend of a friend.</td>
+      </tr>
+      <tr>
+        <td>friends</td>
+        <td>list of lists of 32-bit integers</td>
+        <td>A list containing the friends of the friend of a friend.</td>
+      </tr>
+    </table>
+    <h3><a id="msg137">Outgoing friend invitation confirmation message</a></h3>
+    <p>TODO: describe this message type.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>137</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>TBD</td>
+        <td>TBD</td>
+        <td>TBD</td>
+      </tr>
+    </table>
+    <h3><a id="msg138">Incoming Friend Invitation Message</a></h3>
+    <p>Incoming friend invitation messages are sent to the client by the server when a peer is requesting to add them to their friends list.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>138</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>list of strings</td>
+        <td>A list containing the user names of all the peers requesting to become a friend.</td>
+      </tr>
+      <tr>
+        <td>nick</td>
+        <td>list of strings</td>
+        <td>A list containing the display names of all the peers requesting to become a friend.</td>
+      </tr>
+      <tr>
+        <td>msg</td>
+        <td>list of strings</td>
+        <td>A list containing the invitation messages from each user (e.g. "will you be my friend?").</td>
+      </tr>
+    </table>
+    <h3><a id="msg143">User Search Results Message</a></h3>
+    <p>This message is sent by the server to the client in response to a <a href="#msg12">user lookup message</a>. It contains the details (user name, first name, last name and email address) of all users that matched the provided query.</p>
+    <p>The message contains a set of string lists, where strings at corresponding indices in the lists form the information for a matching user.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>143</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string list</td>
+        <td>The list of user names for matching users.</td>
+      </tr>
+      <tr>
+        <td>fname</td>
+        <td>string list</td>
+        <td>The list of first names for matching users.</td>
+      </tr>
+      <tr>
+        <td>lname</td>
+        <td>string list</td>
+        <td>The list of last names for matching users.</td>
+      </tr>
+      <tr>
+        <td>email</td>
+        <td>string list</td>
+        <td>The list of email addresses for matching users.</td>
+      </tr>
+    </table>
+    <h3><a id="msg147">Friend VoIP Information message</a></h3>
+    <p>This message is sent to the client by the server to notify them of any VoIP servers in use by their friends.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>147</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>sid</td>
+        <td>session id list</td>
+        <td>The list of session ids for which VoIP information has been updated.</td>
+      </tr>
+      <tr>
+        <td>vid</td>
+        <td>int32 list</td>
+        <td>The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client.</td>
+      </tr>
+      <tr>
+        <td>vip</td>
+        <td>int32 (IPv4 address) list</td>
+        <td>The list of IP addresses of the VoIP servers for each user.</td>
+      </tr>
+    </table>
+    <h3><a id="msg154">Friend Status Message</a></h3>
+    <p>This message is sent to the client by the server to notify it of a change in a friend's status message (e.g. "AFK" or "out to lunch").</p>
+    <p>The message contains a set of string lists, where strings at corresponding indices in the lists form each individual status update.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>154</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>sid</td>
+        <td>session id list</td>
+        <td>The list of session ids of users whose status message has changed.</td>
+      </tr>
+      <tr>
+        <td>msg</td>
+        <td>string list</td>
+        <td>The list new status messages;</td>
+      </tr>
+    </table>
+    <h3><a id="msg400">DID Message</a></h3>
+    <p>The purpose of this message type is unknown. Unusually, it also contains an entirely unique data-type, consisting of a 21 byte value. It is sent from the server to the client at the start of a session, and does not appear to be used thereafter.</p>
+    <h4>Properties</h4>
+    <table>
+      <tr>
+        <th>Message ID</th>
+        <td>400</td>
+      </tr>
+      <tr>
+        <th>Attribute key type</th>
+        <td>string</td>
+      </tr>
+      <tr>
+        <th>Direction</th>
+        <td>From server to client</td>
+      </tr>
+    </table>
+    <h4>Contents</h4>
+    <table>
+      <tr>
+        <th>Attribute name</th>
+        <th>Type</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>did</td>
+        <td>DID value</td>
+        <td>The mystery 21-byte value.</td>
+      </tr>
+    </table>
+  </body>
+</html>
