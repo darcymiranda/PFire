@@ -28,13 +28,13 @@ namespace PFire.Core.Session
         private TcpClient _tcpClient;
 
         public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
-        
-        public string Salt { get; private set; }
-        
+
+        public string Salt { get; }
+
         public PFireServer Server { get; set; }
 
-        public Guid SessionId { get; private set; }
-        
+        public Guid SessionId { get; }
+
         public User User { get; set; }
 
         public XFireClient(TcpClient tcpClient,
@@ -53,7 +53,7 @@ namespace PFire.Core.Session
             _connected = true;
 
             // TODO: be able to use unique salts
-            Salt = "4dc383ea21bf4bca83ea5040cb10da62";//Guid.NewGuid().ToString().Replace("-", string.Empty);
+            Salt = "4dc383ea21bf4bca83ea5040cb10da62";
             SessionId = Guid.NewGuid();
 
             _clientWaitEvent = new AutoResetEvent(false);
@@ -64,7 +64,7 @@ namespace PFire.Core.Session
 
             ThreadPool.QueueUserWorkItem(ClientThreadWorker);
         }
-     
+
         public void Disconnect()
         {
             _connected = false;
@@ -95,10 +95,10 @@ namespace PFire.Core.Session
 
                 _tcpClient.Client.Send(payload);
 
-                ConsoleLogger.Log(string.Format("Sent message[{0},{1}]: {2}",
-                    User != null ? User.Username : "unknown",
-                    User != null ? User.UserId : -1,
-                    message), ConsoleColor.Gray);
+                var username = (User != null ? User.Username : "unknown");
+                var userId = (User != null ? User.UserId : -1);
+
+                ConsoleLogger.Log($"Sent message[{username},{userId}]: {message}", ConsoleColor.Gray);
             }
         }
 
@@ -181,6 +181,7 @@ namespace PFire.Core.Session
                 }
             }
         }
+
         private void ReadMessage(NetworkStream stream)
         {
             // Header determines size of message
@@ -203,18 +204,18 @@ namespace PFire.Core.Session
             {
                 var message = MessageSerializer.Deserialize(messageBuffer);
 
-                ConsoleLogger.Log(string.Format("Recv message[{0},{1}]: {2}",
-                    User != null ? User.Username : "unknown",
-                    User != null ? User.UserId : -1,
-                    message), ConsoleColor.Gray);
+                var username = (User != null ? User.Username : "unknown");
+                var userId = (User != null ? User.UserId : -1);
+
+                ConsoleLogger.Log($"Recv message[{username},{userId}]: {message}", ConsoleColor.Gray);
 
                 _receiveHandler?.Invoke(this, message);
             }
-            catch (UnknownMessageTypeException messageTypeEx)
+            catch(UnknownMessageTypeException messageTypeEx)
             {
                 Debug.WriteLine(messageTypeEx.ToString());
             }
-            catch (UnknownXFireAttributeTypeException attributeTypeEx)
+            catch(UnknownXFireAttributeTypeException attributeTypeEx)
             {
                 Debug.WriteLine(attributeTypeEx.ToString());
             }
@@ -224,7 +225,7 @@ namespace PFire.Core.Session
         {
             // First time the client connects, an opening statement of 4 bytes is sent that needs to be ignored
             var openingStatementBuffer = new byte[4];
-            int read = stream.Read(openingStatementBuffer, 0, openingStatementBuffer.Length);
+            var read = stream.Read(openingStatementBuffer, 0, openingStatementBuffer.Length);
 
             _initialized = read == 4;
 

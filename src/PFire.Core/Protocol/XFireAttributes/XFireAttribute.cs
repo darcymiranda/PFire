@@ -6,8 +6,8 @@ namespace PFire.Core.Protocol.XFireAttributes
 {
     public abstract class XFireAttribute
     {
-        public abstract Type AttributeType { get; }
-        public abstract byte AttributeTypeId { get; }
+        public abstract Type AttributeType {get;}
+        public abstract byte AttributeTypeId {get;}
         public abstract dynamic ReadValue(BinaryReader reader);
         public abstract void WriteValue(BinaryWriter writer, dynamic data);
 
@@ -15,12 +15,16 @@ namespace PFire.Core.Protocol.XFireAttributes
         {
             writer.Write(AttributeTypeId);
         }
+
         public void WriteName(BinaryWriter writer, string name)
         {
-            if (name == null) return;
+            if(name == null)
+            {
+                return;
+            }
+
             writer.Write((byte)name.Length);
             WriteNameWithoutLengthPrefix(writer, Encoding.UTF8.GetBytes(name));
-            //writer.Write(Encoding.GetEncoding("ISO-8859-1").GetBytes(name));
         }
 
         public void WriteNameWithoutLengthPrefix(BinaryWriter writer, byte[] name)

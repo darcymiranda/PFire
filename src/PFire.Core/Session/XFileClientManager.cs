@@ -19,7 +19,7 @@ namespace PFire.Core.Session
         {
             if (!_sessions.TryAdd(session.SessionId, session))
             {
-                Console.WriteLine("Tried to add a user with session id {0} that already existed", "WARN", session.SessionId);
+                Console.WriteLine("Tried to add a user with session id {0} that already existed", session.SessionId);
             }
         }
 
