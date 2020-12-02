@@ -33,13 +33,12 @@ namespace PFire.Core.Protocol.Messages.Outbound
 
         public override void Process(XFireClient context)
         {
-            var users = context.Server.Database.QueryUsers(_queryByUsername);
-            var usernames = users.Select(a => a.Username);
+            var usernames = context.Server.Database.QueryUsers(_queryByUsername).Select(a => a.Username).ToList();
 
             Usernames.AddRange(usernames);
 
             // Don't really care about these but they're necessary to work properly
-            var unknowns = usernames.Select(a => "Unknown");
+            var unknowns = usernames.Select(a => "Unknown").ToList();
 
             FirstNames.AddRange(unknowns);
             LastNames.AddRange(unknowns);

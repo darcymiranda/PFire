@@ -37,6 +37,8 @@ namespace PFire.Core.Session
 
         public User User { get; set; }
 
+        private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
+
         public XFireClient(TcpClient tcpClient,
                            IXFireClientManager clientManager,
                            TcpServer.OnReceiveHandler receiveHandler,
@@ -89,17 +91,19 @@ namespace PFire.Core.Session
 
         public void SendMessage(XFireMessage message)
         {
-            if (_initialized)
+            if(!_initialized)
             {
-                var payload = MessageSerializer.Serialize(message);
-
-                _tcpClient.Client.Send(payload);
-
-                var username = User != null ? User.Username : "unknown";
-                var userId = User != null ? User.UserId : -1;
-
-                ConsoleLogger.Log($"Sent message[{username},{userId}]: {message}", ConsoleColor.Gray);
+                return;
             }
+
+            var payload = MessageSerializer.Serialize(message);
+
+            _tcpClient.Client.Send(payload);
+
+            var username = User != null ? User.Username : "unknown";
+            var userId = User != null ? User.UserId : -1;
+
+            ConsoleLogger.Log($"Sent message[{username},{userId}]: {message}", ConsoleColor.Gray);
         }
 
         protected override void DisposeManagedResources()
@@ -125,7 +129,7 @@ namespace PFire.Core.Session
 
         private void CheckForLifetimeExpiry()
         {
-            if (DateTime.UtcNow - _lastReceivedFrom > new TimeSpan(0, ClientTimeoutInMinutes, 0))
+            if (DateTime.UtcNow - _lastReceivedFrom > ClientTimeout)
             {
                 ConsoleLogger.Log($"Client: {User.Username}-{SessionId} has timed out -> {_lastReceivedFrom}", ConsoleColor.Red);
                 _clientManager.RemoveSession(this);

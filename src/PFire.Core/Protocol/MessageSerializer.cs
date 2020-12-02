@@ -35,19 +35,7 @@ namespace PFire.Core.Protocol
 
             for (var i = 0; i < attributeCount; i++)
             {
-                // TODO: Be brave enough to find an elegant fix for this
-                // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
-                // and breaks this code. Assume first byte after the attribute count as the attribute name
-                string attributeName = null;
-                if (messageType == typeof(StatusChange))
-                {
-                    attributeName = Encoding.UTF8.GetString(reader.ReadBytes(1));
-                }
-                else
-                {
-                    var attributeNameLength = reader.ReadByte();
-                    attributeName = Encoding.UTF8.GetString(reader.ReadBytes(attributeNameLength));
-                }
+                var attributeName = GetAttributeName(reader, messageType);
 
                 var attributeType = reader.ReadByte();
 
@@ -69,6 +57,17 @@ namespace PFire.Core.Protocol
             Debug.WriteLine("Deserialized [{0}]: {1}", messageType, messageBase.ToString());
 
             return messageBase;
+        }
+
+        private static string GetAttributeName(BinaryReader reader, Type messageType)
+        {
+            // TODO: Be brave enough to find an elegant fix for this
+            // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
+            // and breaks this code. Assume first byte after the attribute count as the attribute name
+            var count = messageType == typeof(StatusChange) ? 1 : reader.ReadByte();
+
+            var readBytes = reader.ReadBytes(count);
+            return Encoding.UTF8.GetString(readBytes);
         }
 
         public static byte[] Serialize(IMessage message)
