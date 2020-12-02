@@ -12,7 +12,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         }
 
         [XMessageField("max")]
-        public int MaximumFavourates { get; private set; }
+        public int MaximumFavorites { get; private set; }
 
         [XMessageField("gameid")]
         public List<int> GameIds { get; private set; }
