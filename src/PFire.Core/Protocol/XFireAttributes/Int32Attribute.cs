@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PFire.Core.Protocol.XFireAttributes
 {
-    class Int32Attribute : XFireAttribute
+    public class Int32Attribute : XFireAttribute
     {
         public override byte AttributeTypeId => 0x02;
 

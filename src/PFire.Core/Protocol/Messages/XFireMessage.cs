@@ -6,9 +6,7 @@ namespace PFire.Core.Protocol.Messages
 {
     public abstract class XFireMessage : IMessage
     {
-        protected XFireMessageType MessageType;
-
-        public XFireMessageType MessageTypeId { get; protected set; }
+        public XFireMessageType MessageTypeId {get;}
 
         protected XFireMessage(XFireMessageType typeId)
         {

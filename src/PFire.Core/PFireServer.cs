@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
@@ -16,15 +13,12 @@ namespace PFire.Core
         public PFireDatabase Database { get; }
 
         private readonly TcpServer _server;
-
-
         private readonly IXFireClientManager _clientManager;
 
         public PFireServer(string baseDirectory, IPEndPoint endPoint = null)
         {
-            
             Database = new PFireDatabase(baseDirectory);
-            
+
             _clientManager = new XFileClientManager();
 
             _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), _clientManager);
@@ -85,7 +79,6 @@ namespace PFire.Core
         public XFireClient GetSession(User user)
         {
             return _clientManager.GetSession(user);
-            
         }
 
         private void AddSession(XFireClient session)

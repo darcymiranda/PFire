@@ -19,7 +19,7 @@ namespace PFire.Core.Session
         {
             if (!_sessions.TryAdd(session.SessionId, session))
             {
-                Console.WriteLine("Tried to add a user with session id {0} that already existed", "WARN", session.SessionId);
+                Console.WriteLine("Tried to add a user with session id {0} that already existed", session.SessionId);
             }
         }
 
@@ -54,11 +54,13 @@ namespace PFire.Core.Session
 
         public void RemoveSession(Guid sessionId)
         {
-            if (_sessions.TryRemove(sessionId, out var currentSession))
+            if(!_sessions.TryRemove(sessionId, out var currentSession))
             {
-                currentSession.Disconnect();
-                currentSession.Dispose();
+                return;
             }
+
+            currentSession.Disconnect();
+            currentSession.Dispose();
         }
     }
 }

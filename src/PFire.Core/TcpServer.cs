@@ -1,12 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using PFire.Core.Protocol;
 using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
-using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Session;
 using PFire.Core.Util;
 
@@ -32,9 +28,6 @@ namespace PFire.Core
             _listener = new TcpListener(endPoint);
             _clientManager = clientManager;
         }
-
-        public TcpServer(IPAddress ip, int port, IXFireClientManager clientManager) 
-            : this(new IPEndPoint(ip, port), clientManager) { }
 
         public void Listen()
         {
