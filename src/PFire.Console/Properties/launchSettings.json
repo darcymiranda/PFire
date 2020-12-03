@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "PFire.Console": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Local"
+      }
+    }
+  }
+}
