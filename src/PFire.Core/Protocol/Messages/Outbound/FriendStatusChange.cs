@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PFire.Core.Session;
+using PFire.Core.Util;
+using System;
 using System.Collections.Generic;
 
 namespace PFire.Core.Protocol.Messages.Outbound

@@ -37,18 +37,25 @@ namespace PFire.Core
             _server.Shutdown();
         }
 
-        private void OnDisconnection(XFireClient sessionContext)
+        private void OnDisconnection(XFireClient disconnectedClient)
         {
-            RemoveSession(sessionContext);
+            // we have to remove the session first 
+            // because of the friends of this user processing
+            RemoveSession(disconnectedClient);
 
-            var friends = Database.QueryFriends(sessionContext.User);
+            UpdateFriendsWithDisconnetedStatus(disconnectedClient);
+        }
+
+        private void UpdateFriendsWithDisconnetedStatus(XFireClient disconnectedClient)
+        {
+            var friends = Database.QueryFriends(disconnectedClient.User);
+
             friends.ForEach(friend =>
             {
-                var friendSession = GetSession(friend);
-                if (friendSession != null)
+                var friendClient = GetSession(friend);
+                if (friendClient != null)
                 {
-                    // Not working
-                    sessionContext.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                    friendClient.SendAndProcessMessage(new FriendsSessionAssign(friend));
                 }
             });
         }

@@ -91,7 +91,13 @@ namespace PFire.Core.Session
 
         public void SendMessage(XFireMessage message)
         {
-            if(!_initialized)
+            if (Disposed)
+            {
+                // He's dead, Jim.
+                return;
+            }
+
+            if (_initialized )
             {
                 return;
             }
