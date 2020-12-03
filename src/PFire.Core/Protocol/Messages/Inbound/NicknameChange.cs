@@ -3,14 +3,14 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class NicknameChange : XFireMessage
+    internal sealed class NicknameChange : XFireMessage
     {
-        public NicknameChange() : base(XFireMessageType.NicknameChange) { } 
+        private const int MAX_LENGTH = 35;
+
+        public NicknameChange() : base(XFireMessageType.NicknameChange) {}
 
         [XMessageField("nick")]
         public string Nickname { get; private set; }
-
-        private const int MAX_LENGTH = 35;
 
         public override void Process(XFireClient context)
         {
@@ -22,11 +22,12 @@ namespace PFire.Core.Protocol.Messages.Inbound
             context.Server.Database.UpdateNickname(context.User, Nickname);
 
             var updatedFriendsList = new FriendsList(context.User);
-            context.Server.Database.QueryFriends(context.User).ForEach(friend =>
-            {
-                var friendSession = context.Server.GetSession(friend);
-                friendSession?.SendAndProcessMessage(updatedFriendsList);
-            });
+            context.Server.Database.QueryFriends(context.User)
+                   .ForEach(friend =>
+                   {
+                       var friendSession = context.Server.GetSession(friend);
+                       friendSession?.SendAndProcessMessage(updatedFriendsList);
+                   });
         }
     }
 }

@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using PFire.Core.Session;
 using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed class FriendsSessionAssign : XFireMessage
+    internal sealed class FriendsSessionAssign : XFireMessage
     {
-        private readonly User _ownerUser;
         private static readonly Guid FriendIsOffLineSessionId = Guid.Empty;
+        private readonly User _ownerUser;
 
-        public FriendsSessionAssign(User owner)
-            : base(XFireMessageType.FriendsSessionAssign)
+        public FriendsSessionAssign(User owner) : base(XFireMessageType.FriendsSessionAssign)
         {
             _ownerUser = owner;
             UserIds = new List<int>();
@@ -21,10 +18,10 @@ namespace PFire.Core.Protocol.Messages.Outbound
         }
 
         [XMessageField("userid")]
-        public List<int> UserIds { get; private set; }
+        public List<int> UserIds { get; }
 
         [XMessageField("sid")]
-        public List<Guid> SessionIds { get; private set; }
+        public List<Guid> SessionIds { get; }
 
         [XMessageField(0x0b)]
         public byte Unknown { get; private set; }
@@ -38,7 +35,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
                 var friendSession = client.Server.GetSession(friend);
 
                 UserIds.Add(friend.UserId);
-                SessionIds.Add(friendSession != null ? friendSession.SessionId : FriendIsOffLineSessionId);
+                SessionIds.Add(friendSession?.SessionId ?? FriendIsOffLineSessionId);
             }
         }
     }

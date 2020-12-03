@@ -3,9 +3,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class ClientVersion : XFireMessage
+    internal sealed class ClientVersion : XFireMessage
     {
-        public ClientVersion() : base(XFireMessageType.ClientVersion) { }
+        public ClientVersion() : base(XFireMessageType.ClientVersion) {}
 
         [XMessageField("version")]
         public int Version { get; private set; }

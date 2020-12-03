@@ -4,14 +4,14 @@ using PFire.Core.Util;
 
 namespace PFire.Core.Protocol.Messages
 {
-    public abstract class XFireMessage : IMessage
+    internal abstract class XFireMessage : IMessage
     {
-        public XFireMessageType MessageTypeId {get;}
-
         protected XFireMessage(XFireMessageType typeId)
         {
             MessageTypeId = typeId;
         }
+
+        public XFireMessageType MessageTypeId { get; }
 
         public virtual void Process(XFireClient client)
         {

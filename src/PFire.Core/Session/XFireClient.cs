@@ -13,7 +13,7 @@ using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Session
 {
-    public sealed class XFireClient : Disposable
+    internal sealed class XFireClient : Disposable
     {
         private const int ClientTimeoutInMinutes = 5;
 
@@ -26,18 +26,6 @@ namespace PFire.Core.Session
         private bool _initialized;
         private DateTime _lastReceivedFrom;
         private TcpClient _tcpClient;
-
-        public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
-
-        public string Salt { get; private set;}
-
-        public PFireServer Server { get; set; }
-
-        public Guid SessionId { get; private set;}
-
-        public User User { get; set; }
-
-        private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
 
         public XFireClient(TcpClient tcpClient,
                            IXFireClientManager clientManager,
@@ -66,6 +54,18 @@ namespace PFire.Core.Session
 
             ThreadPool.QueueUserWorkItem(ClientThreadWorker);
         }
+
+        public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
+
+        public string Salt { get; }
+
+        public PFireServer Server { get; set; }
+
+        public Guid SessionId { get; }
+
+        public User User { get; set; }
+
+        private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
 
         public void Disconnect()
         {
@@ -97,7 +97,7 @@ namespace PFire.Core.Session
                 return;
             }
 
-            if (!_initialized )
+            if (!_initialized)
             {
                 return;
             }
@@ -154,9 +154,9 @@ namespace PFire.Core.Session
                         {
                             var stream = _tcpClient.GetStream();
 
-                            if(stream.DataAvailable)
+                            if (stream.DataAvailable)
                             {
-                                if(!_initialized)
+                                if (!_initialized)
                                 {
                                     ReadOpeningHeader(stream);
                                 }
@@ -225,11 +225,11 @@ namespace PFire.Core.Session
 
                 _receiveHandler?.Invoke(this, message);
             }
-            catch(UnknownMessageTypeException messageTypeEx)
+            catch (UnknownMessageTypeException messageTypeEx)
             {
                 Debug.WriteLine(messageTypeEx.ToString());
             }
-            catch(UnknownXFireAttributeTypeException attributeTypeEx)
+            catch (UnknownXFireAttributeTypeException attributeTypeEx)
             {
                 Debug.WriteLine(attributeTypeEx.ToString());
             }

@@ -3,9 +3,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class UserLookup : XFireMessage
+    internal sealed class UserLookup : XFireMessage
     {
-        public UserLookup() : base(XFireMessageType.UserLookup) { }
+        public UserLookup() : base(XFireMessageType.UserLookup) {}
 
         [XMessageField("name")]
         public string Username { get; private set; }

@@ -6,15 +6,15 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Bidirectional
 {
-    public sealed class ChatMessage : XFireMessage
+    internal sealed class ChatMessage : XFireMessage
     {
         // the id of this message is the one that the original code base used
         // technically this is a server routed chat message
-        public ChatMessage() : base(XFireMessageType.ServerChatMessage) { } 
+        public ChatMessage() : base(XFireMessageType.ServerChatMessage) {}
 
         [XMessageField("sid")]
         public Guid SessionId { get; private set; }
-        
+
         [XMessageField("peermsg")]
         public Dictionary<string, dynamic> MessagePayload { get; private set; }
 
@@ -69,7 +69,7 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
                 SessionId = sessionId,
                 MessagePayload = new Dictionary<string, dynamic>()
             };
-          
+
             ack.MessagePayload.Add("imindex", (int)MessagePayload["imindex"]);
             return ack;
         }

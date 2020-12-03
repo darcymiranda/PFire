@@ -1,7 +1,7 @@
 ﻿namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class Unknown10 : XFireMessage
+    internal sealed class Unknown10 : XFireMessage
     {
-        public Unknown10() : base(XFireMessageType.Unknown10) { }
+        public Unknown10() : base(XFireMessageType.Unknown10) {}
     }
 }

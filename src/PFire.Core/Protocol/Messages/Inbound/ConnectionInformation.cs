@@ -3,9 +3,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class ConnectionInformation : XFireMessage
+    internal sealed class ConnectionInformation : XFireMessage
     {
-        public ConnectionInformation() : base(XFireMessageType.ConnectionInformation) { }
+        public ConnectionInformation() : base(XFireMessageType.ConnectionInformation) {}
 
         [XMessageField("conn")]
         public int Connection { get; private set; }

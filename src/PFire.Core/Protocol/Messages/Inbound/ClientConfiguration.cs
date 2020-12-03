@@ -3,9 +3,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class ClientConfiguration : XFireMessage
+    internal sealed class ClientConfiguration : XFireMessage
     {
-        public ClientConfiguration() : base(XFireMessageType.ClientConfiguration) { }
+        public ClientConfiguration() : base(XFireMessageType.ClientConfiguration) {}
 
         [XMessageField("lang")]
         public string Language { get; set; }

@@ -2,9 +2,9 @@
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed class ServerList : XFireMessage
+    internal sealed class ServerList : XFireMessage
     {
-        public ServerList() : base(XFireMessageType.ServerList) 
+        public ServerList() : base(XFireMessageType.ServerList)
         {
             GameIds = new List<int>();
             GameIPs = new List<int>();
@@ -15,12 +15,12 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public int MaximumFavorites { get; private set; }
 
         [XMessageField("gameid")]
-        public List<int> GameIds { get; private set; }
+        public List<int> GameIds { get; }
 
         [XMessageField("gip")]
-        public List<int> GameIPs { get; private set; }
+        public List<int> GameIPs { get; }
 
         [XMessageField("gport")]
-        public List<int> GamePorts { get; private set; }
+        public List<int> GamePorts { get; }
     }
 }

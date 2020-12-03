@@ -5,9 +5,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed class LoginSuccess : XFireMessage
+    internal sealed class LoginSuccess : XFireMessage
     {
-        public LoginSuccess() : base(XFireMessageType.LoginSuccess) {  }
+        public LoginSuccess() : base(XFireMessageType.LoginSuccess) {}
 
         [XMessageField("userid")]
         public int UserId { get; private set; }

@@ -4,12 +4,11 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed  class UserLookupResult : XFireMessage
+    internal sealed class UserLookupResult : XFireMessage
     {
         private readonly string _queryByUsername;
 
-        public UserLookupResult(string username)
-            : base(XFireMessageType.UserLookupResult)
+        public UserLookupResult(string username) : base(XFireMessageType.UserLookupResult)
         {
             _queryByUsername = username;
 
@@ -20,16 +19,16 @@ namespace PFire.Core.Protocol.Messages.Outbound
         }
 
         [XMessageField("name")]
-        public List<string> Usernames { get; private set; }
+        public List<string> Usernames { get; }
 
         [XMessageField("fname")]
-        public List<string> FirstNames { get; private set; }
+        public List<string> FirstNames { get; }
 
         [XMessageField("lname")]
-        public List<string> LastNames { get; private set; }
+        public List<string> LastNames { get; }
 
         [XMessageField("email")]
-        public List<string> Emails { get; private set; }
+        public List<string> Emails { get; }
 
         public override void Process(XFireClient context)
         {

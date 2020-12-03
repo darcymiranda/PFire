@@ -3,9 +3,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class StatusChange : XFireMessage
+    internal sealed class StatusChange : XFireMessage
     {
-        public StatusChange() : base(XFireMessageType.StatusChange) { } 
+        public StatusChange() : base(XFireMessageType.StatusChange) {}
 
         [XMessageField(0x2e)]
         public string Message { get; private set; }

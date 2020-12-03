@@ -1,10 +1,10 @@
-﻿using PFire.Core.Session;
+﻿using System;
+using PFire.Core.Session;
 using PFire.Infrastructure.Database;
-using System;
 
 namespace PFire.Core.Protocol.Interfaces
 {
-    public interface IXFireClientManager
+    internal interface IXFireClientManager
     {
         XFireClient GetSession(Guid sessionId);
         XFireClient GetSession(User user);

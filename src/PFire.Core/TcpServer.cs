@@ -8,26 +8,27 @@ using PFire.Core.Util;
 
 namespace PFire.Core
 {
-    public sealed class TcpServer
+    internal sealed class TcpServer
     {
-        public delegate void OnReceiveHandler(XFireClient sessionContext, IMessage message);
-        public event OnReceiveHandler OnReceive;
-
         public delegate void OnConnectionHandler(XFireClient sessionContext);
-        public event OnConnectionHandler OnConnection;
 
         public delegate void OnDisconnectionHandler(XFireClient sessionContext);
-        public event OnDisconnectionHandler OnDisconnection;
 
+        public delegate void OnReceiveHandler(XFireClient sessionContext, IMessage message);
+
+        private readonly IXFireClientManager _clientManager;
         private readonly TcpListener _listener;
         private bool _running;
-        private readonly IXFireClientManager _clientManager;
 
         public TcpServer(IPEndPoint endPoint, IXFireClientManager clientManager)
         {
             _listener = new TcpListener(endPoint);
             _clientManager = clientManager;
         }
+
+        public event OnConnectionHandler OnConnection;
+        public event OnDisconnectionHandler OnDisconnection;
+        public event OnReceiveHandler OnReceive;
 
         public void Listen()
         {

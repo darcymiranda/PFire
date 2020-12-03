@@ -11,7 +11,7 @@ using PFire.Core.Util;
 
 namespace PFire.Core.Protocol
 {
-    public static class MessageSerializer
+    internal static class MessageSerializer
     {
         private static readonly int MESSAGE_SIZE_LENGTH_IN_BYTES = 2;
 
@@ -94,14 +94,10 @@ namespace PFire.Core.Protocol
                             var propertyValue = property.GetValue(message);
                             var attributeDefinition = property.GetCustomAttribute<XMessageField>();
                             var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
-                            
-                            attributesToBeWritten.Add(
-                                Tuple.Create<XMessageField, byte, dynamic>(
-                                    attributeDefinition,
-                                    attribute.AttributeTypeId,
-                                    propertyValue
-                                )
-                            );
+
+                            var tuple = Tuple.Create<XMessageField, byte, dynamic>(attributeDefinition, attribute.AttributeTypeId, propertyValue);
+
+                            attributesToBeWritten.Add(tuple);
                         });
 
             using var ms = new MemoryStream();
@@ -111,7 +107,7 @@ namespace PFire.Core.Protocol
             attributesToBeWritten.ForEach(a =>
             {
                 var attribute = XFireAttributeFactory.Instance.GetAttribute(a.Item2);
-                if(a.Item1.NonTextualName)
+                if (a.Item1.NonTextualName)
                 {
                     attribute.WriteNameWithoutLengthPrefix(writer, a.Item1.NameAsBytes);
                     attribute.WriteType(writer);

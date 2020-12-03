@@ -4,9 +4,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class FriendRequestAccept : XFireMessage
+    internal sealed class FriendRequestAccept : XFireMessage
     {
-        public FriendRequestAccept() : base(XFireMessageType.FriendRequestAccept) { }
+        public FriendRequestAccept() : base(XFireMessageType.FriendRequestAccept) {}
 
         [XMessageField("name")]
         public string FriendUsername { get; private set; }
