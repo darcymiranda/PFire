@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol;
-using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Util;

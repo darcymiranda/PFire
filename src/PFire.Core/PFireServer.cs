@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;

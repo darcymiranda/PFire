@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Session;
 

@@ -2,11 +2,18 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using PFire.Core.Protocol.Interfaces;
 using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Session
 {
+    internal interface IXFireClientManager
+    {
+        IXFireClient GetSession(Guid sessionId);
+        IXFireClient GetSession(User user);
+        void AddSession(IXFireClient session);
+        void RemoveSession(IXFireClient session);
+    }
+
     internal sealed class XFireClientManager : IXFireClientManager
     {
         private readonly ConcurrentDictionary<Guid, XFireClient> _sessions;

@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.DependencyInjection;
-using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Session;
 
 namespace PFire.Core.Extensions
