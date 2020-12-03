@@ -78,9 +78,9 @@ The attribute value can be one of a set of predefined attribute types:
 | Type ID | Description                                                                                                                                                                                              |
 | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0x01    | A variable length string. The first two bytes of the data containa 16-bit integer indicating the length of the string, followed by the string data.                                                      |
-| 0x02    | A 32-bit int.                                                                                                                                                                                        |
+| 0x02    | A 32-bit int.                                                                                                                                                                                            |
 | 0x03    | A 128-bit session identifier, used to identify a particular user'ssession on the xfire network.                                                                                                          |
-| 0x04    | A list. The first byte indicates the type of the items in the list,for instance 0x01 for a `string` list. The next two bytes indicate the number of items in the list, followed by each consecutive value. |
+| 0x04    | A list. The first byte indicates the type of the items in the list,for instance 0x01 for a string list. The next two bytes indicate the number of items in the list, followed by each consecutive value. |
 | 0x05    | A string keyed map. The first byte indicates the number of entries,followed by each entry, with a string name (prefixed by 8-bit string length) and type (the same format for messages as a whole).      |
 | 0x06    | A DID value. As yet, the purpose of this value is unknown (See [DID Message](#did-message) for more information).                                                                                        |
 | 0x09    | An integer keyed map (type 0x09). The first byte indicates the number of entries, followed by each entry, with an 8-bit integer key and type.                                                            |
@@ -500,7 +500,7 @@ See the description of the normal [chat message](#chat-message) for a full descr
 
 ### New Version Available Message
 
-This message is sent by the server to the client if it reports a version number which is lower than the currently released XFire client. It contains the details to download newer client versions. The message is composed of a number of `string` lists, where values at matching indices in these lists collectively represent a new version.
+This message is sent by the server to the client if it reports a version number which is lower than the currently released XFire client. It contains the details to download newer client versions. The message is composed of a number of string lists, where values at matching indices in these lists collectively represent a new version.
 
 #### Properties
 
@@ -516,7 +516,7 @@ This message is sent by the server to the client if it reports a version number 
 | file           |   `string` list   | The links to the new XFire client versions. An example of a URL sent is . All files observed to date have been .exe update installers which  must be run within the XFire installation path. |
 | command        | `32-bit int` list | An integer list of unknown purpose. In all data observed so far, the integers have had the value `1`.                                                                                        |
 | fileid         | `32-bit int` list | An integer list of unknown purpose. In all data observed so far, the integers have had the value `0`.                                                                                        |
-| flags          |    `32-bit int`   | A `32-bit int` of unknown purpose. In all data observed so far this has had the value `0`.                                                                                                     |
+| flags          |    `32-bit int`   | An integer of unknown purpose. In all data observed so far this has had the value `0`.                                                                                                       |
 
 ### Friend Game Information Message
 
@@ -627,14 +627,14 @@ This message is sent to the client by the server to notify them of any VoIP serv
 | Attribute Name |        Type       | Details                                                                                                                                                                   |
 | :------------- | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | sid            |  Session ID list  | The list of session ids for which VoIP information has been updated.                                                                                                      |
-| vid            |     int32 list    | The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client. |
+| vid            | `32-bit int` list | The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client. |
 | vip            | IPv4 address list | The list of IP addresses of the VoIP servers for each user.                                                                                                               |
 
 ### Friend Status Message
 
 This message is sent to the client by the server to notify it of a change in a friend's status message (e.g. `AFK` or `out to lunch`).
 
-The message contains a set of `string` lists, where strings at corresponding indices in the lists form each individual status update.
+The message contains a set of string lists, where strings at corresponding indices in the lists form each individual status update.
 
 #### Properties
 
