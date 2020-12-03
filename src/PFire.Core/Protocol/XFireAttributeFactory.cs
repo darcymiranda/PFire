@@ -26,10 +26,7 @@ namespace PFire.Core.Protocol
 
         private void Add(XFireAttribute attributeValue)
         {
-            _attributeTypes.Add(
-                attributeValue.AttributeTypeId,
-                attributeValue
-            );
+            _attributeTypes.Add(attributeValue.AttributeTypeId, attributeValue);
         }
 
         public XFireAttribute GetAttribute(byte type)
@@ -44,22 +41,20 @@ namespace PFire.Core.Protocol
 
         public XFireAttribute GetAttribute(Type type)
         {
-            foreach (var keyValuePair in _attributeTypes.ToList())
+            foreach (var keyValuePair in _attributeTypes.Where(x => x.Value.AttributeType.Name == type.Name))
             {
-                if (keyValuePair.Value.AttributeType.Name == type.Name)
+                // Need to match on the first generic type for maps/dictionaries
+                if (type.GenericTypeArguments.Length > 1)
                 {
-                    // Need to match on the first generic type for maps/dictionaries
-                    if (type.GenericTypeArguments.Length > 1)
+                    if(type.GenericTypeArguments.FirstOrDefault() != keyValuePair.Value.AttributeType.GenericTypeArguments.FirstOrDefault())
                     {
-                        if (type.GenericTypeArguments.FirstOrDefault() != keyValuePair.Value.AttributeType.GenericTypeArguments.FirstOrDefault())
-                        {
-                            continue;
-                        }
+                        continue;
                     }
-
-                    return GetAttribute(keyValuePair.Value.AttributeTypeId);
                 }
+
+                return GetAttribute(keyValuePair.Value.AttributeTypeId);
             }
+
             throw new KeyNotFoundException($"XFireAttribute with type of {type.Name} not found");
         }
 

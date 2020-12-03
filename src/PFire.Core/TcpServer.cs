@@ -1,13 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using PFire.Core.Protocol;
 using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
-using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Session;
+using PFire.Core.Util;
 
 namespace PFire.Core
 {
@@ -32,13 +29,11 @@ namespace PFire.Core
             _clientManager = clientManager;
         }
 
-        public TcpServer(IPAddress ip, int port, IXFireClientManager clientManager) 
-            : this(new IPEndPoint(ip, port), clientManager) { }
-
         public void Listen()
         {
             _running = true;
             _listener.Start();
+            ConsoleLogger.Log($"PFire Server listening on {_listener.LocalEndpoint}");
             Task.Run(() => Accept().ConfigureAwait(false));
         }
 
@@ -53,9 +48,9 @@ namespace PFire.Core
             while (_running)
             {
                 var tcpClient = await _listener.AcceptTcpClientAsync().ConfigureAwait(false);
-                XFireClient session = new XFireClient(tcpClient, _clientManager, OnReceive, OnDisconnection);
+                var newXFireClient = new XFireClient(tcpClient, _clientManager, OnReceive, OnDisconnection);
 
-                OnConnection?.Invoke(session);
+                OnConnection?.Invoke(newXFireClient);
             }
         }
     }

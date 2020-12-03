@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using PFire.WindowsService.Extensions;
+using PFire.Console.Extensions;
 
-namespace PFire.WindowsService
+namespace PFire.Console
 {
     public class Program
     {

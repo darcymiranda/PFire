@@ -19,13 +19,13 @@ namespace PFire.Core.Session
         {
             if (!_sessions.TryAdd(session.SessionId, session))
             {
-                Console.WriteLine("Tried to add a user with session id {0} that already existed", "WARN", session.SessionId);
+                Console.WriteLine("Tried to add a user with session id {0} that already existed", session.SessionId);
             }
         }
 
         public XFireClient GetSession(Guid sessionId)
         {
-            return _sessions[sessionId];
+            return _sessions.TryGetValue(sessionId, out var result) ? result : null;
         }
 
         public XFireClient GetSession(User user)
@@ -47,11 +47,13 @@ namespace PFire.Core.Session
 
         public void RemoveSession(Guid sessionId)
         {
-            if (_sessions.TryRemove(sessionId, out var currentSession))
+            if(!_sessions.TryRemove(sessionId, out var currentSession))
             {
-                currentSession.Disconnect();
-                currentSession.Dispose();
+                return;
             }
+
+            currentSession.Disconnect();
+            currentSession.Dispose();
         }
     }
 }

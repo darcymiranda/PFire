@@ -2,11 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>PFire.Infrastructure</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetCoreServer" Version="3.0.19" />
     <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
   </ItemGroup>
 

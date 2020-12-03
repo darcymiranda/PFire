@@ -15,11 +15,6 @@ namespace PFire.Infrastructure.Database
             CreateTable<PendingFriendRequest>();
         }
 
-        public bool QueryUsernameExists(string username)
-        {
-            return Table<User>().Any(a => a.Username == username);
-        }
-
         public User InsertUser(string username, string password, string salt)
         {
             var newUser = User.New(username, password, salt);

@@ -10,6 +10,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
     public sealed class FriendsSessionAssign : XFireMessage
     {
         private readonly User _ownerUser;
+        private static readonly Guid FriendIsOffLineSessionId = Guid.Empty;
 
         public FriendsSessionAssign(User owner)
             : base(XFireMessageType.FriendsSessionAssign)
@@ -32,20 +33,13 @@ namespace PFire.Core.Protocol.Messages.Outbound
         {
             var friends = client.Server.Database.QueryFriends(_ownerUser);
 
-            // offline friends are just not sent
-            var friendsSessions = friends.Select(a => client.Server.GetSession(a))
-                                         .Where(a => a != null)
-                                         .ToList();
-
-            friendsSessions.ForEach(session =>
+            foreach (var friend in friends)
             {
-                UserIds.Add(session.User.UserId);
-                SessionIds.Add(session.SessionId);
-                Debug.WriteLine("Status: For:{0} -- FriendId:{1} Friend:{2} FriendSession:{3}", client.User.Username, session.User.UserId, session.User.Username, session.SessionId);
-            });
-            
-            //friendsSessions.OrderBy(a => a.User.UserId);
-            //friendsSessions.ForEach(session => Debug.WriteLine("Context: For:{0} -- FriendId:{1} Friend:{2} FriendSession:{3}", context.User.Username, session.User.UserId, session.User.Username, session.SessionId));
+                var friendSession = client.Server.GetSession(friend);
+
+                UserIds.Add(friend.UserId);
+                SessionIds.Add(friendSession != null ? friendSession.SessionId : FriendIsOffLineSessionId);
+            }
         }
     }
 }
