@@ -25,14 +25,7 @@ namespace PFire.Core.Session
 
         public XFireClient GetSession(Guid sessionId)
         {
-            try
-            {
-                return _sessions[sessionId];
-            }
-            catch
-            {
-                return null;
-            }
+            return _sessions.TryGetValue(sessionId, out var result) ? result : null;
         }
 
         public XFireClient GetSession(User user)
