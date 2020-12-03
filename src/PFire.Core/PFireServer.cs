@@ -45,16 +45,16 @@ namespace PFire.Core
             return Task.CompletedTask;
         }
 
-        private void OnDisconnection(XFireClient disconnectedClient)
+        private void OnDisconnection(IXFireClient disconnectedClient)
         {
             // we have to remove the session first 
             // because of the friends of this user processing
             RemoveSession(disconnectedClient);
 
-            UpdateFriendsWithDisconnetedStatus(disconnectedClient);
+            UpdateFriendsWithDisconnectedStatus(disconnectedClient);
         }
 
-        private void UpdateFriendsWithDisconnetedStatus(XFireClient disconnectedClient)
+        private void UpdateFriendsWithDisconnectedStatus(IXFireClient disconnectedClient)
         {
             var friends = Database.QueryFriends(disconnectedClient.User);
 
@@ -68,33 +68,33 @@ namespace PFire.Core
             });
         }
 
-        private void HandleNewConnection(XFireClient sessionContext)
+        private void HandleNewConnection(IXFireClient sessionContext)
         {
             AddSession(sessionContext);
         }
 
-        private void HandleRequest(XFireClient context, IMessage message)
+        private void HandleRequest(IXFireClient context, IMessage message)
         {
             context.Server = this;
             message.Process(context);
         }
 
-        public XFireClient GetSession(Guid sessionId)
+        public IXFireClient GetSession(Guid sessionId)
         {
             return _clientManager.GetSession(sessionId);
         }
 
-        public XFireClient GetSession(User user)
+        public IXFireClient GetSession(User user)
         {
             return _clientManager.GetSession(user);
         }
 
-        private void AddSession(XFireClient session)
+        private void AddSession(IXFireClient session)
         {
             _clientManager.AddSession(session);
         }
 
-        public void RemoveSession(XFireClient session)
+        public void RemoveSession(IXFireClient session)
         {
             _clientManager.RemoveSession(session);
         }

@@ -19,7 +19,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("partner")]
         public string Partner { get; set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             context.SendAndProcessMessage(new Did());
         }

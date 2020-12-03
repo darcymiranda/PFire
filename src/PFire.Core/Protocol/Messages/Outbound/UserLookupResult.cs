@@ -30,7 +30,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("email")]
         public List<string> Emails { get; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var usernames = context.Server.Database.QueryUsers(_queryByUsername).Select(a => a.Username).ToList();
 

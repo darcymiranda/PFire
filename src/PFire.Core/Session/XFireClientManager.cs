@@ -16,14 +16,14 @@ namespace PFire.Core.Session
 
     internal sealed class XFireClientManager : IXFireClientManager
     {
-        private readonly ConcurrentDictionary<Guid, XFireClient> _sessions;
+        private readonly ConcurrentDictionary<Guid, IXFireClient> _sessions;
 
         public XFireClientManager()
         {
-            _sessions = new ConcurrentDictionary<Guid, XFireClient>();
+            _sessions = new ConcurrentDictionary<Guid, IXFireClient>();
         }
 
-        public void AddSession(XFireClient session)
+        public void AddSession(IXFireClient session)
         {
             if (!_sessions.TryAdd(session.SessionId, session))
             {
@@ -31,16 +31,16 @@ namespace PFire.Core.Session
             }
         }
 
-        public XFireClient GetSession(Guid sessionId)
+        public IXFireClient GetSession(Guid sessionId)
         {
             return _sessions.TryGetValue(sessionId, out var result) ? result : null;
         }
 
-        public XFireClient GetSession(User user)
+        public IXFireClient GetSession(User user)
         {
             var keyValuePair = _sessions.ToList().FirstOrDefault(a => a.Value.User == user);
 
-            if (!keyValuePair.Equals(default(KeyValuePair<Guid, XFireClient>)))
+            if (!keyValuePair.Equals(default(KeyValuePair<Guid, IXFireClient>)))
             {
                 return keyValuePair.Value;
             }
@@ -48,7 +48,7 @@ namespace PFire.Core.Session
             return null;
         }
 
-        public void RemoveSession(XFireClient session)
+        public void RemoveSession(IXFireClient session)
         {
             RemoveSession(session.SessionId);
         }

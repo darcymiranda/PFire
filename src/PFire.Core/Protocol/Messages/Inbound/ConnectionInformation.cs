@@ -25,7 +25,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("upnpinfo")]
         public string UpnpInfo { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var clientPrefs = new Unknown10();
             context.SendAndProcessMessage(clientPrefs);

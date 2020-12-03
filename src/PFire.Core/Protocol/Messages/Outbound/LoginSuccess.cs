@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Net;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Outbound
@@ -57,7 +56,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("reason")]
         public string Reason { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             UserId = context.User.UserId;
             SessionId = context.SessionId;
@@ -65,18 +64,12 @@ namespace PFire.Core.Protocol.Messages.Outbound
             Nickname = string.IsNullOrEmpty(context.User.Nickname) ? context.User.Username : context.User.Nickname;
             MinRect = 1;
             MaxRect = 164867;
-            var ipAddress = StripPortFromIPAddress(context.RemoteEndPoint.ToString());
-            PublicIp = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
+            PublicIp = context.PublicIp;
             Salt = context.Salt;
             Reason = "Mq_P8Ad3aMEUvFinw0ceu6FITnZTWXxg46XU8xHW";
 
             Debug.WriteLine("User {0}[{1}] logged in successfully with session id {2}", context.User.Username, context.User.UserId, context.SessionId);
             Console.WriteLine("User {0} logged in", context.User.Username);
-        }
-
-        private static string StripPortFromIPAddress(string address)
-        {
-            return address.Substring(0, address.IndexOf(":"));
         }
     }
 }

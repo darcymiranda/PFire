@@ -26,7 +26,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("nick")]
         public List<string> Nicks { get; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var friends = context.Server.Database.QueryFriends(_ownerUser);
             friends.ForEach(f =>

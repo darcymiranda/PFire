@@ -12,7 +12,7 @@ namespace PFire.Core.Protocol.Messages
 
         public XFireMessageType MessageTypeId { get; }
 
-        public virtual void Process(XFireClient client)
+        public virtual void Process(IXFireClient client)
         {
             // base implementation is to do nothing
             client.Logger.LogWarning($" *** Unimplemented processing for message type {MessageTypeId}");

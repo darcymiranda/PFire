@@ -16,7 +16,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("flags")]
         public int Flags { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var user = context.Server.Database.QueryUser(Username);
             if (user != null)

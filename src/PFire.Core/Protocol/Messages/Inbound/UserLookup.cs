@@ -19,7 +19,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("email")]
         public string Email { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var result = new UserLookupResult(Username);
             context.SendAndProcessMessage(result);

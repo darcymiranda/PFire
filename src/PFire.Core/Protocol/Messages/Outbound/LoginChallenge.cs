@@ -9,7 +9,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("salt")]
         public string Salt { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             Salt = context.Salt;
         }

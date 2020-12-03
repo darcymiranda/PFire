@@ -21,7 +21,7 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
         // TODO: Create test for this message so we can refactor and build this message the same way as the others to avoid the switch statement
         // TODO: How to tell the client we didn't receive the ACK?
         // TODO: P2P stuff???
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var otherSession = context.Server.GetSession(SessionId);
 

@@ -12,7 +12,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("nick")]
         public string Nickname { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             if (Nickname.Length > MAX_LENGTH)
             {

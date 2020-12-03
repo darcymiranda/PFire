@@ -9,9 +9,9 @@ namespace PFire.Core
 {
     internal interface ITcpServer
     {
-        event Action<XFireClient, IMessage> OnReceive;
-        event Action<XFireClient> OnConnection;
-        event Action<XFireClient> OnDisconnection;
+        event Action<IXFireClient, IMessage> OnReceive;
+        event Action<IXFireClient> OnConnection;
+        event Action<IXFireClient> OnDisconnection;
         void Listen();
         void Shutdown();
     }
@@ -30,9 +30,9 @@ namespace PFire.Core
             _logger = logger;
         }
 
-        public event Action<XFireClient> OnConnection;
-        public event Action<XFireClient> OnDisconnection;
-        public event Action<XFireClient, IMessage> OnReceive;
+        public event Action<IXFireClient> OnConnection;
+        public event Action<IXFireClient> OnDisconnection;
+        public event Action<IXFireClient, IMessage> OnReceive;
 
         public void Listen()
         {

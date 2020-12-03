@@ -19,7 +19,7 @@ namespace PFire.Core.Session
         Guid SessionId { get; }
         PFireServer Server { get; set; }
         ILogger Logger { get; }
-        EndPoint RemoteEndPoint { get; }
+        int PublicIp { get; }
         string Salt { get; }
         void Disconnect();
         void Dispose();
@@ -34,9 +34,9 @@ namespace PFire.Core.Session
 
         private readonly IXFireClientManager _clientManager;
         private readonly AutoResetEvent _clientWaitEvent;
-        private readonly Action<XFireClient> _disconnectionHandler;
+        private readonly Action<IXFireClient> _disconnectionHandler;
         private readonly object _lock;
-        private readonly Action<XFireClient, IMessage> _receiveHandler;
+        private readonly Action<IXFireClient, IMessage> _receiveHandler;
         private bool _connected;
         private bool _initialized;
         private DateTime _lastReceivedFrom;
@@ -45,8 +45,8 @@ namespace PFire.Core.Session
         public XFireClient(TcpClient tcpClient,
                            IXFireClientManager clientManager,
                            ILogger logger,
-                           Action<XFireClient, IMessage> receiveHandler,
-                           Action<XFireClient> disconnectionHandler)
+                           Action<IXFireClient, IMessage> receiveHandler,
+                           Action<IXFireClient> disconnectionHandler)
         {
             _receiveHandler = receiveHandler;
             _disconnectionHandler = disconnectionHandler;
@@ -73,7 +73,7 @@ namespace PFire.Core.Session
             ThreadPool.QueueUserWorkItem(ClientThreadWorker);
         }
 
-        public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
+        private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
 
         public string Salt { get; }
 
@@ -82,8 +82,6 @@ namespace PFire.Core.Session
         public Guid SessionId { get; }
 
         public User User { get; set; }
-
-        private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
 
         public ILogger Logger { get; }
 
@@ -115,17 +113,6 @@ namespace PFire.Core.Session
             _connected = false;
         }
 
-        // A login has been successful, and as part of the login processing
-        // we should remove any duplicate/old sessions
-        public void RemoveDuplicatedSessions(User user)
-        {
-            var otherSession = _clientManager.GetSession(user);
-            if (otherSession != null)
-            {
-                _clientManager.RemoveSession(otherSession);
-            }
-        }
-
         public void SendAndProcessMessage(XFireMessage message)
         {
             message.Process(this);
@@ -153,6 +140,17 @@ namespace PFire.Core.Session
             var userId = User != null ? User.UserId : -1;
 
             Logger.LogDebug($"Sent message[{username},{userId}]: {message}");
+        }
+
+        // A login has been successful, and as part of the login processing
+        // we should remove any duplicate/old sessions
+        public void RemoveDuplicatedSessions(User user)
+        {
+            var otherSession = _clientManager.GetSession(user);
+            if (otherSession != null)
+            {
+                _clientManager.RemoveSession(otherSession);
+            }
         }
 
         protected override void DisposeManagedResources()

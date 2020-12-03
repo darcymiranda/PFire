@@ -10,7 +10,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("name")]
         public string RequesterUsername { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var requesterUser = context.Server.Database.QueryUser(RequesterUsername);
             var pendingRequests = context.Server.Database.QueryPendingFriendRequestsSelf(requesterUser);

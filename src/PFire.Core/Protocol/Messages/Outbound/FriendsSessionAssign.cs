@@ -26,7 +26,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField(0x0b)]
         public byte Unknown { get; private set; }
 
-        public override void Process(XFireClient client)
+        public override void Process(IXFireClient client)
         {
             var friends = client.Server.Database.QueryFriends(_ownerUser);
 

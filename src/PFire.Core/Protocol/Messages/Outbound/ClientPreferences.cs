@@ -10,7 +10,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField(0x4c)]
         public Dictionary<byte, string> preferences { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             preferences = new Dictionary<byte, string>
             {

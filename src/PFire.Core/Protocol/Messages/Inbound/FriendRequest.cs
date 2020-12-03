@@ -13,7 +13,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("msg")]
         public string Message { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var recipient = context.Server.Database.QueryUser(Username);
             var invite = new FriendInvite(context.User.Username, context.User.Nickname, Message);

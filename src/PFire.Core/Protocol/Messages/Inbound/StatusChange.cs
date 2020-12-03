@@ -10,7 +10,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField(0x2e)]
         public string Message { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var statusChange = new FriendStatusChange(context.SessionId, Message);
             var friends = context.Server.Database.QueryFriends(context.User);
