@@ -19,8 +19,7 @@ namespace PFire.Infrastructure.Database
         List<User> QueryFriends(User user);
         List<PendingFriendRequest> QueryPendingFriendRequestsSelf(User user);
         List<PendingFriendRequest> QueryPendingFriendRequests(User otherUser);
-        void DeletePendingFriendRequest(int friendRequestId);
-        void DeletePendingFriendRequests(IEnumerable<int> friendRequestIds);
+        void DeletePendingFriendRequest(params int[] sequenceIds);
         void UpdateNickname(User user, string nickname);
     }
 
@@ -84,17 +83,9 @@ namespace PFire.Infrastructure.Database
             return Table<PendingFriendRequest>().Where(a => a.FriendUserId == otherUser.UserId).ToList();
         }
 
-        public void DeletePendingFriendRequest(int friendRequestId)
+        public void DeletePendingFriendRequest(params int[] sequenceIds)
         {
-            Delete<PendingFriendRequest>(friendRequestId);
-        }
-
-        public void DeletePendingFriendRequests(IEnumerable<int> friendRequestIds)
-        {
-            foreach (var friendRequestId in friendRequestIds)
-            {
-                DeletePendingFriendRequest(friendRequestId);
-            }
+            sequenceIds.ToList().ForEach(a => Delete<PendingFriendRequest>(a));
         }
 
         public void UpdateNickname(User user, string nickname)
