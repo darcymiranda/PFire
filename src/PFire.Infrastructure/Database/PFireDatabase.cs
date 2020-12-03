@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using PFire.Common.Models;
 using SQLite;
 
 namespace PFire.Infrastructure.Database
@@ -22,7 +26,8 @@ namespace PFire.Infrastructure.Database
 
     internal class PFireDatabase : SQLiteConnection, IPFireDatabase
     {
-        public PFireDatabase(string databasePath) : base(databasePath)
+        public PFireDatabase(IOptions<DatabaseSettings> databaseSettings, IHostEnvironment hostEnvironment) : base(Path.Combine(hostEnvironment.ContentRootPath,
+            databaseSettings.Value.Name))
         {
             CreateTable<User>();
             CreateTable<Friend>();
