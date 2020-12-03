@@ -213,14 +213,14 @@ The contents of the peermsg map vary depending on what this chat message represe
 
 * _msgtype = 2_ - a client information message:
 
-| Attribute Name | Type                             | Details                                                                                                                                      |
-|:----|:---:|:----|-------------------------------------------------------------------------------------------------------------------------------------------- |
-| ip             | IPv4 address (32-bit int)        | The public IPv4 address of this user.                                                                                                        |
+| Attribute Name |               Type               | Details                                                                                                                                      |
+| :------------- | :------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| ip             |     IPv4 address (32-bit int)    | The public IPv4 address of this user.                                                                                                        |
 | port           | 32-bit int (legal range 0-65535) | The public UDP port of this user.                                                                                                            |
-| localip        | IPv4 address (32-bit int)        | The LAN IPv4 address of this user.                                                                                                           |
+| localip        |     IPv4 address (32-bit int)    | The LAN IPv4 address of this user.                                                                                                           |
 | localport      | 32-bit int (legal range 0-65535) | The LAN UDP port of this user (not necessarily the same as the public port, depending on how the use of NAT or firewall)                     |
-| status         | 32-bit int                       | The purpose of this field has not been determined, in all analysed data to date it has been 0.                                               |
-| salt           | `string` | A salt string; it is not known what this is used for (it is always present but does not appear to be used when communicating via the server) |
+| status         |           `32-bit int`           | The purpose of this field has not been determined, in all analysed data to date it has been 0.                                               |
+| salt           |             `string`             | A salt string; it is not known what this is used for (it is always present but does not appear to be used when communicating via the server) |
 
 * _msgtype = 3_ - a typing notification:
 
