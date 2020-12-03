@@ -24,6 +24,12 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
         public override void Process(XFireClient context)
         {
             var otherSession = context.Server.GetSession(SessionId);
+
+            if (otherSession == null)
+            {
+                return;
+            }
+
             var messageType = (ChatMessageType)(byte)MessagePayload["msgtype"];
 
             switch (messageType)
