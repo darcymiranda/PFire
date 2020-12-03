@@ -17,20 +17,20 @@ namespace PFire.Infrastructure.Database
 
         public User InsertUser(string username, string password, string salt)
         {
-            var newUser = User.New(username, password, salt);
+            var newUser = new User(username, password, salt);
             Insert(newUser);
             return QueryUser(newUser.UserId);
         }
 
         public void InsertMutualFriend(User user1, User user2)
         {
-            Insert(Friend.New(user1.UserId, user2.UserId));
-            Insert(Friend.New(user2.UserId, user1.UserId));
+            Insert(new Friend(user1.UserId, user2.UserId));
+            Insert(new Friend(user2.UserId, user1.UserId));
         }
 
         public void InsertFriendRequest(User owner, string requestedUsername, string message)
         {
-            Insert(PendingFriendRequest.New(owner.UserId, QueryUser(requestedUsername).UserId, message));
+            Insert(new PendingFriendRequest(owner.UserId, QueryUser(requestedUsername).UserId, message));
         }
 
         public User QueryUser(int userId)

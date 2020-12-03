@@ -9,9 +9,12 @@ namespace PFire.Infrastructure.Database
         public int UserId { get; set; }
         public int FriendUserId { get; set; }
 
-        public static Friend New(int userId, int friendUserId)
+        public Friend() { }
+
+        public Friend(int userId, int friendUserId)
         {
-            return new Friend {UserId = userId, FriendUserId = friendUserId};
+            UserId = userId;
+            FriendUserId = friendUserId;
         }
     }
 }

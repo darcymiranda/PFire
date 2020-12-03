@@ -10,12 +10,12 @@ namespace PFire.Infrastructure.Database
         public int FriendUserId { get; set; }
         public string Message { get; set; }
 
-        public static PendingFriendRequest New(int userId, int friendUserId, string message)
+        public PendingFriendRequest() { }
+        public PendingFriendRequest(int userId, int friendUserId, string message)
         {
-            return new PendingFriendRequest
-            {
-                UserId = userId, FriendUserId = friendUserId, Message = message
-            };
+            UserId = userId;
+            FriendUserId = friendUserId;
+            Message = message;
         }
     }
 }
