@@ -17,21 +17,13 @@ namespace PFire.Core.Protocol
 
         public static IMessage Deserialize(byte[] data)
         {
-            using (var reader = new BinaryReader(new MemoryStream(data)))
-            {
-                short messageTypeId = reader.ReadInt16();
-                var xMessageType = (XFireMessageType)messageTypeId;
-
-                var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
-                var message = Activator.CreateInstance(messageType) as IMessage;
-                return Deserialize(reader, message);
-            }
-        }
-
-        public static IMessage Deserialize(byte[] data, IMessage messageType)
-        {
             using var reader = new BinaryReader(new MemoryStream(data));
-            return Deserialize(reader, messageType);
+            var messageTypeId = reader.ReadInt16();
+            var xMessageType = (XFireMessageType)messageTypeId;
+
+            var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
+            var message = Activator.CreateInstance(messageType) as IMessage;
+            return Deserialize(reader, message);
         }
 
         public static IMessage Deserialize(BinaryReader reader, IMessage messageBase)
@@ -43,25 +35,14 @@ namespace PFire.Core.Protocol
 
             for (var i = 0; i < attributeCount; i++)
             {
-                // TODO: Be brave enough to find an elegant fix for this
-                // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
-                // and breaks this code. Assume first byte after the attribute count as the attribute name
-                string attributeName = null;
-                if (messageType == typeof(StatusChange))
-                {
-                    attributeName = Encoding.UTF8.GetString(reader.ReadBytes(1));
-                }
-                else
-                {
-                    var attributeNameLength = reader.ReadByte();
-                    attributeName = Encoding.UTF8.GetString(reader.ReadBytes(attributeNameLength));
-                }
+                var attributeName = GetAttributeName(reader, messageType);
+
                 var attributeType = reader.ReadByte();
 
-                dynamic value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
+                var value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
 
                 var field = fieldInfo.Where(a => a.GetCustomAttribute<XMessageField>() != null)
-                    .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
+                                     .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
 
                 if (field != null)
                 {
@@ -69,13 +50,24 @@ namespace PFire.Core.Protocol
                 }
                 else
                 {
-                    Debug.WriteLine(string.Format("WARN: No attribute defined for {0} on class {1}", attributeName, messageType.Name));
+                    Debug.WriteLine($"WARN: No attribute defined for {attributeName} on class {messageType.Name}");
                 }
             }
 
             Debug.WriteLine("Deserialized [{0}]: {1}", messageType, messageBase.ToString());
 
             return messageBase;
+        }
+
+        private static string GetAttributeName(BinaryReader reader, Type messageType)
+        {
+            // TODO: Be brave enough to find an elegant fix for this
+            // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
+            // and breaks this code. Assume first byte after the attribute count as the attribute name
+            var count = messageType == typeof(StatusChange) ? 1 : reader.ReadByte();
+
+            var readBytes = reader.ReadBytes(count);
+            return Encoding.UTF8.GetString(readBytes);
         }
 
         public static byte[] Serialize(IMessage message)
@@ -95,23 +87,23 @@ namespace PFire.Core.Protocol
         {
             var propertyInfo = message.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             var attributesToBeWritten = new List<Tuple<XMessageField, byte, dynamic>>();
-            propertyInfo.Where(a => Attribute.IsDefined(a, typeof(XMessageField))).ToList()
-                .ForEach(property =>
-                {
-                    var propertyValue = property.GetValue(message);
-                    var attributeDefinition = property.GetCustomAttribute<XMessageField>();
-                    var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
+            propertyInfo.Where(a => Attribute.IsDefined(a, typeof(XMessageField)))
+                        .ToList()
+                        .ForEach(property =>
+                        {
+                            var propertyValue = property.GetValue(message);
+                            var attributeDefinition = property.GetCustomAttribute<XMessageField>();
+                            var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
+                            
+                            attributesToBeWritten.Add(
+                                Tuple.Create<XMessageField, byte, dynamic>(
+                                    attributeDefinition,
+                                    attribute.AttributeTypeId,
+                                    propertyValue
+                                )
+                            );
+                        });
 
-                    attributesToBeWritten.Add(
-                        Tuple.Create<XMessageField, byte, dynamic>(
-                            attributeDefinition,
-                            attribute.AttributeTypeId,
-                            propertyValue
-                        )
-                    );
-                });
-
-            byte[] payload = { };
             using var ms = new MemoryStream();
             using var writer = new BinaryWriter(ms);
             writer.Write((short)message.MessageTypeId);
@@ -119,7 +111,7 @@ namespace PFire.Core.Protocol
             attributesToBeWritten.ForEach(a =>
             {
                 var attribute = XFireAttributeFactory.Instance.GetAttribute(a.Item2);
-                if (a.Item1.NonTextualName)
+                if(a.Item1.NonTextualName)
                 {
                     attribute.WriteNameWithoutLengthPrefix(writer, a.Item1.NameAsBytes);
                     attribute.WriteType(writer);
@@ -130,9 +122,8 @@ namespace PFire.Core.Protocol
                     attribute.WriteAll(writer, a.Item1.Name, a.Item3);
                 }
             });
-            payload = ms.ToArray();
 
-            return payload;
+            return ms.ToArray();
         }
     }
 }

@@ -11,8 +11,7 @@ namespace PFire.Infrastructure.Database
 
         public static Friend New(int userId, int friendUserId)
         {
-            var friend = new Friend {UserId = userId, FriendUserId = friendUserId};
-            return friend;
+            return new Friend {UserId = userId, FriendUserId = friendUserId};
         }
     }
 }

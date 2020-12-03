@@ -8,23 +8,25 @@ namespace PFire.Core.Util
         protected bool IsDisposing;
         protected virtual void Dispose(bool disposing)
         {
-            if (!Disposed)
+            if(Disposed)
             {
-                if (disposing)
-                {
-                    try
-                    {
-                        IsDisposing = true;
-                        DisposeManagedResources();
-                    }
-                    finally
-                    {
-                        IsDisposing = false;
-                    }
-                }
-
-                Disposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                try
+                {
+                    IsDisposing = true;
+                    DisposeManagedResources();
+                }
+                finally
+                {
+                    IsDisposing = false;
+                }
+            }
+
+            Disposed = true;
         }
 
         public void Dispose()

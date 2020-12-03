@@ -43,9 +43,6 @@ namespace PFire.Core.Protocol.Messages.Outbound
                 SessionIds.Add(session.SessionId);
                 Debug.WriteLine("Status: For:{0} -- FriendId:{1} Friend:{2} FriendSession:{3}", client.User.Username, session.User.UserId, session.User.Username, session.SessionId);
             });
-            
-            //friendsSessions.OrderBy(a => a.User.UserId);
-            //friendsSessions.ForEach(session => Debug.WriteLine("Context: For:{0} -- FriendId:{1} Friend:{2} FriendSession:{3}", context.User.Username, session.User.UserId, session.User.Username, session.SessionId));
         }
     }
 }

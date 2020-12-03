@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using PFire.Core;
 
-namespace PFire.WindowsService.Services
+namespace PFire.Console.Services
 {
     internal class PFireServerService : IHostedService
     {
