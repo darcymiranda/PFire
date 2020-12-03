@@ -54,7 +54,7 @@ namespace PFire.Core.Protocol
                 }
             }
 
-            Debug.WriteLine("Deserialized [{0}]: {1}", messageType, messageBase.ToString());
+            Debug.WriteLine($"Deserialized [{messageType}]: {messageBase}");
 
             return messageBase;
         }
@@ -78,7 +78,7 @@ namespace PFire.Core.Protocol
 
             var finalPayload = ByteHelper.CombineByteArray(payloadLength, payload);
 
-            Debug.WriteLine("Serialized [{0}]: {1}", message.ToString(), BitConverter.ToString(finalPayload));
+            Debug.WriteLine($"Serialized [{message}]: {BitConverter.ToString(finalPayload)}");
 
             return finalPayload;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Session
@@ -27,7 +28,7 @@ namespace PFire.Core.Session
         {
             if (!_sessions.TryAdd(session.SessionId, session))
             {
-                Console.WriteLine("Tried to add a user with session id {0} that already existed", session.SessionId);
+                session.Logger.LogWarning($"Tried to add a user with session id {session.SessionId} that already existed.");
             }
         }
 

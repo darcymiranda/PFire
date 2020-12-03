@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Outbound
@@ -68,8 +68,8 @@ namespace PFire.Core.Protocol.Messages.Outbound
             Salt = context.Salt;
             Reason = "Mq_P8Ad3aMEUvFinw0ceu6FITnZTWXxg46XU8xHW";
 
-            Debug.WriteLine("User {0}[{1}] logged in successfully with session id {2}", context.User.Username, context.User.UserId, context.SessionId);
-            Console.WriteLine("User {0} logged in", context.User.Username);
+            context.Logger.LogDebug($"User {context.User.Username}[{context.User.UserId}] logged in successfully with session id {context.SessionId}");
+            context.Logger.LogInformation($"User {context.User.Username} logged in");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -253,7 +252,7 @@ namespace PFire.Core.Session
             var messageBuffer = new byte[messageLength];
             read = stream.Read(messageBuffer, 0, messageLength);
 
-            Debug.WriteLine("RECEIVED RAW: " + BitConverter.ToString(messageBuffer));
+            Logger.LogTrace($"RECEIVED RAW: {BitConverter.ToString(messageBuffer)}");
 
             try
             {
@@ -268,11 +267,11 @@ namespace PFire.Core.Session
             }
             catch (UnknownMessageTypeException messageTypeEx)
             {
-                Debug.WriteLine(messageTypeEx.ToString());
+                Logger.LogDebug(messageTypeEx, "Unknown Message Type");
             }
             catch (UnknownXFireAttributeTypeException attributeTypeEx)
             {
-                Debug.WriteLine(attributeTypeEx.ToString());
+                Logger.LogDebug(attributeTypeEx, "Unknown XFireAttribute Type");
             }
         }
 

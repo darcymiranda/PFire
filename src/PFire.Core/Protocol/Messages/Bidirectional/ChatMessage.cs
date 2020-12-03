@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol.Messages.MessageEnums;
 using PFire.Core.Session;
 
@@ -48,7 +48,7 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
                     break;
 
                 default:
-                    Debug.WriteLine($"NOT BUILT: Got {messageType} for session: {context.SessionId}");
+                    context.Logger.LogDebug($"NOT BUILT: Got {messageType} for session: {context.SessionId}");
                     break;
             }
         }
