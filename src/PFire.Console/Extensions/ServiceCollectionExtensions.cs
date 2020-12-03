@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PFire.Console.Services;
 using PFire.Core;
-using PFire.WindowsService.Services;
 
-namespace PFire.WindowsService.Extensions
+namespace PFire.Console.Extensions
 {
     internal static class ServiceCollectionExtensions
     {

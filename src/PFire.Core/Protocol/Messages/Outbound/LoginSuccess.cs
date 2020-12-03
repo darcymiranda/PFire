@@ -57,14 +57,12 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("reason")]
         public string Reason { get; private set; }
 
-   
-
         public override void Process(XFireClient context)
         {
             UserId = context.User.UserId;
             SessionId = context.SessionId;
-            Status = 0;//BitConverter.ToInt32(new byte[] { 0x7f, 0x05, 0x0, 0x0 }, 0);
-            Nickname = String.IsNullOrEmpty(context.User.Nickname) ? context.User.Username : context.User.Nickname;
+            Status = 0;
+            Nickname = string.IsNullOrEmpty(context.User.Nickname) ? context.User.Username : context.User.Nickname;
             MinRect = 1;
             MaxRect = 164867;
             var ipAddress = StripPortFromIPAddress(context.RemoteEndPoint.ToString());
@@ -74,10 +72,6 @@ namespace PFire.Core.Protocol.Messages.Outbound
 
             Debug.WriteLine("User {0}[{1}] logged in successfully with session id {2}", context.User.Username, context.User.UserId, context.SessionId);
             Console.WriteLine("User {0} logged in", context.User.Username);
-
-            //N1 = BitConverter.ToInt32(new byte[] { 0x3c, 0xb2, 0x58, 0xd0 }, 0);
-            //N2 = BitConverter.ToInt32(new byte[] { 0x3d, 0xb2, 0x58, 0xd0 }, 0);
-            //N3 = BitConverter.ToInt32(new byte[] { 0x3e, 0xb2, 0x58, 0xd0 }, 0);
         }
 
         private static string StripPortFromIPAddress(string address)

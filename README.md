@@ -30,7 +30,7 @@ Emulated XFire server (Client 1.127)
 1. `cd tests\PFire.Tests`
 2. `dotnet test`
 
-# Working Features
+## Working Features
 * Friend search
 * Friend requests
 * Statuses

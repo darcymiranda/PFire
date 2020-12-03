@@ -7,14 +7,6 @@ namespace PFire.Core.Protocol.XFireAttributes
 {
     public abstract class MapAttribute<T> : XFireAttribute
     {
-
-        /*private XFireAttribute cachedKeyAttribute;
-
-        public MapAttribute()
-        {
-            cachedKeyAttribute = XFireAttributeFactory.Instance.GetAttribute(typeof(T));
-        }
-        */
         public override Type AttributeType => typeof(Dictionary<T, dynamic>);
 
         public abstract override byte AttributeTypeId { get; }
@@ -25,10 +17,8 @@ namespace PFire.Core.Protocol.XFireAttributes
             var mapLength = reader.ReadByte();
             var keyAttribute = XFireAttributeFactory.Instance.GetAttribute(typeof(T));
 
-            for (int i = 0; i < mapLength; i++)
+            for(var i = 0; i < mapLength; i++)
             {
-                //var key = cachedKeyAttribute.ReadValue(reader);
-
                 // TODO: Fix hack
                 // Stupid protocol decides to not be nice and expect an 8bit string length prefix instead of the normal 16 for string key mapped types
 
@@ -39,6 +29,7 @@ namespace PFire.Core.Protocol.XFireAttributes
 
                 values.Add(key, attribute.ReadValue(reader));
             }
+
             return values;
         }
 
@@ -54,8 +45,6 @@ namespace PFire.Core.Protocol.XFireAttributes
                 var key = pair.Key;
                 var value = pair.Value;
                 var attribute = XFireAttributeFactory.Instance.GetAttribute(value.GetType());
-
-                //cachedKeyAttribute.WriteValue(writer, key);
 
                 // TODO: Fix hack
                 // Stupid protocol decides to not be nice and expect an 8bit string length prefix instead of 16 for string key mapped types

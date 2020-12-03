@@ -1,5 +1,4 @@
-﻿
-namespace PFire.Core.Protocol.Messages
+﻿namespace PFire.Core.Protocol.Messages
 {
     public enum XFireMessageType : short
     {
@@ -14,14 +13,14 @@ namespace PFire.Core.Protocol.Messages
         Unknown10 = 10,
         UserLookup = 12,
         KeepAlive = 13,
-        NicknameChange = 14, 
+        NicknameChange = 14,
         ClientConfiguration = 16,
         ConnectionInformation = 17,
         StatusChange = 32,
         Unknown37 = 37,
         LoginChallenge = 128,
         LoginFailure = 129,
-        LoginSuccess =130,
+        LoginSuccess = 130,
         FriendsList = 131,
         FriendsSessionAssign = 132,
         ServerChatMessage = 133,
