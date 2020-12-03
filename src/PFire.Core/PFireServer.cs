@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.Messages.Outbound;
@@ -8,12 +9,17 @@ using PFire.Infrastructure.Database;
 
 namespace PFire.Core
 {
-    public sealed class PFireServer
+    public interface IPFireServer
     {
-        public PFireDatabase Database { get; }
+        Task Start();
+        Task Stop();
+    }
+
+    internal sealed class PFireServer : IPFireServer
+    {
+        private readonly IXFireClientManager _clientManager;
 
         private readonly TcpServer _server;
-        private readonly IXFireClientManager _clientManager;
 
         public PFireServer(string baseDirectory, IPEndPoint endPoint = null)
         {
@@ -27,14 +33,20 @@ namespace PFire.Core
             _server.OnDisconnection += OnDisconnection;
         }
 
-        public void Start()
+        public PFireDatabase Database { get; }
+
+        public Task Start()
         {
             _server.Listen();
+
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public Task Stop()
         {
             _server.Shutdown();
+
+            return Task.CompletedTask;
         }
 
         private void OnDisconnection(XFireClient disconnectedClient)
@@ -53,7 +65,7 @@ namespace PFire.Core
             friends.ForEach(friend =>
             {
                 var friendClient = GetSession(friend);
-                if (friendClient != null)
+                if(friendClient != null)
                 {
                     friendClient.SendAndProcessMessage(new FriendsSessionAssign(friend));
                 }
