@@ -43,20 +43,28 @@ namespace PFire.Core
             _server.Shutdown();
         }
 
-        void OnDisconnection(XFireClient sessionContext)
+        private void OnDisconnection(XFireClient disconnectedClient)
         {
-            RemoveSession(sessionContext);
+            UpdateFriendsWithDisconnetedStatus(disconnectedClient);
 
-            var friends = Database.QueryFriends(sessionContext.User);
-            friends.ForEach(friend =>
-            {
-                var friendSession = GetSession(friend);
-                if (friendSession != null)
-                {
-                    // Not working
-                    sessionContext.SendAndProcessMessage(new FriendsSessionAssign(friend));
-                }
-            });
+            RemoveSession(disconnectedClient);
+        }
+
+        private void UpdateFriendsWithDisconnetedStatus(XFireClient disconnectedClient)
+        {
+            // TODO - Get a list of valid session message strings
+            // and update any friends of the disconnected client
+
+            //var friends = Database.QueryFriends(disconnectedClient.User);
+            //friends.ForEach(friend =>
+            //{
+            //    var friendSession = GetSession(friend);
+            //    if (friendSession != null)
+            //    {
+            //        // Not working
+            //        friendSession.SendAndProcessMessage(new FriendStatusChange(..., ...));
+            //    }
+            //});
         }
 
         private void HandleNewConnection(XFireClient sessionContext)
