@@ -14,7 +14,7 @@ namespace PFire.Console.Extensions
         {
             return serviceCollection.AddHostedService<PFireServerService>()
                                     .RegisterCore()
-                                    .RegisterInfrastructure()
+                                    .RegisterInfrastructure(hostEnvironment, configuration)
                                     .RegisterCommon(configuration)
                                     .AddLogging(builder => builder.AddLogging(hostEnvironment));
         }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Session;
-using PFire.Core.Util;
 
 namespace PFire.Core
 {
@@ -21,12 +21,14 @@ namespace PFire.Core
     {
         private readonly IXFireClientManager _clientManager;
         private readonly TcpListener _listener;
+        private readonly ILogger<TcpServer> _logger;
         private bool _running;
 
-        public TcpServer(TcpListener listener, IXFireClientManager clientManager)
+        public TcpServer(TcpListener listener, IXFireClientManager clientManager, ILogger<TcpServer> logger)
         {
             _listener = listener;
             _clientManager = clientManager;
+            _logger = logger;
         }
 
         public event Action<XFireClient> OnConnection;
@@ -37,7 +39,7 @@ namespace PFire.Core
         {
             _running = true;
             _listener.Start();
-            ConsoleLogger.Log($"PFire Server listening on {_listener.LocalEndpoint}");
+            _logger.LogInformation($"PFire Server listening on {_listener.LocalEndpoint}");
             Task.Run(() => Accept().ConfigureAwait(false));
         }
 
@@ -52,7 +54,7 @@ namespace PFire.Core
             while (_running)
             {
                 var tcpClient = await _listener.AcceptTcpClientAsync().ConfigureAwait(false);
-                var newXFireClient = new XFireClient(tcpClient, _clientManager, OnReceive, OnDisconnection);
+                var newXFireClient = new XFireClient(tcpClient, _clientManager, _logger, OnReceive, OnDisconnection);
 
                 OnConnection?.Invoke(newXFireClient);
             }

@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
 using PFire.Core.Session;
-using PFire.Core.Util;
 
 namespace PFire.Core.Protocol.Messages
 {
@@ -16,7 +15,7 @@ namespace PFire.Core.Protocol.Messages
         public virtual void Process(XFireClient client)
         {
             // base implementation is to do nothing
-            ConsoleLogger.Log($" *** Unimplemented processing for message type {MessageTypeId}", ConsoleColor.Magenta);
+            client.Logger.LogWarning($" *** Unimplemented processing for message type {MessageTypeId}");
         }
     }
 }

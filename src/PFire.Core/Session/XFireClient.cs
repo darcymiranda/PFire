@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol;
 using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
@@ -29,6 +30,7 @@ namespace PFire.Core.Session
 
         public XFireClient(TcpClient tcpClient,
                            IXFireClientManager clientManager,
+                           ILogger logger,
                            Action<XFireClient, IMessage> receiveHandler,
                            Action<XFireClient> disconnectionHandler)
         {
@@ -42,6 +44,8 @@ namespace PFire.Core.Session
             _tcpClient.ReceiveTimeout = 300; // ms
             _connected = true;
 
+            Logger = logger;
+
             // TODO: be able to use unique salts
             Salt = "4dc383ea21bf4bca83ea5040cb10da62";
             SessionId = Guid.NewGuid();
@@ -50,7 +54,7 @@ namespace PFire.Core.Session
 
             _lastReceivedFrom = DateTime.UtcNow;
 
-            ConsoleLogger.Log($"Client connected {_tcpClient.Client.RemoteEndPoint} and assigned session id {SessionId}", ConsoleColor.Green);
+            Logger.LogInformation($"Client connected {_tcpClient.Client.RemoteEndPoint} and assigned session id {SessionId}");
 
             ThreadPool.QueueUserWorkItem(ClientThreadWorker);
         }
@@ -66,6 +70,31 @@ namespace PFire.Core.Session
         public User User { get; set; }
 
         private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
+
+        public ILogger Logger { get; }
+
+        public int PublicIp
+        {
+            get
+            {
+                IPAddress address;
+                var remoteEndPoint = _tcpClient.Client.RemoteEndPoint;
+                if (remoteEndPoint is IPEndPoint ipEndPoint)
+                {
+                    address = ipEndPoint.Address;
+                }
+                else
+                {
+                    var addressStr = remoteEndPoint.ToString();
+                    var ip = addressStr.Substring(0, addressStr.IndexOf(":"));
+                    address = IPAddress.Parse(ip);
+                }
+
+                var addressBytes = address.GetAddressBytes();
+
+                return BitConverter.ToInt32(addressBytes);
+            }
+        }
 
         public void Disconnect()
         {
@@ -109,7 +138,7 @@ namespace PFire.Core.Session
             var username = User != null ? User.Username : "unknown";
             var userId = User != null ? User.UserId : -1;
 
-            ConsoleLogger.Log($"Sent message[{username},{userId}]: {message}", ConsoleColor.Gray);
+            Logger.LogDebug($"Sent message[{username},{userId}]: {message}");
         }
 
         protected override void DisposeManagedResources()
@@ -137,7 +166,7 @@ namespace PFire.Core.Session
         {
             if (DateTime.UtcNow - _lastReceivedFrom > ClientTimeout)
             {
-                ConsoleLogger.Log($"Client: {User.Username}-{SessionId} has timed out -> {_lastReceivedFrom}", ConsoleColor.Red);
+                Logger.LogError($"Client: {User.Username}-{SessionId} has timed out -> {_lastReceivedFrom}");
                 _clientManager.RemoveSession(this);
             }
         }
@@ -173,13 +202,13 @@ namespace PFire.Core.Session
                         {
                             // the client says the other end has gone, 
                             // lets shut down this client 
-                            ConsoleLogger.Log($"Client: {User.Username}-{SessionId} has disconnected", ConsoleColor.Red);
+                            Logger.LogError($"Client: {User.Username}-{SessionId} has disconnected");
                             _clientManager.RemoveSession(this);
                         }
                     }
                     catch (IOException ioe)
                     {
-                        ConsoleLogger.Log(ioe.ToString());
+                        Logger.LogError(ioe, "An exception occurred when reading from the tcp stream");
                         // the read timed out 
                         // this could indicate that the other end is bad
                         // the lifetime handler will help
@@ -203,7 +232,7 @@ namespace PFire.Core.Session
             var read = stream.Read(headerBuffer, 0, headerBuffer.Length);
             if (read == 0)
             {
-                ConsoleLogger.Log($"Client {User?.Username}-{SessionId} disconnected via 0 read", ConsoleColor.DarkRed);
+                Logger.LogCritical($"Client {User?.Username}-{SessionId} disconnected via 0 read");
                 _disconnectionHandler?.Invoke(this);
                 return;
             }
@@ -221,7 +250,7 @@ namespace PFire.Core.Session
                 var username = User != null ? User.Username : "unknown";
                 var userId = User != null ? User.UserId : -1;
 
-                ConsoleLogger.Log($"Recv message[{username},{userId}]: {message}", ConsoleColor.Gray);
+                Logger.LogDebug($"Recv message[{username},{userId}]: {message}");
 
                 _receiveHandler?.Invoke(this, message);
             }
@@ -245,7 +274,7 @@ namespace PFire.Core.Session
 
             if (!_initialized)
             {
-                ConsoleLogger.Log($"Failed to read header bytes from {SessionId}", ConsoleColor.Red);
+                Logger.LogError($"Failed to read header bytes from {SessionId}");
             }
         }
     }
