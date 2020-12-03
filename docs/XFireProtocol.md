@@ -78,27 +78,27 @@ The attribute value can be one of a set of predefined attribute types:
 | Type ID | Description                                                                                                                                                                                              |
 | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0x01    | A variable length string. The first two bytes of the data containa 16-bit integer indicating the length of the string, followed by the string data.                                                      |
-| 0x02    | A 32-bit integer.                                                                                                                                                                                        |
+| 0x02    | A 32-bit int.                                                                                                                                                                                        |
 | 0x03    | A 128-bit session identifier, used to identify a particular user'ssession on the xfire network.                                                                                                          |
-| 0x04    | A list. The first byte indicates the type of the items in the list,for instance 0x01 for a string list. The next two bytes indicate the number of items in the list, followed by each consecutive value. |
+| 0x04    | A list. The first byte indicates the type of the items in the list,for instance 0x01 for a `string` list. The next two bytes indicate the number of items in the list, followed by each consecutive value. |
 | 0x05    | A string keyed map. The first byte indicates the number of entries,followed by each entry, with a string name (prefixed by 8-bit string length) and type (the same format for messages as a whole).      |
 | 0x06    | A DID value. As yet, the purpose of this value is unknown (See [DID Message](#did-message) for more information).                                                                                        |
 | 0x09    | An integer keyed map (type 0x09). The first byte indicates the number of entries, followed by each entry, with an 8-bit integer key and type.                                                            |
 
-An example of a simple message is the [client version message](#client-version-message), which has a single attribute named "version". It looks like this (with each bytes value displayed in hexadecimal, or the character equivalent where appropriate):
+An example of a simple message is the [client version message](#client-version-message), which has a single attribute named `version`. It looks like this (with each bytes value displayed in hexadecimal, or the character equivalent where appropriate):
 
 | Position (hex)  |  00 |  01 |  02 |  03 |  04 |  05 |  06 |  07 |  08 |  09 |  0A |  0B |  0C |  0D |  0E |  0F |  10 |  11 |
 | :-------------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Value (hex)     |  12 |  00 |  03 |  00 |  01 |  07 |  76 |  65 |  72 |  73 |  69 |  6f |  6e |  02 |  43 |  00 |  00 |  00 |
 | Value (literal) |     |     |     |     |     |     |  v  |  e  |  r  |  s  |  i  |  o  |  n  |     |     |     |     |     |
 
-As you can see from the above, the message length is 18 (0x0012), the packet id is 3 (0x0003), there is a single attribute with name of length 7 ("version"), with a 32-bit value 0x00000043 (67 represented as a 32-bit integer). Remember that because the protocol is little endian, the integers will appear with the least significant byte first, i.e. the message length will appear as 12 00 in the message.
+As you can see from the above, the message length is 18 (0x0012), the packet id is 3 (0x0003), there is a single attribute with name of length 7 (`version`), with a 32-bit value 0x00000043 (67 represented as a 32-bit int). Remember that because the protocol is little endian, the integers will appear with the least significant byte first, i.e. the message length will appear as 12 00 in the message.
 
 ### Connection Handshake
 
 When initiating a new connection, the sequence of events is as follows:
 
-1. The client opens a TCP/IP connection with the server, first sending the hexadecimal code 55 41 30 31 (or, as a string, "UA01") as an opening statement.
+1. The client opens a TCP/IP connection with the server, first sending the hexadecimal code 55 41 30 31 (or, as a string, `UA01`) as an opening statement.
 2. The client then sends a [client information message](#client-information-message), followed by a [client version message](#client-version-message).
     1. If this version is older than the current XFire version, a [new version message](#new-version-available-message) will be sent and the server will send no more messages. The client should disconnect at this point.
 3. The server will then send an [authentication challenge message](#login-challenge-message) to the client.
@@ -149,6 +149,7 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | 163                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
 | [400](#did-message)                                     | DID (?)                                 | `string` |     ❌     |      ✔      |        ❌        |
 | [450](#channel-information-message)                     | Channel information (?)                 |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
+
 ### Login Request Message
 
 This message is sent by the client to the server in response to a [Login Challenge Message](#login-challenge-message) in order to authenticate the user. The server will respond with either a [Login Success Message](#login-success-message) or a [Login Failure Message](#login-failure-message).
@@ -161,24 +162,24 @@ This message is sent by the client to the server in response to a [Login Challen
 
 #### Contents
 
-|Attribute Name|Type|Details|
-|---|---|---|
-|name|string|The user name of the user that is attempting to log in.|
-|password|string (128 bit SHA-1 hash as a hex string)|The salted username and password of the user that is attempting to log in. This is constructed as follows:<pre>String a = username + password + "UltimateArena";<br />int128 a_hash = sha1(a);<br />String b = toHexString(a_hash) + salt;<br />int128 b_hash = sha1(b);<br />String result = toHexString(b_hash);</pre>Where the salt is a string that has been provided in the login challenge.
-|flags|32-bit integer|The purpose of this value is not known, in all data observed from the real XFire client it has been 0.|
+| Attribute Name |                      Type                     | Details                                                                                                                                                                                                                                                                                                                                                                                           |
+| :------------- | :-------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| name           |                    `string`                   | The user name of the user that is attempting to log in.                                                                                                                                                                                                                                                                                                                                           |
+| password       | `string` (128 bit SHA-1 hash as a hex string) | The salted username and password of the user that is attempting to log in. This is constructed as follows:<pre>String a = username + password + "UltimateArena";<br />int128 a_hash = sha1(a);<br />String b = toHexString(a_hash) + salt;<br />int128 b_hash = sha1(b);<br />String result = toHexString(b_hash);</pre>Where the salt is a string that has been provided in the login challenge. |
+| flags          |                  `32-bit int`                 | The purpose of this value is not known, in all data observed from the real XFire client it has been 0.                                                                                                                                                                                                                                                                                            |
 
 ### Chat Message
 
 This message is sent by the client to the server, or directly to another user via UDP. The message can represent a number of things:
 
-* An content message (e.g. "hi there")
+* An content message (e.g. `hi there`)
 * An indication of whether the user is typing or not
 * A list of the client's details (IP address, open UDP port, etc)
 * An acknowledgement that a message from the peer was received
 
 When chat messages are sent via the server, they will be received by the peer as a [Server Routed Chat Message](#server-routed-chat-message). 
 
-If communication is to be routed via the XFire server, client information messages should be sent regularly to prevent "high latency warnings" where the peer is a real XFire client. In OpenFire, these are sent with each real message, up to once every 5 seconds. It has not been determined what the threshold is for the XFire client to start reporting latency warnings.
+If communication is to be routed via the XFire server, client information messages should be sent regularly to prevent high-latency warnings where the peer is a real XFire client. In OpenFire, these are sent with each real message, up to once every 5 seconds. It has not been determined what the threshold is for the XFire client to start reporting latency warnings.
 
 #### Properties
 
@@ -188,51 +189,47 @@ If communication is to be routed via the XFire server, client information messag
 
 #### Contents
 
-| Attribute name | Type             | Details                                                                                |
-| -------------- | ---------------- | -------------------------------------------------------------------------------------- |
-| sid            | Session ID       | The session ID of the peer this message is intended for.                               |
+| Attribute Name |       Type       | Details                                                                                |
+| :------------- | :--------------: | :------------------------------------------------------------------------------------- |
+| sid            |    Session ID    | The Session ID of the peer this message is intended for.                               |
 | peermsg        | string keyed map | Contains the real content of the message. See below for the structure of each payload. |
 
 ####  Peermsg contents
 
-The contents of the peermsg map vary depending on what this chat message
-represents. What is represented is indicated in the "msgtype" attribute
-in the map, a 32-bit integer value.
+The contents of the peermsg map vary depending on what this chat message represents. What is represented is indicated in the `msgtype` attribute in the map, a `32-bit int` value.
 
 * _msgtype = 0_ - a content message:
 
-| Attribute name | Type           | Details                                                                                                                      |
-| -------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| imindex        | 32-bit integer | The "index" of this message within the conversation log. Used as a hint of message order, incremented for each message sent. |
-| im             | string         | The actual message (e.g. "hello")                                                                                            |
+| Attribute Name |     Type     | Details                                                                                                                      |
+| :------------- | :----------: | :--------------------------------------------------------------------------------------------------------------------------- |
+| imindex        | `32-bit int` | The index of this message within the conversation log. Used as a hint of message order, incremented for each message sent. |
+| im             | `string` | The actual message (e.g. `hello`)                                                                                            |
 
 * _msgtype = 1_ - an acknowledgement message:
 
-| Attribute name | Type           | Details                                                                                                   |
-| -------------- | -------------- | --------------------------------------------------------------------------------------------------------- |
-| imindex        | 32-bit integer | The "index" of the message we are acknowledging. Corresponds to the imindex in the message the peer sent. |
+| Attribute Name | Type           | Details                                                                                                   |
+|:----|:---:|:----|
+| imindex        | `32-bit int` | The index of the message we are acknowledging. Corresponds to the `imindex` in the message the peer sent. |
 
-    
 * _msgtype = 2_ - a client information message:
 
-| Attribute name | Type                             | Details                                                                                                                                      |
-| -------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Attribute Name | Type                             | Details                                                                                                                                      |
+|:----|:---:|:----|-------------------------------------------------------------------------------------------------------------------------------------------- |
 | ip             | IPv4 address (32-bit int)        | The public IPv4 address of this user.                                                                                                        |
 | port           | 32-bit int (legal range 0-65535) | The public UDP port of this user.                                                                                                            |
 | localip        | IPv4 address (32-bit int)        | The LAN IPv4 address of this user.                                                                                                           |
 | localport      | 32-bit int (legal range 0-65535) | The LAN UDP port of this user (not necessarily the same as the public port, depending on how the use of NAT or firewall)                     |
 | status         | 32-bit int                       | The purpose of this field has not been determined, in all analysed data to date it has been 0.                                               |
-| salt           | string                           | A salt string; it is not known what this is used for (it is always present but does not appear to be used when communicating via the server) |
-    
+| salt           | `string` | A salt string; it is not known what this is used for (it is always present but does not appear to be used when communicating via the server) |
+
 * _msgtype = 3_ - a typing notification:
 
+| Attribute Name |     Type     | Details                                                                                    |
+| :------------- | :----------: | :----------------------------------------------------------------------------------------- |
+| imindex        | `32-bit int` | The index of the message that will be sent if the user sends the pending content message.  |
+| typing         | `32-bit int` | A boolean indicating whether the user is typing or not (`1` is typing, `0` is not typing). |
 
-| Attribute name | Type           | Details                                                                                     |
-| -------------- | -------------- | ------------------------------------------------------------------------------------------- |
-| imindex        | 32-bit integer | The "index" of the message that will be sent if the user sends the pending content message. |
-| typing         | 32-bit integer | A boolean indicating whether the user is typing or not (1 is typing, 0 is not typing).      |
-
-### Client version Message
+### Client Version Message
 
 This message is sent by the client to the server immediately after a [client information message](#client-information-message) in order to report the version of the xfire client in use. This number changes frequently, incremented with each release of the XFire client (typically at least once a month). If the version number sent to the server is lower than the current released client, the server will send a [new version available](#new-version-available-message) message and cease communicating with the client (the TCP connection will remain open until the client closes it, but it will ignore any further messages from the client).
 
@@ -244,9 +241,9 @@ This message is sent by the client to the server immediately after a [client inf
 
 #### Contents
 
-| Attribute name | Type           | Details                           |
-| -------------- | -------------- | --------------------------------- |
-| version        | 32-bit integer | The version number of the client. |
+| Attribute Name |     Type     | Details                           |
+| :------------- | :----------: | :-------------------------------- |
+| version        | `32-bit int` | The version number of the client. |
 
 ### Friends of Online Friend Request Message
 
@@ -260,8 +257,8 @@ This message is sent by the client to the server to get a list of friends of fri
 
 #### Contents
 
-| Attribute name | Type            | Details                                                                                                                  |
-| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Attribute Name |       Type      | Details                                                                                                                  |
+| :------------- | :-------------: | :----------------------------------------------------------------------------------------------------------------------- |
 | sid            | Session ID list | A list of session IDs of currently online friends, for whom we wish to acquire the list of second-degree online friends. |
 
 ### Outgoing Friend Invitation Message
@@ -276,15 +273,14 @@ This is the message sent by a client when it wishes to add another user to it's 
 
 #### Contents
 
-| Attribute name | Type   | Details                                                                                              |
-| -------------- | ------ | ---------------------------------------------------------------------------------------------------- |
-| name           | string | The username of the user to invite.                                                                  |
-| msg            | string | The personalised message typed by the user of the client, intended to be displayed to the recipient. |
+| Attribute Name |  Type  | Details                                                                                              |
+| :------------- | :----: | :--------------------------------------------------------------------------------------------------- |
+| name           | `string` | The username of the user to invite.                                                                  |
+| msg            | `string` | The personalised message typed by the user of the client, intended to be displayed to the recipient. |
 
 ### Accept Invitation Message
 
-This is the message sent by a client when it wishes to accept an [invitation](#incoming-friend-invitation-message) received from another user. It simply
-contains the username of the other user.
+This is the message sent by a client when it wishes to accept an [invitation](#incoming-friend-invitation-message) received from another user. It simply contains the username of the other user.
 
 This message type is identical to the [reject invitation message](#reject-invitation-message), the message ID is the only difference.
 
@@ -296,9 +292,9 @@ This message type is identical to the [reject invitation message](#reject-invita
 
 #### Contents
 
-| Attribute name | Type   | Details                                                 |
-| -------------- | ------ | ------------------------------------------------------- |
-| name           | string | The username of the user to accept the invitation from. |
+| Attribute Name |  Type  | Details                                                 |
+| :------------- | :----: | :------------------------------------------------------ |
+| name           | `string` | The username of the user to accept the invitation from. |
 
 ### Reject Invitation Message
 
@@ -314,9 +310,9 @@ This message type is identical to the [accept invitation message](#accept-invita
 
 #### Contents
 
-| Attribute name | Type   | Details                                                 |
-| -------------- | ------ | ------------------------------------------------------- |
-| name           | string | The username of the user to reject the invitation from. |
+| Attribute Name |  Type  | Details                                                 |
+| :------------- | :----: | :------------------------------------------------------ |
+| name           | `string` | The username of the user to reject the invitation from. |
 
 ### User Lookup Message
 
@@ -332,12 +328,12 @@ The server will respond to this message with a [user search results message](#us
 
 #### Contents
 
-| Attribute name | Type   | Details                                                                                |
-| -------------- | ------ | -------------------------------------------------------------------------------------- |
-| name           | string | A search string, which will match against email addresses, first names and last names. |
-| fname          | string | A search string which will only match the first name of other users.                   |
-| lname          | string | A search string which will only match the last name of other users.                    |
-| email          | string | A search string which will only match the email addresses of other users.              |
+| Attribute Name |   Type   | Details                                                                                |
+| :------------- | :------: | :------------------------------------------------------------------------------------- |
+| name           | `string` | A search string, which will match against email addresses, first names and last names. |
+| fname          | `string` | A search string which will only match the first name of other users.                   |
+| lname          | `string` | A search string which will only match the last name of other users.                    |
+| email          | `string` | A search string which will only match the email addresses of other users.              |
 
 ### Connection Keep-alive Message
 
@@ -351,10 +347,10 @@ This message is sent periodically by the client to notify the server it is still
 
 #### Contents
 
-| Attribute name | Type                | Details                                                                                       |
-| -------------- | ------------------- | --------------------------------------------------------------------------------------------- |
-| value          | 32-bit integer      | An integer of unknown purpose. In all analysed data to date this has had the value "0".       |
-| stats          | 32-bit integer list | An integer list of unknown purpose. In all analysed data to date this has been an empty list. |
+| Attribute Name |        Type       | Details                                                                                       |
+| :------------- | :---------------: | :-------------------------------------------------------------------------------------------- |
+| value          |    `32-bit int`   | An integer of unknown purpose. In all analysed data to date this has had the value `0`.       |
+| stats          | `32-bit int` list | An integer list of unknown purpose. In all analysed data to date this has been an empty list. |
 
 ### Client Configuration Message
 
@@ -368,12 +364,12 @@ This is a message sent by the client immediately after a [successful login](#log
 
 #### Contents
 
-| Attribute name | Type   | Details                                                                                                           |
-| -------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
-| lang           | string | The locale string of the user, e.g. "en" for english or "de" for german.                                          |
-| skin           | string | The skin currently being used by the user's client. In a vanilla XFire client, this will typically be "XFire".    |
-| theme          | string | The theme currently being used by the user's client. In a vanilla XFire client, this will typically be "default". |
-| partner        | string | A string of unknown purpose. In all data analysed to date, this has been an empty string.                         |
+| Attribute Name |   Type   | Details                                                                                                           |
+| :------------- | :------: | :---------------------------------------------------------------------------------------------------------------- |
+| lang           | `string` | The locale string of the user, e.g. `en` for english or `de` for german.                                          |
+| skin           | `string` | The skin currently being used by the user's client. In a vanilla XFire client, this will typically be `XFire`.    |
+| theme          | `string` | The theme currently being used by the user's client. In a vanilla XFire client, this will typically be `default`. |
+| partner        | `string` | A string of unknown purpose. In all data analysed to date, this has been an empty string.                         |
 
 ### Client Information Message
 
@@ -387,10 +383,10 @@ This message is sent by the client to the server as the first message after the 
 
 #### Contents
 
-| Attribute name | Type                | Details                                                                                                                                                                                                                                                                                                                              |
-| -------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| version        | 32-bit integer list | A version number, in 4 parts. As of writing, all observed messages have used the version number "3.2.0.0". It appears this may have been made redundant by the version number transmitted in the client version message.                                                                                                             |
-| skin           | string list         | The list of skins installed on the client. With a vanilla install of the XFire client, this contains the strings `Xfire`, `standard`, `Separator`, and `XF_URL`. This corresponds to the XFire client's "Tools -> Skin" menu, with string representations of the horizontal separator and the link to the XFire skins download page. |
+| Attribute Name |        Type       | Details                                                                                                                                                                                                                                                                                                                              |
+| :------------- | :---------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| version        | `32-bit int` list | A version number, in 4 parts. As of writing, all observed messages have used the version number `3.2.0.0`. It appears this may have been made redundant by the version number transmitted in the client version message.                                                                                                             |
+| skin           |   `string` list   | The list of skins installed on the client. With a vanilla install of the XFire client, this contains the strings `Xfire`, `standard`, `Separator`, and `XF_URL`. This corresponds to the XFire client's `Tools -> Skin` menu, with string representations of the horizontal separator and the link to the XFire skins download page. |
 
 ### Login Challenge Message
 
@@ -404,9 +400,9 @@ This message is sent by the server to the client to initiate the authentication 
 
 #### Contents
 
-| Attribute name | Type   | Details                                                         |
-| -------------- | ------ | --------------------------------------------------------------- |
-| salt           | string | A salt string which is to be used as part of the login request. |
+| Attribute Name |   Type   | Details                                                         |
+| :------------- | :------: | :-------------------------------------------------------------- |
+| salt           | `string` | A salt string which is to be used as part of the login request. |
 
 ### Login Failure Message
 
@@ -420,9 +416,9 @@ This message is sent in response to a [login request message](#login-request-mes
 
 #### Contents
 
-| Attribute name | Type           | Details                                                                                                           |
-| -------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
-| reason         | 32-bit integer | A code perhaps used to indicate the reason for the failed login. In all analysed data this has had the value "0". |
+| Attribute Name |     Type     | Details                                                                                                           |
+| :------------- | :----------: | :---------------------------------------------------------------------------------------------------------------- |
+| reason         | `32-bit int` | A code perhaps used to indicate the reason for the failed login. In all analysed data this has had the value `0`. |
 
 ### Login Success Message
 
@@ -436,22 +432,22 @@ This message is sent in response to a [login request message](#login-request-mes
 
 #### Contents
 
-| Attribute name | Type           | Details                                                                                                                                                                                                                                                                                 |
-| -------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| userid         | 32-bit integer | The user's unique identifier on the network, bound to their username. This is used in various other parts of the protocol instead of the username.                                                                                                                                      |
-| sid            | Session ID     | The unique session ID for this connection, distinct from all other connections this user or any other user's have had.                                                                                                                                                                  |
-| nick           | string         | The "nickname" or alias of this user last time they connected - this is what is displayed in the XFire UI if one has been set, otherwise the username is displayed.                                                                                                                     |
-| status         | 32-bit integer | An integer of unknown purpose.                                                                                                                                                                                                                                                          |
-| dlSet          | string         | A string of unknown purpose. In all observed data this has been an empty string.                                                                                                                                                                                                        |
-| p2pset         | string         | A string of unknown purpose. In all observed data this has been an empty string.                                                                                                                                                                                                        |
-| clntSet        | string         | A string of unknown purpose. In all observed data this has been an empty string.                                                                                                                                                                                                        |
-| minRect        | 32-bit integer | An integer of unknown purpose, presumably related in some way to the rectangular size of the client. In all observed data this has had the value "1".                                                                                                                                   |
-| maxRect        | 32-bit integer | An integer of unknown purpose, presumably related in some way to the rectangular size of the client. In all observed data this has had the value "1800", and the XFire client does seem restricted to roughly this size (it won't fill the width of a 1920x1200 monitor, for instance). |
-| ctry           | 32-bit integer | An integer of unknown purpose.                                                                                                                                                                                                                                                          |
-| n1             | IPv4 address   | An address of unknown purpose. In all observed data this has had the value "204.71.190.131", which resolves to "nat1.sv.xfire.com".                                                                                                                                                     |
-| n2             | IPv4 address   | An address of unknown purpose. In all observed data this has had the value "204.71.190.132", which resolves to "nat2.sv.xfire.com".                                                                                                                                                     |
-| n3             | IPv4 address   | An address of unknown purpose. In all observed data this has had the value "204.71.190.133", which resolves to "nat3.sv.xfire.com".                                                                                                                                                     |
-| pip            | IPv4 address   | The public IPv4 address of this client, as detected by the server. This is useful for the client to discover it's public IP when it is not directly connected to the internet.                                                                                                          |
+| Attribute Name |     Type     | Details                                                                                                                                                                                                                                                                                 |
+| :------------- | :----------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| userid         | `32-bit int` | The user's unique identifier on the network, bound to their username. This is used in various other parts of the protocol instead of the username.                                                                                                                                      |
+| sid            |  Session ID  | The unique Session ID for this connection, distinct from all other connections this user or any other user's have had.                                                                                                                                                                  |
+| nick           |   `string`   | The nickname or alias of this user last time they connected - this is what is displayed in the XFire UI if one has been set, otherwise the username is displayed.                                                                                                                     |
+| status         | `32-bit int` | An integer of unknown purpose.                                                                                                                                                                                                                                                          |
+| dlSet          |   `string`   | A string of unknown purpose. In all observed data this has been an empty string.                                                                                                                                                                                                        |
+| p2pset         |   `string`   | A string of unknown purpose. In all observed data this has been an empty string.                                                                                                                                                                                                        |
+| clntSet        |   `string`   | A string of unknown purpose. In all observed data this has been an empty string.                                                                                                                                                                                                        |
+| minRect        | `32-bit int` | An integer of unknown purpose, presumably related in some way to the rectangular size of the client. In all observed data this has had the value `1`.                                                                                                                                   |
+| maxRect        | `32-bit int` | An integer of unknown purpose, presumably related in some way to the rectangular size of the client. In all observed data this has had the value `1800`, and the XFire client does seem restricted to roughly this size (it won't fill the width of a 1920x1200 monitor, for instance). |
+| ctry           | `32-bit int` | An integer of unknown purpose.                                                                                                                                                                                                                                                          |
+| n1             | IPv4 address | An address of unknown purpose. In all observed data this has had the value `204.71.190.131`, which resolves to `nat1.sv.xfire.com`.                                                                                                                                                     |
+| n2             | IPv4 address | An address of unknown purpose. In all observed data this has had the value `204.71.190.132`, which resolves to `nat2.sv.xfire.com`.                                                                                                                                                     |
+| n3             | IPv4 address | An address of unknown purpose. In all observed data this has had the value `204.71.190.133`, which resolves to `nat3.sv.xfire.com`.                                                                                                                                                     |
+| pip            | IPv4 address | The public IPv4 address of this client, as detected by the server. This is useful for the client to discover it's public IP when it is not directly connected to the internet.                                                                                                          |
 
 ### Friend List Message
 
@@ -465,12 +461,11 @@ This message provides the list of friends for the current user after a successfu
 
 #### Contents
 
-| Attribute name | Type                | Details                                                                                                                                                                            |
-| -------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| userid         | 32-bit integer list | A list containing the unique ID of each friend.                                                                                                                                    |
-| friends        | String list         | A list containing the usernames of each friend.                                                                                                                                    |
-| nick           | String list         | A list containing the "nick name" of each friend, i.e. the name that will be displayed instead of the username if set. If no nick name has been set, this will be an empty string. |
-
+| Attribute Name |        Type       | Details                                                                                                                                                                            |
+| :------------- | :---------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| userid         | `32-bit int` list | A list containing the unique ID of each friend.                                                                                                                                    |
+| friends        |   `string` list   | A list containing the usernames of each friend.                                                                                                                                    |
+| nick           |   `string` list   | A list containing the nickname of each friend, i.e. the name that will be displayed instead of the username if set. If no nickname has been set, this will be an empty string. |
 
 ### Session ID List Message
 
@@ -484,11 +479,10 @@ This message provides a list of session IDs for friends who are currently online
 
 #### Contents
 
-| Attribute name | Type                | Details                                                                                                                                                                                        |
-| -------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| userid         | 32-bit integer list | A list containing the unique ID of each who has come online or gone offline.                                                                                                                   |
-| sid            | Session ID list     | A list containing the session IDs for each user. If the session ID is 0, this indicates that the friend has gone offline. Otherwise, it is a real session ID and indicates the user is online. |
-
+| Attribute Name |        Type       | Details                                                                                                                                                                                        |
+| :------------- | :---------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| userid         | `32-bit int` list | A list containing the unique ID of each who has come online or gone offline.                                                                                                                   |
+| sid            |  Session ID list  | A list containing the session IDs for each user. If the Session ID is 0, this indicates that the friend has gone offline. Otherwise, it is a real Session ID and indicates the user is online. |
 
 ### Server Routed Chat Message
 
@@ -499,13 +493,14 @@ This message type is identical to a normal [chat message](#chat-message), but is
 | Message ID | Attribute Key Type |     Direction    |
 | :--------- | :----------------: | :--------------: |
 | 133        |      `string`      | Server to Client |
+
 #### Contents
 
 See the description of the normal [chat message](#chat-message) for a full description of the contents of the message.
 
 ### New Version Available Message
 
-This message is sent by the server to the client if it reports a version number which is lower than the currently released XFire client. It contains the details to download newer client versions. The message is composed of a number of string lists, where values at matching indices in these lists collectively represent a new version.
+This message is sent by the server to the client if it reports a version number which is lower than the currently released XFire client. It contains the details to download newer client versions. The message is composed of a number of `string` lists, where values at matching indices in these lists collectively represent a new version.
 
 #### Properties
 
@@ -515,13 +510,13 @@ This message is sent by the server to the client if it reports a version number 
 
 #### Contents
 
-| Attribute name | Type                | Details                                                                                                                                                                                                                        |
-| -------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| version        | 32-bit integer list | The list of new version numbers available.                                                                                                                                                                                     |
-| file           | string list         | The links to the new XFire client versions. An example of a URL sent is . All files observed to date have been .exe update installers which  must be run within the XFire installation path. |
-| command        | 32-bit integer list | An integer list of unknown purpose. In all data observed so far, the integers have had the value "1".                                                                                                                          |
-| fileid         | 32-bit integer list | An integer list of unknown purpose. In all data observed so far, the integers have had the value "0".                                                                                                                          |
-| flags          | 32-bit integer      | A 32-bit integer of unknown purpose. In all data observed so far this has had the value 0.                                                                                                                                     |
+| Attribute Name |        Type       | Details                                                                                                                                                                                      |
+| :------------- | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| version        | `32-bit int` list | The list of new version numbers available.                                                                                                                                                   |
+| file           |   `string` list   | The links to the new XFire client versions. An example of a URL sent is . All files observed to date have been .exe update installers which  must be run within the XFire installation path. |
+| command        | `32-bit int` list | An integer list of unknown purpose. In all data observed so far, the integers have had the value `1`.                                                                                        |
+| fileid         | `32-bit int` list | An integer list of unknown purpose. In all data observed so far, the integers have had the value `0`.                                                                                        |
+| flags          |    `32-bit int`   | A `32-bit int` of unknown purpose. In all data observed so far this has had the value `0`.                                                                                                     |
 
 ### Friend Game Information Message
 
@@ -535,12 +530,12 @@ This message contains a description of games that friends are currently playing.
 
 #### Contents
 
-| Attribute name | Type                | Details                                                                                                                                                                       |
-| -------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| sid            | Session ID list     | A list containing the session IDs for each user that is playing a game.                                                                                                       |
-| gameid         | 32-bit integer list | A list containing the game ids currently being played by each user. These correspond to the game IDs contained in the xfire_games.ini                                         |
-| gip            | IPv4 address list   | A list containing the IP addresses of the servers for each game being played by each user. If the game has no server IP or it cannot be determined, then the value will be 0. |
-| gport          | 32-bit integer list | A list containing the port of the servers for each game being played by each user. If the port cannot be determined, then the value will be 0.                                |
+| Attribute Name |        Type       | Details                                                                                                                                                                       |
+| :------------- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| sid            |  Session ID list  | A list containing the session IDs for each user that is playing a game.                                                                                                       |
+| gameid         | `32-bit int` list | A list containing the game ids currently being played by each user. These correspond to the game IDs contained in the xfire_games.ini                                         |
+| gip            | IPv4 address list | A list containing the IP addresses of the servers for each game being played by each user. If the game has no server IP or it cannot be determined, then the value will be 0. |
+| gport          | `32-bit int` list | A list containing the port of the servers for each game being played by each user. If the port cannot be determined, then the value will be 0.                                |
 
 ### Friends of Friends Message
 
@@ -554,13 +549,13 @@ This message contains a list of users who are friends of friends and are current
 
 #### Contents
 
-| Attribute name | Type                             | Details                                                     |
-| -------------- | -------------------------------- | ----------------------------------------------------------- |
-| fnsid          | Session ID list                  | A list containing the session ID of a friend of a friend.   |
-| userid         | 32-bit integer list              | A list containing the user ID of a friend of a friend.      |
-| uname          | string list                      | A list containing the user name of a friend of a friend.    |
-| nick           | string list                      | A list containing the display name of a friend of a friend. |
-| friends        | list of lists of 32-bit integers | A list containing the friends of the friend of a friend.    |
+| Attribute Name |            Type            | Details                                                     |
+| :------------- | :------------------------: | :---------------------------------------------------------- |
+| fnsid          |       Session ID list      | A list containing the Session ID of a friend of a friend.   |
+| userid         |      `32-bit int` list     | A list containing the user ID of a friend of a friend.      |
+| uname          |        `string` list       | A list containing the user name of a friend of a friend.    |
+| nick           |        `string` list       | A list containing the display name of a friend of a friend. |
+| friends        | `32-bit int` list of lists | A list containing the friends of the friend of a friend.    |
 
 ### Outgoing friend invitation confirmation message
 
@@ -574,9 +569,9 @@ This message contains a list of users who are friends of friends and are current
 
 #### Contents
 
-| Attribute name | Type | Details |
-| -------------- | ---- | ------- |
-| TBD            | TBD  | TBD     |
+| Attribute Name | Type | Details |
+| :------------- | :--: | :------ |
+| TBD            |  TBD | TBD     |
 
 ### Incoming Friend Invitation Message
 
@@ -590,11 +585,11 @@ Incoming friend invitation messages are sent to the client by the server when a 
 
 #### Contents
 
-| Attribute name | Type            | Details                                                                                   |
-| -------------- | --------------- | ----------------------------------------------------------------------------------------- |
-| name           | list of strings | A list containing the user names of all the peers requesting to become a friend.          |
-| nick           | list of strings | A list containing the display names of all the peers requesting to become a friend.       |
-| msg            | list of strings | A list containing the invitation messages from each user (e.g. "will you be my friend?"). |
+| Attribute Name |      Type     | Details                                                                                   |
+| :------------- | :-----------: | :---------------------------------------------------------------------------------------- |
+| name           | `string` list | A list containing the user names of all the peers requesting to become a friend.          |
+| nick           | `string` list | A list containing the display names of all the peers requesting to become a friend.       |
+| msg            | `string` list | A list containing the invitation messages from each user (e.g. `will you be my friend?`). |
 
 ### User Search Results Message
 
@@ -610,12 +605,12 @@ The message contains a set of string lists, where strings at corresponding indic
 
 #### Contents
 
-| Attribute name | Type        | Details                                         |
-| -------------- | ----------- | ----------------------------------------------- |
-| name           | string list | The list of user names for matching users.      |
-| fname          | string list | The list of first names for matching users.     |
-| lname          | string list | The list of last names for matching users.      |
-| email          | string list | The list of email addresses for matching users. |
+| Attribute Name |      Type     | Details                                         |
+| :------------- | :-----------: | :---------------------------------------------- |
+| name           | `string` list | The list of user names for matching users.      |
+| fname          | `string` list | The list of first names for matching users.     |
+| lname          | `string` list | The list of last names for matching users.      |
+| email          | `string` list | The list of email addresses for matching users. |
 
 ### Friend VoIP Information message
 
@@ -629,17 +624,17 @@ This message is sent to the client by the server to notify them of any VoIP serv
 
 #### Contents
 
-| Attribute name | Type                      | Details                                                                                                                                                                   |
-| -------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| sid            | session id list           | The list of session ids for which VoIP information has been updated.                                                                                                      |
-| vid            | int32 list                | The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client. |
-| vip            | int32 (IPv4 address) list | The list of IP addresses of the VoIP servers for each user.                                                                                                               |
+| Attribute Name |        Type       | Details                                                                                                                                                                   |
+| :------------- | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| sid            |  Session ID list  | The list of session ids for which VoIP information has been updated.                                                                                                      |
+| vid            |     int32 list    | The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client. |
+| vip            | IPv4 address list | The list of IP addresses of the VoIP servers for each user.                                                                                                               |
 
 ### Friend Status Message
 
-This message is sent to the client by the server to notify it of a change in a friend's status message (e.g. "AFK" or "out to lunch").
+This message is sent to the client by the server to notify it of a change in a friend's status message (e.g. `AFK` or `out to lunch`).
 
-The message contains a set of string lists, where strings at corresponding indices in the lists form each individual status update.
+The message contains a set of `string` lists, where strings at corresponding indices in the lists form each individual status update.
 
 #### Properties
 
@@ -649,10 +644,10 @@ The message contains a set of string lists, where strings at corresponding indic
 
 #### Contents
 
-| Attribute name | Type            | Details                                                            |
-| -------------- | --------------- | ------------------------------------------------------------------ |
-| sid            | session id list | The list of session ids of users whose status message has changed. |
-| msg            | string list     | The list new status messages;                                      |
+| Attribute Name |       Type      | Details                                                            |
+| :------------- | :-------------: | :----------------------------------------------------------------- |
+| sid            | Session ID list | The list of session ids of users whose status message has changed. |
+| msg            |  `string` list  | The list new status messages;                                      |
 
 ### Extra Friend Game Information Message
 
@@ -666,9 +661,9 @@ The message contains a set of string lists, where strings at corresponding indic
 
 #### Contents
 
-| Attribute name | Type | Details |
-| -------------- | ---- | ------- |
-| TBD            | TBD  | TBD     |
+| Attribute Name | Type | Details |
+| :------------- | :--: | :------ |
+| TBD            |  TBD | TBD     |
 
 ### DID Message
 
@@ -682,8 +677,8 @@ The purpose of this message type is unknown. Unusually, it also contains an enti
 
 #### Contents
 
-| Attribute name | Type      | Details                    |
-| -------------- | --------- | -------------------------- |
+| Attribute Name |    Type   | Details                    |
+| :------------- | :-------: | :------------------------- |
 | did            | DID value | The mystery 21-byte value. |
 
 ### Channel Information Message
@@ -698,6 +693,6 @@ The purpose of this message type is unknown. Unusually, it also contains an enti
 
 #### Contents
 
-| Attribute name | Type | Details |
-| -------------- | ---- | ------- |
-| TBD            | TBD  | TBD     |
+| Attribute Name | Type | Details |
+| :------------- | :--: | :------ |
+| TBD            |  TBD | TBD     |
