@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PFire.Console.Services;
 using PFire.Core.Extensions;
+using PFire.Infrastructure.Extensions;
 
 namespace PFire.Console.Extensions
 {
@@ -12,7 +13,8 @@ namespace PFire.Console.Extensions
         {
             return serviceCollection
                    .AddHostedService<PFireServerService>()
-                   .RegisterCore(hostEnvironment, configuration);
+                   .RegisterCore()
+                   .RegisterInfrastructure(hostEnvironment, configuration);
         }
     }
 }

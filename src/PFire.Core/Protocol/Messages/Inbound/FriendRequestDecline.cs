@@ -19,7 +19,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
                                              .Select(a => a.PendingFriendRequestId)
                                              .ToArray();
 
-            context.Server.Database.DeletePendingFriendRequest(requestsIds);
+            context.Server.Database.DeletePendingFriendRequests(requestsIds);
         }
     }
 }

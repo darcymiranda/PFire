@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using PFire.Core.Protocol.Interfaces;
 using PFire.Core.Protocol.Messages;
@@ -18,22 +17,20 @@ namespace PFire.Core
     internal sealed class PFireServer : IPFireServer
     {
         private readonly IXFireClientManager _clientManager;
+        private readonly ITcpServer _server;
 
-        private readonly TcpServer _server;
-
-        public PFireServer(string baseDirectory, IPEndPoint endPoint = null)
+        public PFireServer(IPFireDatabase pFireDatabase, IXFireClientManager xFireClientManager, ITcpServer server)
         {
-            Database = new PFireDatabase(baseDirectory);
+            Database = pFireDatabase;
+            _clientManager = xFireClientManager;
 
-            _clientManager = new XFireClientManager();
-
-            _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), _clientManager);
+            _server = server;
             _server.OnReceive += HandleRequest;
             _server.OnConnection += HandleNewConnection;
             _server.OnDisconnection += OnDisconnection;
         }
 
-        public PFireDatabase Database { get; }
+        public IPFireDatabase Database { get; }
 
         public Task Start()
         {

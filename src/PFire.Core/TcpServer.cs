@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using PFire.Core.Protocol.Interfaces;
@@ -8,27 +8,30 @@ using PFire.Core.Util;
 
 namespace PFire.Core
 {
-    internal sealed class TcpServer
+    internal interface ITcpServer
     {
-        public delegate void OnConnectionHandler(XFireClient sessionContext);
+        event Action<XFireClient, IMessage> OnReceive;
+        event Action<XFireClient> OnConnection;
+        event Action<XFireClient> OnDisconnection;
+        void Listen();
+        void Shutdown();
+    }
 
-        public delegate void OnDisconnectionHandler(XFireClient sessionContext);
-
-        public delegate void OnReceiveHandler(XFireClient sessionContext, IMessage message);
-
+    internal sealed class TcpServer : ITcpServer
+    {
         private readonly IXFireClientManager _clientManager;
         private readonly TcpListener _listener;
         private bool _running;
 
-        public TcpServer(IPEndPoint endPoint, IXFireClientManager clientManager)
+        public TcpServer(TcpListener listener, IXFireClientManager clientManager)
         {
-            _listener = new TcpListener(endPoint);
+            _listener = listener;
             _clientManager = clientManager;
         }
 
-        public event OnConnectionHandler OnConnection;
-        public event OnDisconnectionHandler OnDisconnection;
-        public event OnReceiveHandler OnReceive;
+        public event Action<XFireClient> OnConnection;
+        public event Action<XFireClient> OnDisconnection;
+        public event Action<XFireClient, IMessage> OnReceive;
 
         public void Listen()
         {

@@ -1,14 +1,28 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using SQLite;
 
 namespace PFire.Infrastructure.Database
 {
-    public class PFireDatabase : SQLiteConnection
+    public interface IPFireDatabase
     {
-        private const string DatabaseName = "pfiredb.sqlite";
-        public PFireDatabase(string baseDirectory) : base(Path.Combine(baseDirectory, DatabaseName))
+        User InsertUser(string username, string password, string salt);
+        void InsertMutualFriend(User user1, User user2);
+        void InsertFriendRequest(User owner, string requestedUsername, string message);
+        User QueryUser(int userId);
+        User QueryUser(string username);
+        List<User> QueryUsers(string username);
+        List<User> QueryFriends(User user);
+        List<PendingFriendRequest> QueryPendingFriendRequestsSelf(User user);
+        List<PendingFriendRequest> QueryPendingFriendRequests(User otherUser);
+        void DeletePendingFriendRequest(int friendRequestId);
+        void DeletePendingFriendRequests(IEnumerable<int> friendRequestIds);
+        void UpdateNickname(User user, string nickname);
+    }
+
+    internal class PFireDatabase : SQLiteConnection, IPFireDatabase
+    {
+        public PFireDatabase(string databasePath) : base(databasePath)
         {
             CreateTable<User>();
             CreateTable<Friend>();
@@ -65,9 +79,17 @@ namespace PFire.Infrastructure.Database
             return Table<PendingFriendRequest>().Where(a => a.FriendUserId == otherUser.UserId).ToList();
         }
 
-        public void DeletePendingFriendRequest(params int[] sequenceIds)
+        public void DeletePendingFriendRequest(int friendRequestId)
         {
-            sequenceIds.ToList().ForEach(a => Delete<PendingFriendRequest>(a));
+            Delete<PendingFriendRequest>(friendRequestId);
+        }
+
+        public void DeletePendingFriendRequests(IEnumerable<int> friendRequestIds)
+        {
+            foreach (var friendRequestId in friendRequestIds)
+            {
+                DeletePendingFriendRequest(friendRequestId);
+            }
         }
 
         public void UpdateNickname(User user, string nickname)
