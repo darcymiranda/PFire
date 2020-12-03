@@ -1,16 +1,17 @@
-﻿using PFire.Core.Protocol.Interfaces;
-using PFire.Infrastructure.Database;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using PFire.Core.Protocol.Interfaces;
+using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Session
 {
-    internal sealed class XFileClientManager : IXFireClientManager
+    internal sealed class XFireClientManager : IXFireClientManager
     {
         private readonly ConcurrentDictionary<Guid, XFireClient> _sessions;
-        public XFileClientManager()
+
+        public XFireClientManager()
         {
             _sessions = new ConcurrentDictionary<Guid, XFireClient>();
         }
@@ -47,7 +48,7 @@ namespace PFire.Core.Session
 
         public void RemoveSession(Guid sessionId)
         {
-            if(!_sessions.TryRemove(sessionId, out var currentSession))
+            if (!_sessions.TryRemove(sessionId, out var currentSession))
             {
                 return;
             }
