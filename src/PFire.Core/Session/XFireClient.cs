@@ -13,7 +13,22 @@ using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Session
 {
-    internal sealed class XFireClient : Disposable
+    internal interface IXFireClient
+    {
+        User User { get; set; }
+        Guid SessionId { get; }
+        PFireServer Server { get; set; }
+        ILogger Logger { get; }
+        EndPoint RemoteEndPoint { get; }
+        string Salt { get; }
+        void Disconnect();
+        void Dispose();
+        void SendAndProcessMessage(XFireMessage message);
+        void SendMessage(XFireMessage invite);
+        void RemoveDuplicatedSessions(User user);
+    }
+
+    internal sealed class XFireClient : Disposable, IXFireClient
     {
         private const int ClientTimeoutInMinutes = 5;
 
