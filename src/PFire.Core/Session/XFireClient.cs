@@ -97,7 +97,7 @@ namespace PFire.Core.Session
                 return;
             }
 
-            if (_initialized )
+            if (!_initialized )
             {
                 return;
             }
@@ -154,17 +154,20 @@ namespace PFire.Core.Session
                         {
                             var stream = _tcpClient.GetStream();
 
-                            if (!_initialized)
+                            if(stream.DataAvailable)
                             {
-                                ReadOpeningHeader(stream);
-                            }
-                            else
-                            {
-                                ReadMessage(stream);
-                            }
+                                if(!_initialized)
+                                {
+                                    ReadOpeningHeader(stream);
+                                }
+                                else
+                                {
+                                    ReadMessage(stream);
+                                }
 
-                            // as we read something (i.e we're still here) we can update the last read time
-                            _lastReceivedFrom = DateTime.UtcNow;
+                                // as we read something (i.e we're still here) we can update the last read time
+                                _lastReceivedFrom = DateTime.UtcNow;
+                            }
                         }
                         else
                         {
@@ -174,8 +177,9 @@ namespace PFire.Core.Session
                             _clientManager.RemoveSession(this);
                         }
                     }
-                    catch (IOException)
+                    catch (IOException ioe)
                     {
+                        ConsoleLogger.Log(ioe.ToString());
                         // the read timed out 
                         // this could indicate that the other end is bad
                         // the lifetime handler will help
@@ -199,7 +203,7 @@ namespace PFire.Core.Session
             var read = stream.Read(headerBuffer, 0, headerBuffer.Length);
             if (read == 0)
             {
-                ConsoleLogger.Log($"Client {User.Username}-{SessionId} disconnected via 0 read", ConsoleColor.DarkRed);
+                ConsoleLogger.Log($"Client {User?.Username}-{SessionId} disconnected via 0 read", ConsoleColor.DarkRed);
                 _disconnectionHandler?.Invoke(this);
                 return;
             }
