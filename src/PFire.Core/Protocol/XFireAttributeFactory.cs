@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PFire.Core.Protocol.XFireAttributes;
 using PFire.Protocol.XFireAttributes;
 
 namespace PFire.Protocol
@@ -25,6 +26,8 @@ namespace PFire.Protocol
             Add(new StringKeyMapAttribute());
             Add(new Int8Attribute());
             Add(new MessageAttribute());
+
+            Add(new UnknownXFireAttribute());
         }
 
         private void Add(XFireAttribute attributeValue)
@@ -39,7 +42,8 @@ namespace PFire.Protocol
         {
             if (!_attributeTypes.ContainsKey(type))
             {
-                throw new UnknownXFireAttributeTypeException(type);
+                return new UnknownXFireAttribute() { TypeId = type };
+                //throw new UnknownXFireAttributeTypeException(type);
             }
             return _attributeTypes[type];
         }

@@ -9,6 +9,8 @@ namespace PFire.Protocol.Messages.Outbound
     {
         private readonly User _ownerUser;
 
+        public FriendsList() : base(XFireMessageType.FriendsList) { }
+
         public FriendsList(User owner)
             : base(XFireMessageType.FriendsList)
         {

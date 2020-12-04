@@ -1,16 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFire.Console", "src/PFire.Console/PFire.Console.csproj", "{302CB567-3B2B-47B4-BE41-1E84854C6406}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Console", "src\PFire.Console\PFire.Console.csproj", "{302CB567-3B2B-47B4-BE41-1E84854C6406}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFire.WindowsService", "src\PFire.WindowsService\PFire.WindowsService.csproj", "{D1ED9EB7-85DE-4D74-8D38-676F95A40442}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.WindowsService", "src\PFire.WindowsService\PFire.WindowsService.csproj", "{D1ED9EB7-85DE-4D74-8D38-676F95A40442}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFire.Core", "src\PFire.Core\PFire.Core.csproj", "{62FD083C-F667-44FA-99E7-7A35F363886B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Core", "src\PFire.Core\PFire.Core.csproj", "{62FD083C-F667-44FA-99E7-7A35F363886B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFire.Infrastructure", "src\PFire.Infrastructure\PFire.Infrastructure.csproj", "{CB7EC8E0-436A-4E63-9F24-020238058DB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Infrastructure", "src\PFire.Infrastructure\PFire.Infrastructure.csproj", "{CB7EC8E0-436A-4E63-9F24-020238058DB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFire.Tests", "tests\PFire.Tests\PFire.Tests.csproj", "{F28C1DF0-F867-4435-8165-7F1699994047}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Tests", "tests\PFire.Tests\PFire.Tests.csproj", "{F28C1DF0-F867-4435-8165-7F1699994047}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C495825B-CE95-45B2-B737-0D3D78AC77F9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Client", "src\PFire.Client\PFire.Client.csproj", "{23EFEC28-4DF5-40D4-8E42-7DEEED0B0B61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,8 +43,18 @@ Global
 		{F28C1DF0-F867-4435-8165-7F1699994047}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F28C1DF0-F867-4435-8165-7F1699994047}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F28C1DF0-F867-4435-8165-7F1699994047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23EFEC28-4DF5-40D4-8E42-7DEEED0B0B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23EFEC28-4DF5-40D4-8E42-7DEEED0B0B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23EFEC28-4DF5-40D4-8E42-7DEEED0B0B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23EFEC28-4DF5-40D4-8E42-7DEEED0B0B61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F28C1DF0-F867-4435-8165-7F1699994047} = {C495825B-CE95-45B2-B737-0D3D78AC77F9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {70286781-DB08-45AA-B2B0-4D3FC8E397FA}
 	EndGlobalSection
 EndGlobal

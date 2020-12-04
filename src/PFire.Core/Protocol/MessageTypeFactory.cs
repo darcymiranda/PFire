@@ -39,6 +39,20 @@ namespace PFire.Protocol
             Add(new FriendRequestDecline());
             Add(new NicknameChange());
             Add(new StatusChange());
+
+            // Missing before, added now
+            Add(new LoginChallenge());
+            //Add(new ChatAcknowledgement()); // Duplicate numbers for ChatMessage
+            //Add(new ChatContent()); 
+            //Add(new ChatTypingNotification());
+            Add(new Unknown37());
+            Add(new ClientPreferences());
+            Add(new FriendInvite());
+            Add(new FriendsList());
+            Add(new FriendsSessionAssign());
+            Add(new FriendStatusChange());
+            Add(new UserLookupResult());
+            Add(new UnknownMessageType());
         }
 
         private void Add(IMessage message)
@@ -60,7 +74,7 @@ namespace PFire.Protocol
 
             if (!_messages.ContainsKey(sType))
             {
-                throw new UnknownMessageTypeException(messageType);
+                return _messages[999].GetType();
             }
 
             return _messages[sType].GetType();

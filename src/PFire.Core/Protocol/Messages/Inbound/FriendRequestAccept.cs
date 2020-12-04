@@ -10,7 +10,7 @@ namespace PFire.Protocol.Messages.Inbound
         public FriendRequestAccept() : base(XFireMessageType.FriendRequestAccept) { }
 
         [XMessageField("name")]
-        public string FriendUsername { get; private set; }
+        public string FriendUsername { get; set; }
 
         public override void Process(XFireClient context)
         {

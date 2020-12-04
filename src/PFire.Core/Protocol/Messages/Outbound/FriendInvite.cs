@@ -5,6 +5,7 @@ namespace PFire.Protocol.Messages.Outbound
 {
     public sealed class FriendInvite : XFireMessage
     {
+        public FriendInvite() : base(XFireMessageType.FriendInvite) { }
         public FriendInvite(string username, string nickname, string message)
             : base(XFireMessageType.FriendInvite)
         {

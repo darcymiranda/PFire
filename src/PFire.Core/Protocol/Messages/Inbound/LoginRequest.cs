@@ -9,10 +9,13 @@ namespace PFire.Protocol.Messages.Inbound
         public LoginRequest() : base(XFireMessageType.LoginRequest) { }
 
         [XMessageField("name")]
-        public string Username { get; private set; }
+        public string Username { get; set; }
 
         [XMessageField("password")]
-        public string Password { get; private set; }
+        public string Password {
+            get;
+            set;
+        }
 
         [XMessageField("flags")]
         public int Flags { get; private set; }

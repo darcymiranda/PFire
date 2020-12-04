@@ -13,7 +13,8 @@ namespace PFire.Protocol.Messages.Outbound
 
         [XMessageField(0x1a)]
         public List<string> GroupNames { get; private set; }
-         
+
+        
 
         public override void Process(XFireClient context)
         {

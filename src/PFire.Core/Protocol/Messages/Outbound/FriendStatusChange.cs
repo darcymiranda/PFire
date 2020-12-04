@@ -6,6 +6,8 @@ namespace PFire.Protocol.Messages.Outbound
 {
     public sealed class FriendStatusChange : XFireMessage
     {
+        public FriendStatusChange() : base(XFireMessageType.FriendStatusChange) { }
+
         public FriendStatusChange(Guid sessionId, string message)
            : base(XFireMessageType.FriendStatusChange)
         {

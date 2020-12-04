@@ -34,6 +34,8 @@ namespace PFire.Core.Protocol.Messages
         FriendStatusChange = 154,
         ChatRooms = 155,
 
-        Did = 400
+        Did = 400,
+
+        Unknown = 999
     }
 }

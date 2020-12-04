@@ -23,13 +23,15 @@ namespace PFire
 
         private readonly TcpListener _listener;
         private bool _running;
+        private PFireServer _server;
 
-        public TcpServer(IPEndPoint endPoint)
+        public TcpServer(IPEndPoint endPoint, PFireServer server)
         {
             _listener = new TcpListener(endPoint);
+            _server = server;
         }
 
-        public TcpServer(IPAddress ip, int port) : this(new IPEndPoint(ip, port)) { }
+        public TcpServer(IPAddress ip, int port, PFireServer server) : this(new IPEndPoint(ip, port), server) { }
 
         public void Listen()
         {
@@ -48,7 +50,8 @@ namespace PFire
         {
             while (_running)
             {
-                XFireClient session = new XFireClient(await _listener.AcceptTcpClientAsync().ConfigureAwait(false));
+                TcpClient tcpClient = await _listener.AcceptTcpClientAsync().ConfigureAwait(false);
+                XFireClient session = new XFireClient(tcpClient);
                 Debug.WriteLine("Client connected {0} and assigned session id {1}", session.TcpClient.Client.RemoteEndPoint, session.SessionId);
 
                 OnConnection?.Invoke(session);
@@ -70,7 +73,7 @@ namespace PFire
                 {
                     var openingStatementBuffer = new byte[4];
                     await stream.ReadAsync(openingStatementBuffer, 0, openingStatementBuffer.Length);
-                    context.InitializeClient();
+                    context.InitializeClient(_server);
                 }
 
                 // Header determines size of message

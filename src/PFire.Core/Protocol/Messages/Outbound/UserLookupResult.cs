@@ -9,6 +9,8 @@ namespace PFire.Protocol.Messages.Outbound
     {
         private string _queryByUsername;
 
+        public UserLookupResult() : base(XFireMessageType.UserLookupResult) { }
+
         public UserLookupResult(string username)
             : base(XFireMessageType.UserLookupResult)
         {

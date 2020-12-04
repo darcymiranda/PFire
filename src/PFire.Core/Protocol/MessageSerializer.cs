@@ -14,6 +14,7 @@ using PFire.Protocol.Messages;
 using PFire.Util;
 using PFire.Protocol.Messages.Inbound;
 using PFire.Core.Protocol.Messages;
+using System.Collections;
 
 namespace PFire.Protocol
 {
@@ -30,6 +31,10 @@ namespace PFire.Protocol
 
                 var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
                 var message = Activator.CreateInstance(messageType) as IMessage;
+                if (message.MessageTypeId == XFireMessageType.Unknown)
+                {
+                    ((UnknownMessageType)message).MessageCode = messageTypeId;
+                }
                 return Deserialize(reader, message);
             }
         }
@@ -66,16 +71,32 @@ namespace PFire.Protocol
 
                 dynamic value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
 
-                var field = fieldInfo.Where(a => a.GetCustomAttribute<XMessageField>() != null)
-                    .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
-
-                if (field != null)
+                if (messageBase.MessageTypeId != XFireMessageType.Unknown)
                 {
-                    field.SetValue(messageBase, value);
+                    var field = fieldInfo.Where(a => a.GetCustomAttribute<XMessageField>() != null)
+                        .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
+
+                    if (field != null)
+                    {
+                        try
+                        {
+                            field.SetValue(messageBase, value);
+                        }
+                        catch
+                        {
+                            object instance = Activator.CreateInstance(field.PropertyType);
+                            IList list = (IList)instance;
+                            field.SetValue(messageBase, list);
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine(string.Format("WARN: No attribute defined for {0} on class {1}", attributeName, messageType.Name));
+                    }
                 }
                 else
                 {
-                    Debug.WriteLine(string.Format("WARN: No attribute defined for {0} on class {1}", attributeName, messageType.Name));
+                    ((UnknownMessageType)messageBase).AttributeValues.Add(attributeName, value);
                 }
             }
 

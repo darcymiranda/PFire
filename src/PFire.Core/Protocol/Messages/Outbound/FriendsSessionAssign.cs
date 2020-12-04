@@ -12,6 +12,8 @@ namespace PFire.Protocol.Messages.Outbound
     {
         private readonly User _ownerUser;
 
+        public FriendsSessionAssign() : base(XFireMessageType.FriendsSessionAssign) { }
+
         public FriendsSessionAssign(User owner)
             : base(XFireMessageType.FriendsSessionAssign)
         {

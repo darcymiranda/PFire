@@ -24,7 +24,7 @@ namespace PFire
             
             Database = new PFireDatabase(baseDirectory);
             _sessions = new Dictionary<Guid, XFireClient>();
-            _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999));
+            _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), this);
             _server.OnReceive += HandleRequest;
             _server.OnConnection += HandleNewConnection;
             _server.OnDisconnection += OnDisconnection;
@@ -84,6 +84,7 @@ namespace PFire
 
         private void AddSession(XFireClient session)
         {
+            session.Server = this;
             if (_sessions.ContainsKey(session.SessionId))
             {
                 Debug.WriteLine("Tried to add a user with session id {0} that already existed", "WARN", session.SessionId);
