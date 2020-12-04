@@ -25,7 +25,8 @@ namespace PFire.Client
         #endregion
 
         #region Public Variables
-        public event EventHandler MessageReceived;
+        public delegate void MessageReceivedHandlerDelegate(object sender, MessageReceivedEventArgs args);
+        public event EventHandler<MessageReceivedEventArgs> MessageReceivedHandler;
         #endregion
 
         #region Constructor
@@ -80,6 +81,17 @@ namespace PFire.Client
                 NatError = 15
             };
             _xFireClient.SendMessage(connInfo);
+        }
+
+
+        public void Disconnect()
+        {
+            if (_xFireClient == null)
+            {
+                return;
+            }
+
+            _xFireClient.TcpClient.Close();
         }
 
 
@@ -446,7 +458,7 @@ namespace PFire.Client
                         Console.WriteLine("Something else occurred. Probably an undefined message type.");
                         break;
                 }
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs() { MessageReceived = message });
+                MessageReceivedHandler?.Invoke(this, new MessageReceivedEventArgs() { MessageReceived = message });
             }
         }
         #endregion
