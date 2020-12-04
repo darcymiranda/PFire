@@ -21,7 +21,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             var user = context.Server.Database.QueryUser(Username);
             if (user != null)
             {
-                if (user.Password != Password)
+                if (!BCrypt.Net.BCrypt.Verify(Password, user.Password))
                 {
                     context.SendAndProcessMessage(new LoginFailure());
                     return;
@@ -29,7 +29,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
             else
             {
-                user = context.Server.Database.InsertUser(Username, Password, context.Salt);
+                var hashPassword = BCrypt.Net.BCrypt.HashPassword(Password);
+                user = context.Server.Database.InsertUser(Username, hashPassword, context.Salt);
             }
 
             // Remove any older sessions from this user (duplicate logins)
