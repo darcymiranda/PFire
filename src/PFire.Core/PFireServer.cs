@@ -25,7 +25,7 @@ namespace PFire.Core
         {
             Database = new PFireDatabase(baseDirectory);
 
-            _clientManager = new XFileClientManager();
+            _clientManager = new XFireClientManager();
 
             _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), _clientManager);
             _server.OnReceive += HandleRequest;
@@ -65,7 +65,7 @@ namespace PFire.Core
             friends.ForEach(friend =>
             {
                 var friendClient = GetSession(friend);
-                if(friendClient != null)
+                if (friendClient != null)
                 {
                     friendClient.SendAndProcessMessage(new FriendsSessionAssign(friend));
                 }
