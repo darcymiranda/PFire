@@ -16,9 +16,9 @@ namespace PFire.Core.Session
     {
         User User { get; set; }
         Guid SessionId { get; }
+        EndPoint RemoteEndPoint { get; }
         PFireServer Server { get; set; }
         ILogger Logger { get; }
-        int PublicIp { get; }
         string Salt { get; }
         void Disconnect();
         void Dispose();
@@ -33,9 +33,9 @@ namespace PFire.Core.Session
 
         private readonly IXFireClientManager _clientManager;
         private readonly AutoResetEvent _clientWaitEvent;
-        private readonly Action<IXFireClient> _disconnectionHandler;
+        private readonly ITcpServer.OnDisconnectionHandler _disconnectionHandler;
         private readonly object _lock;
-        private readonly Action<IXFireClient, IMessage> _receiveHandler;
+        private readonly ITcpServer.OnReceiveHandler _receiveHandler;
         private bool _connected;
         private bool _initialized;
         private DateTime _lastReceivedFrom;
@@ -44,8 +44,8 @@ namespace PFire.Core.Session
         public XFireClient(TcpClient tcpClient,
                            IXFireClientManager clientManager,
                            ILogger logger,
-                           Action<IXFireClient, IMessage> receiveHandler,
-                           Action<IXFireClient> disconnectionHandler)
+                           ITcpServer.OnReceiveHandler receiveHandler,
+                           ITcpServer.OnDisconnectionHandler disconnectionHandler)
         {
             _receiveHandler = receiveHandler;
             _disconnectionHandler = disconnectionHandler;
@@ -74,6 +74,8 @@ namespace PFire.Core.Session
 
         private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
 
+        public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
+
         public string Salt { get; }
 
         public PFireServer Server { get; set; }
@@ -83,29 +85,6 @@ namespace PFire.Core.Session
         public User User { get; set; }
 
         public ILogger Logger { get; }
-
-        public int PublicIp
-        {
-            get
-            {
-                IPAddress address;
-                var remoteEndPoint = _tcpClient.Client.RemoteEndPoint;
-                if (remoteEndPoint is IPEndPoint ipEndPoint)
-                {
-                    address = ipEndPoint.Address;
-                }
-                else
-                {
-                    var addressStr = remoteEndPoint.ToString();
-                    var ip = addressStr.Substring(0, addressStr.IndexOf(":"));
-                    address = IPAddress.Parse(ip);
-                }
-
-                var addressBytes = address.GetAddressBytes();
-
-                return BitConverter.ToInt32(addressBytes);
-            }
-        }
 
         public void Disconnect()
         {

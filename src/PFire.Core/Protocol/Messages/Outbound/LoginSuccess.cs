@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using PFire.Core.Session;
 
@@ -64,12 +65,18 @@ namespace PFire.Core.Protocol.Messages.Outbound
             Nickname = string.IsNullOrEmpty(context.User.Nickname) ? context.User.Username : context.User.Nickname;
             MinRect = 1;
             MaxRect = 164867;
-            PublicIp = context.PublicIp;
+            var ipAddress = StripPortFromIPAddress(context.RemoteEndPoint.ToString());
+            PublicIp = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
             Salt = context.Salt;
             Reason = "Mq_P8Ad3aMEUvFinw0ceu6FITnZTWXxg46XU8xHW";
 
             context.Logger.LogDebug($"User {context.User.Username}[{context.User.UserId}] logged in successfully with session id {context.SessionId}");
             context.Logger.LogInformation($"User {context.User.Username} logged in");
+        }
+
+        private static string StripPortFromIPAddress(string address)
+        {
+            return address.Substring(0, address.IndexOf(":"));
         }
     }
 }

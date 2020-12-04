@@ -35,7 +35,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
                 var friendSession = client.Server.GetSession(friend);
 
                 UserIds.Add(friend.UserId);
-                SessionIds.Add(friendSession?.SessionId ?? FriendIsOffLineSessionId);
+                SessionIds.Add(friendSession != null ? friendSession.SessionId : FriendIsOffLineSessionId);
             }
         }
     }

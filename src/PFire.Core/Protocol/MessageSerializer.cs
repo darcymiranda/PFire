@@ -95,9 +95,13 @@ namespace PFire.Core.Protocol
                             var attributeDefinition = property.GetCustomAttribute<XMessageField>();
                             var attribute = XFireAttributeFactory.Instance.GetAttribute(property.PropertyType);
 
-                            var tuple = Tuple.Create<XMessageField, byte, dynamic>(attributeDefinition, attribute.AttributeTypeId, propertyValue);
-
-                            attributesToBeWritten.Add(tuple);
+                            attributesToBeWritten.Add(
+                                Tuple.Create<XMessageField, byte, dynamic>(
+                                    attributeDefinition,
+                                    attribute.AttributeTypeId,
+                                    propertyValue
+                                )
+                            );
                         });
 
             using var ms = new MemoryStream();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol.Messages;
@@ -9,9 +8,15 @@ namespace PFire.Core
 {
     internal interface ITcpServer
     {
-        event Action<IXFireClient, IMessage> OnReceive;
-        event Action<IXFireClient> OnConnection;
-        event Action<IXFireClient> OnDisconnection;
+        delegate void OnConnectionHandler(IXFireClient sessionContext);
+
+        delegate void OnDisconnectionHandler(IXFireClient sessionContext);
+
+        delegate void OnReceiveHandler(IXFireClient sessionContext, IMessage message);
+
+        event OnReceiveHandler OnReceive;
+        event OnConnectionHandler OnConnection;
+        event OnDisconnectionHandler OnDisconnection;
         void Listen();
         void Shutdown();
     }
@@ -30,9 +35,9 @@ namespace PFire.Core
             _logger = logger;
         }
 
-        public event Action<IXFireClient> OnConnection;
-        public event Action<IXFireClient> OnDisconnection;
-        public event Action<IXFireClient, IMessage> OnReceive;
+        public event ITcpServer.OnReceiveHandler OnReceive;
+        public event ITcpServer.OnConnectionHandler OnConnection;
+        public event ITcpServer.OnDisconnectionHandler OnDisconnection;
 
         public void Listen()
         {
