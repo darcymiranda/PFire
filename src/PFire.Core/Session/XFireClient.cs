@@ -97,7 +97,7 @@ namespace PFire.Core.Session
                 return;
             }
 
-            if (!_initialized)
+            if (_initialized )
             {
                 return;
             }
@@ -199,11 +199,8 @@ namespace PFire.Core.Session
             var read = stream.Read(headerBuffer, 0, headerBuffer.Length);
             if (read == 0)
             {
-                // Password validation is wrong or the user is already logged out
-                if(User != null) {
-                    ConsoleLogger.Log($"Client {User.Username}-{SessionId} disconnected via 0 read", ConsoleColor.DarkRed);
-                    _disconnectionHandler?.Invoke(this);
-                }
+                ConsoleLogger.Log($"Client {User.Username}-{SessionId} disconnected via 0 read", ConsoleColor.DarkRed);
+                _disconnectionHandler?.Invoke(this);
                 return;
             }
 
