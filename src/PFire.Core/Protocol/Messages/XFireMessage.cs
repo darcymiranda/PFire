@@ -1,22 +1,21 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
 using PFire.Core.Session;
-using PFire.Core.Util;
 
 namespace PFire.Core.Protocol.Messages
 {
-    public abstract class XFireMessage : IMessage
+    internal abstract class XFireMessage : IMessage
     {
-        public XFireMessageType MessageTypeId {get;}
-
         protected XFireMessage(XFireMessageType typeId)
         {
             MessageTypeId = typeId;
         }
 
-        public virtual void Process(XFireClient client)
+        public XFireMessageType MessageTypeId { get; }
+
+        public virtual void Process(IXFireClient client)
         {
             // base implementation is to do nothing
-            ConsoleLogger.Log($" *** Unimplemented processing for message type {MessageTypeId}", ConsoleColor.Magenta);
+            client.Logger.LogWarning($" *** Unimplemented processing for message type {MessageTypeId}");
         }
     }
 }

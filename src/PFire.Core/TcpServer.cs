@@ -1,39 +1,49 @@
-﻿using System.Net;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Threading.Tasks;
-using PFire.Core.Protocol.Interfaces;
+using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Session;
-using PFire.Core.Util;
 
 namespace PFire.Core
 {
-    public sealed class TcpServer
+    internal interface ITcpServer
     {
-        public delegate void OnReceiveHandler(XFireClient sessionContext, IMessage message);
-        public event OnReceiveHandler OnReceive;
+        delegate void OnConnectionHandler(IXFireClient sessionContext);
 
-        public delegate void OnConnectionHandler(XFireClient sessionContext);
-        public event OnConnectionHandler OnConnection;
+        delegate void OnDisconnectionHandler(IXFireClient sessionContext);
 
-        public delegate void OnDisconnectionHandler(XFireClient sessionContext);
-        public event OnDisconnectionHandler OnDisconnection;
+        delegate void OnReceiveHandler(IXFireClient sessionContext, IMessage message);
 
-        private readonly TcpListener _listener;
-        private bool _running;
+        event OnReceiveHandler OnReceive;
+        event OnConnectionHandler OnConnection;
+        event OnDisconnectionHandler OnDisconnection;
+        void Listen();
+        void Shutdown();
+    }
+
+    internal sealed class TcpServer : ITcpServer
+    {
         private readonly IXFireClientManager _clientManager;
+        private readonly TcpListener _listener;
+        private readonly ILogger<TcpServer> _logger;
+        private bool _running;
 
-        public TcpServer(IPEndPoint endPoint, IXFireClientManager clientManager)
+        public TcpServer(TcpListener listener, IXFireClientManager clientManager, ILogger<TcpServer> logger)
         {
-            _listener = new TcpListener(endPoint);
+            _listener = listener;
             _clientManager = clientManager;
+            _logger = logger;
         }
+
+        public event ITcpServer.OnReceiveHandler OnReceive;
+        public event ITcpServer.OnConnectionHandler OnConnection;
+        public event ITcpServer.OnDisconnectionHandler OnDisconnection;
 
         public void Listen()
         {
             _running = true;
             _listener.Start();
-            ConsoleLogger.Log($"PFire Server listening on {_listener.LocalEndpoint}");
+            _logger.LogInformation($"PFire Server listening on {_listener.LocalEndpoint}");
             Task.Run(() => Accept().ConfigureAwait(false));
         }
 
@@ -48,7 +58,7 @@ namespace PFire.Core
             while (_running)
             {
                 var tcpClient = await _listener.AcceptTcpClientAsync().ConfigureAwait(false);
-                var newXFireClient = new XFireClient(tcpClient, _clientManager, OnReceive, OnDisconnection);
+                var newXFireClient = new XFireClient(tcpClient, _clientManager, _logger, OnReceive, OnDisconnection);
 
                 OnConnection?.Invoke(newXFireClient);
             }

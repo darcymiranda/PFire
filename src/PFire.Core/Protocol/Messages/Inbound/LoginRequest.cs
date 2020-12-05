@@ -3,9 +3,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class LoginRequest : XFireMessage
+    internal sealed class LoginRequest : XFireMessage
     {
-        public LoginRequest() : base(XFireMessageType.LoginRequest) { }
+        public LoginRequest() : base(XFireMessageType.LoginRequest) {}
 
         [XMessageField("name")]
         public string Username { get; private set; }
@@ -16,7 +16,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("flags")]
         public int Flags { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var user = context.Server.Database.QueryUser(Username);
             if (user != null)

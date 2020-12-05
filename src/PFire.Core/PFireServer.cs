@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Net;
-using PFire.Core.Protocol.Interfaces;
+using System.Threading.Tasks;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
@@ -8,36 +7,45 @@ using PFire.Infrastructure.Database;
 
 namespace PFire.Core
 {
-    public sealed class PFireServer
+    public interface IPFireServer
     {
-        public PFireDatabase Database { get; }
+        Task Start();
+        Task Stop();
+    }
 
-        private readonly TcpServer _server;
+    internal sealed class PFireServer : IPFireServer
+    {
         private readonly IXFireClientManager _clientManager;
+        private readonly ITcpServer _server;
 
-        public PFireServer(string baseDirectory, IPEndPoint endPoint = null)
+        public PFireServer(IPFireDatabase pFireDatabase, IXFireClientManager xFireClientManager, ITcpServer server)
         {
-            Database = new PFireDatabase(baseDirectory);
+            Database = pFireDatabase;
+            _clientManager = xFireClientManager;
 
-            _clientManager = new XFileClientManager();
-
-            _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), _clientManager);
+            _server = server;
             _server.OnReceive += HandleRequest;
             _server.OnConnection += HandleNewConnection;
             _server.OnDisconnection += OnDisconnection;
         }
 
-        public void Start()
+        public IPFireDatabase Database { get; }
+
+        public Task Start()
         {
             _server.Listen();
+
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public Task Stop()
         {
             _server.Shutdown();
+
+            return Task.CompletedTask;
         }
 
-        private void OnDisconnection(XFireClient disconnectedClient)
+        private void OnDisconnection(IXFireClient disconnectedClient)
         {
             // we have to remove the session first 
             // because of the friends of this user processing
@@ -46,7 +54,7 @@ namespace PFire.Core
             UpdateFriendsWithDisconnetedStatus(disconnectedClient);
         }
 
-        private void UpdateFriendsWithDisconnetedStatus(XFireClient disconnectedClient)
+        private void UpdateFriendsWithDisconnetedStatus(IXFireClient disconnectedClient)
         {
             var friends = Database.QueryFriends(disconnectedClient.User);
 
@@ -60,33 +68,33 @@ namespace PFire.Core
             });
         }
 
-        private void HandleNewConnection(XFireClient sessionContext)
+        private void HandleNewConnection(IXFireClient sessionContext)
         {
             AddSession(sessionContext);
         }
 
-        private void HandleRequest(XFireClient context, IMessage message)
+        private void HandleRequest(IXFireClient context, IMessage message)
         {
             context.Server = this;
             message.Process(context);
         }
 
-        public XFireClient GetSession(Guid sessionId)
+        public IXFireClient GetSession(Guid sessionId)
         {
             return _clientManager.GetSession(sessionId);
         }
 
-        public XFireClient GetSession(User user)
+        public IXFireClient GetSession(User user)
         {
             return _clientManager.GetSession(user);
         }
 
-        private void AddSession(XFireClient session)
+        private void AddSession(IXFireClient session)
         {
             _clientManager.AddSession(session);
         }
 
-        public void RemoveSession(XFireClient session)
+        public void RemoveSession(IXFireClient session)
         {
             _clientManager.RemoveSession(session);
         }

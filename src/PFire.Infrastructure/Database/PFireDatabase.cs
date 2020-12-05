@@ -1,14 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using PFire.Common.Models;
 using SQLite;
 
 namespace PFire.Infrastructure.Database
 {
-    public class PFireDatabase : SQLiteConnection
+    public interface IPFireDatabase
     {
-        private const string DatabaseName = "pfiredb.sqlite";
-        public PFireDatabase(string baseDirectory) : base(Path.Combine(baseDirectory, DatabaseName))
+        User InsertUser(string username, string password, string salt);
+        void InsertMutualFriend(User user1, User user2);
+        void InsertFriendRequest(User owner, string requestedUsername, string message);
+        User QueryUser(int userId);
+        User QueryUser(string username);
+        List<User> QueryUsers(string username);
+        List<User> QueryFriends(User user);
+        List<PendingFriendRequest> QueryPendingFriendRequestsSelf(User user);
+        List<PendingFriendRequest> QueryPendingFriendRequests(User otherUser);
+        void DeletePendingFriendRequest(params int[] sequenceIds);
+        void UpdateNickname(User user, string nickname);
+    }
+
+    internal class PFireDatabase : SQLiteConnection, IPFireDatabase
+    {
+        public PFireDatabase(IOptions<DatabaseSettings> databaseSettings, IHostEnvironment hostEnvironment) : base(Path.Combine(hostEnvironment.ContentRootPath,
+            databaseSettings.Value.Name))
         {
             CreateTable<User>();
             CreateTable<Friend>();

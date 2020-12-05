@@ -2,15 +2,14 @@
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed class LoginChallenge : XFireMessage
+    internal sealed class LoginChallenge : XFireMessage
     {
-        public LoginChallenge() : base(XFireMessageType.LoginChallenge) {  }
+        public LoginChallenge() : base(XFireMessageType.LoginChallenge) {}
 
         [XMessageField("salt")]
         public string Salt { get; private set; }
 
-      
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             Salt = context.Salt;
         }

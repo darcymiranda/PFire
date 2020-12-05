@@ -2,23 +2,33 @@
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed class FriendInvite : XFireMessage
+    internal sealed class FriendInvite : XFireMessage
     {
-        public FriendInvite(string username, string nickname, string message)
-            : base(XFireMessageType.FriendInvite)
+        public FriendInvite(string username, string nickname, string message) : base(XFireMessageType.FriendInvite)
         {
-            Usernames = new List<string>() { username };
-            Nicknames = new List<string>() { nickname };
-            Messages = new List<string>() { message };
+            Usernames = new List<string>
+            {
+                username
+            };
+
+            Nicknames = new List<string>
+            {
+                nickname
+            };
+
+            Messages = new List<string>
+            {
+                message
+            };
         }
 
         [XMessageField("name")]
-        public List<string> Usernames { get; private set; }
+        public List<string> Usernames { get; }
 
         [XMessageField("nick")]
-        public List<string> Nicknames { get; private set; }
+        public List<string> Nicknames { get; }
 
         [XMessageField("msg")]
-        public List<string> Messages { get; private set; }
+        public List<string> Messages { get; }
     }
 }

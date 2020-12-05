@@ -2,9 +2,9 @@
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed class ChatRooms : XFireMessage
+    internal sealed class ChatRooms : XFireMessage
     {
-        public ChatRooms() : base(XFireMessageType.ChatRooms) 
+        public ChatRooms() : base(XFireMessageType.ChatRooms)
         {
             ChatIds = new List<int>();
         }

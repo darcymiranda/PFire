@@ -7,25 +7,21 @@ namespace PFire.Console.Services
 {
     internal class PFireServerService : IHostedService
     {
-        private readonly PFireServer _pfServer;
+        private readonly IPFireServer _pfServer;
 
-        public PFireServerService(PFireServer pFireServer)
+        public PFireServerService(IPFireServer pFireServer)
         {
             _pfServer = pFireServer;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _pfServer.Start();
-
-            return Task.CompletedTask;
+            return _pfServer.Start();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _pfServer.Stop();
-
-            return Task.CompletedTask;
+            return _pfServer.Stop();
         }
     }
 }

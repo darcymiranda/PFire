@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol.Messages.MessageEnums;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Bidirectional
 {
-    public sealed class ChatMessage : XFireMessage
+    internal sealed class ChatMessage : XFireMessage
     {
         // the id of this message is the one that the original code base used
         // technically this is a server routed chat message
-        public ChatMessage() : base(XFireMessageType.ServerChatMessage) { } 
+        public ChatMessage() : base(XFireMessageType.ServerChatMessage) {}
 
         [XMessageField("sid")]
         public Guid SessionId { get; private set; }
-        
+
         [XMessageField("peermsg")]
         public Dictionary<string, dynamic> MessagePayload { get; private set; }
 
         // TODO: Create test for this message so we can refactor and build this message the same way as the others to avoid the switch statement
         // TODO: How to tell the client we didn't receive the ACK?
         // TODO: P2P stuff???
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var otherSession = context.Server.GetSession(SessionId);
 
@@ -48,7 +48,7 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
                     break;
 
                 default:
-                    Debug.WriteLine($"NOT BUILT: Got {messageType} for session: {context.SessionId}");
+                    context.Logger.LogDebug($"NOT BUILT: Got {messageType} for session: {context.SessionId}");
                     break;
             }
         }
@@ -69,7 +69,7 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
                 SessionId = sessionId,
                 MessagePayload = new Dictionary<string, dynamic>()
             };
-          
+
             ack.MessagePayload.Add("imindex", (int)MessagePayload["imindex"]);
             return ack;
         }
