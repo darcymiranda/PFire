@@ -3,9 +3,9 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class ConnectionInformation : XFireMessage
+    internal sealed class ConnectionInformation : XFireMessage
     {
-        public ConnectionInformation() : base(XFireMessageType.ConnectionInformation) { }
+        public ConnectionInformation() : base(XFireMessageType.ConnectionInformation) {}
 
         [XMessageField("conn")]
         public int Connection { get; private set; }
@@ -25,7 +25,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("upnpinfo")]
         public string UpnpInfo { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var clientPrefs = new Unknown10();
             context.SendAndProcessMessage(clientPrefs);

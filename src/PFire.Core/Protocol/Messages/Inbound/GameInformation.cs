@@ -1,8 +1,8 @@
 ﻿namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class GameInformation : XFireMessage
+    internal sealed class GameInformation : XFireMessage
     {
-        public GameInformation() : base(XFireMessageType.GameInformation) { } 
+        public GameInformation() : base(XFireMessageType.GameInformation) {}
 
         [XMessageField("gameid")]
         public int GameId { get; private set; }

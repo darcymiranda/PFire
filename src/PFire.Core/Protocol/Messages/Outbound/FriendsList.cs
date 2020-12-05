@@ -4,12 +4,11 @@ using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
-    public sealed class FriendsList : XFireMessage
+    internal sealed class FriendsList : XFireMessage
     {
         private readonly User _ownerUser;
 
-        public FriendsList(User owner)
-            : base(XFireMessageType.FriendsList)
+        public FriendsList(User owner) : base(XFireMessageType.FriendsList)
         {
             _ownerUser = owner;
 
@@ -19,15 +18,15 @@ namespace PFire.Core.Protocol.Messages.Outbound
         }
 
         [XMessageField("userid")]
-        public List<int> UserIds { get; private set; }
+        public List<int> UserIds { get; }
 
         [XMessageField("friends")]
-        public List<string> Usernames { get; private set; }
+        public List<string> Usernames { get; }
 
         [XMessageField("nick")]
-        public List<string> Nicks { get; private set; }
+        public List<string> Nicks { get; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var friends = context.Server.Database.QueryFriends(_ownerUser);
             friends.ForEach(f =>

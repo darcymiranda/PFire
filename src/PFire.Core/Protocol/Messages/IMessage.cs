@@ -2,10 +2,9 @@
 
 namespace PFire.Core.Protocol.Messages
 {
-    public interface IMessage 
+    internal interface IMessage
     {
         XFireMessageType MessageTypeId { get; }
-
-        void Process(XFireClient client);
+        void Process(IXFireClient client);
     }
 }

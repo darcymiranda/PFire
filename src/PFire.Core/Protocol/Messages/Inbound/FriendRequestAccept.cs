@@ -4,14 +4,14 @@ using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
-    public sealed class FriendRequestAccept : XFireMessage
+    internal sealed class FriendRequestAccept : XFireMessage
     {
-        public FriendRequestAccept() : base(XFireMessageType.FriendRequestAccept) { }
+        public FriendRequestAccept() : base(XFireMessageType.FriendRequestAccept) {}
 
         [XMessageField("name")]
         public string FriendUsername { get; private set; }
 
-        public override void Process(XFireClient context)
+        public override void Process(IXFireClient context)
         {
             var friend = context.Server.Database.QueryUser(FriendUsername);
 

@@ -3,9 +3,9 @@
     // the typing notification is a sub message from the chat message and 
     // not a separate message in of itself
 
-    public sealed class ChatTypingNotification : XFireMessage
+    internal sealed class ChatTypingNotification : XFireMessage
     {
-        public ChatTypingNotification() : base(XFireMessageType.ServerChatMessage) { }
+        public ChatTypingNotification() : base(XFireMessageType.ServerChatMessage) {}
 
         [XMessageField("imindex")]
         public int OrderIndex { get; private set; }
