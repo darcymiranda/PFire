@@ -9,21 +9,28 @@ namespace PFire.Infrastructure.Database
 
         [Unique]
         public string Username { get; set; }
-
         public string Password { get; set; }
-
         public string Salt { get; set; }
-
         public string Nickname { get; set; }
 
-        public static User New(string username, string password, string salt)
+        public User() { }
+
+        public User(string username, string password, string salt)
         {
-            return new User {Username = username, Nickname = username, Password = password, Salt = salt};
+            Username = username;
+            Nickname = username;
+            Password = password;
+            Salt = salt;
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as User);
+            if(obj.GetType() == typeof(User))
+            {
+                return Equals(obj as User);
+            }
+
+            return false;
         }
 
         public virtual bool Equals(User other)
