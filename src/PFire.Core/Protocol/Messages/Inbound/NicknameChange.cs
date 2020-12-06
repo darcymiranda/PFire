@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -12,7 +13,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("nick")]
         public string Nickname { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             if (Nickname.Length > MAX_LENGTH)
             {
@@ -24,10 +25,12 @@ namespace PFire.Core.Protocol.Messages.Inbound
             var updatedFriendsList = new FriendsList(context.User);
             context.Server.Database.QueryFriends(context.User)
                    .ForEach(friend =>
-                   {
-                       var friendSession = context.Server.GetSession(friend);
-                       friendSession?.SendAndProcessMessage(updatedFriendsList);
-                   });
+            {
+                var friendSession = context.Server.GetSession(friend);
+                friendSession?.SendAndProcessMessage(updatedFriendsList);
+            });
+
+            return Task.CompletedTask;
         }
     }
 }

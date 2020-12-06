@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -10,7 +11,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField(0x2e)]
         public string Message { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var statusChange = new FriendStatusChange(context.SessionId, Message);
             var friends = context.Server.Database.QueryFriends(context.User);
@@ -19,6 +20,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 var friendSession = context.Server.GetSession(friend);
                 friendSession?.SendAndProcessMessage(statusChange);
             });
+
+            return Task.CompletedTask;
         }
     }
 }

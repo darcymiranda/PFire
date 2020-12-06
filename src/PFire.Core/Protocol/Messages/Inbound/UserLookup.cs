@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -19,10 +20,12 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("email")]
         public string Email { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var result = new UserLookupResult(Username);
             context.SendAndProcessMessage(result);
+
+            return Task.CompletedTask;
         }
     }
 }

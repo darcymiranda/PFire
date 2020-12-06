@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol.Messages.MessageEnums;
 using PFire.Core.Session;
@@ -21,13 +22,12 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
         // TODO: Create test for this message so we can refactor and build this message the same way as the others to avoid the switch statement
         // TODO: How to tell the client we didn't receive the ACK?
         // TODO: P2P stuff???
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var otherSession = context.Server.GetSession(SessionId);
-
             if (otherSession == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var messageType = (ChatMessageType)(byte)MessagePayload["msgtype"];
@@ -51,6 +51,8 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
                     context.Logger.LogDebug($"NOT BUILT: Got {messageType} for session: {context.SessionId}");
                     break;
             }
+
+            return Task.CompletedTask;
         }
 
         private ChatMessage BuildChatMessageResponse(Guid sessionId)

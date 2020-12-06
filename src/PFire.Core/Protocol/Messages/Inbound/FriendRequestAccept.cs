@@ -1,3 +1,4 @@
+﻿using System.Threading.Tasks;
 ﻿using System.Linq;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
@@ -11,7 +12,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("name")]
         public string FriendUsername { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var friend = context.Server.Database.QueryUser(FriendUsername);
 
@@ -34,6 +35,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
             {
                 context.Server.Database.DeletePendingFriendRequest(pq.PendingFriendRequestId);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

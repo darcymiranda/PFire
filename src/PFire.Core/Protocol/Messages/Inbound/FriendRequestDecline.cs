@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -10,7 +11,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("name")]
         public string RequesterUsername { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var requesterUser = context.Server.Database.QueryUser(RequesterUsername);
             var pendingRequests = context.Server.Database.QueryPendingFriendRequestsSelf(requesterUser);
@@ -20,6 +21,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
                                              .ToArray();
 
             context.Server.Database.DeletePendingFriendRequest(requestsIds);
+
+            return Task.CompletedTask;
         }
     }
 }

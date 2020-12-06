@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Outbound
@@ -13,10 +14,12 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField(0x1a)]
         public List<string> GroupNames { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             GroupIds = new List<int>();
             GroupNames = new List<string>();
+
+            return Task.CompletedTask;
         }
     }
 }

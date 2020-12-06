@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -25,7 +26,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("upnpinfo")]
         public string UpnpInfo { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var clientPrefs = new Unknown10();
             context.SendAndProcessMessage(clientPrefs);
@@ -63,6 +64,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 var requester = context.Server.Database.QueryUser(request.UserId);
                 context.SendAndProcessMessage(new FriendInvite(requester.Username, requester.Nickname, request.Message));
             });
+
+            return Task.CompletedTask;
         }
     }
 }

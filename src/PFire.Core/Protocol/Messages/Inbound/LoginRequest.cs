@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -16,7 +17,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("flags")]
         public int Flags { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var user = context.Server.Database.QueryUser(Username);
             if (user != null)
@@ -26,7 +27,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
                     context.SendAndProcessMessage(new LoginFailure());
                     return;
                 }
-            }
+                }
             else
             {
                 user = context.Server.Database.InsertUser(Username, Password, context.Salt);
@@ -39,6 +40,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
             var success = new LoginSuccess();
             context.SendAndProcessMessage(success);
+
+            return Task.CompletedTask;
         }
     }
 }

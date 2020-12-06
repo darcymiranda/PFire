@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PFire.Core.Session;
 
@@ -57,7 +58,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("reason")]
         public string Reason { get; private set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             UserId = context.User.UserId;
             SessionId = context.SessionId;
@@ -72,6 +73,8 @@ namespace PFire.Core.Protocol.Messages.Outbound
 
             context.Logger.LogDebug($"User {context.User.Username}[{context.User.UserId}] logged in successfully with session id {context.SessionId}");
             context.Logger.LogInformation($"User {context.User.Username} logged in");
+
+            return Task.CompletedTask;
         }
 
         private static string StripPortFromIPAddress(string address)

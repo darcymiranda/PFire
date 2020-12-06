@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using PFire.Core.Session;
 using PFire.Infrastructure.Database;
 
@@ -26,7 +27,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("nick")]
         public List<string> Nicks { get; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             var friends = context.Server.Database.QueryFriends(_ownerUser);
             friends.ForEach(f =>
@@ -35,6 +36,8 @@ namespace PFire.Core.Protocol.Messages.Outbound
                 Usernames.Add(f.Username);
                 Nicks.Add(f.Nickname);
             });
+
+            return Task.CompletedTask;
         }
     }
 }

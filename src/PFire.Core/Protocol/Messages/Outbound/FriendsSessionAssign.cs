@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PFire.Core.Session;
 using PFire.Infrastructure.Database;
 
@@ -26,7 +27,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField(0x0b)]
         public byte Unknown { get; private set; }
 
-        public override void Process(IXFireClient client)
+        public override Task Process(IXFireClient client)
         {
             var friends = client.Server.Database.QueryFriends(_ownerUser);
 
@@ -37,6 +38,8 @@ namespace PFire.Core.Protocol.Messages.Outbound
                 UserIds.Add(friend.UserId);
                 SessionIds.Add(friendSession != null ? friendSession.SessionId : FriendIsOffLineSessionId);
             }
+
+            return Task.CompletedTask;
         }
     }
 }
