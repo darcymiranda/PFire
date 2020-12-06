@@ -31,11 +31,9 @@ namespace PFire.Core
 
         public IPFireDatabase Database { get; }
 
-        public Task Start()
+        public async Task Start()
         {
-            _server.Listen();
-
-            return Task.CompletedTask;
+            await _server.Listen();
         }
 
         public Task Stop()

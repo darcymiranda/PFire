@@ -6,21 +6,6 @@ using PFire.Core.Session;
 
 namespace PFire.Core
 {
-    internal interface ITcpServer
-    {
-        delegate void OnConnectionHandler(IXFireClient sessionContext);
-
-        delegate void OnDisconnectionHandler(IXFireClient sessionContext);
-
-        delegate void OnReceiveHandler(IXFireClient sessionContext, IMessage message);
-
-        event OnReceiveHandler OnReceive;
-        event OnConnectionHandler OnConnection;
-        event OnDisconnectionHandler OnDisconnection;
-        void Listen();
-        void Shutdown();
-    }
-
     internal sealed class TcpServer : ITcpServer
     {
         private readonly IXFireClientManager _clientManager;
@@ -39,12 +24,12 @@ namespace PFire.Core
         public event ITcpServer.OnConnectionHandler OnConnection;
         public event ITcpServer.OnDisconnectionHandler OnDisconnection;
 
-        public void Listen()
+        public async Task Listen()
         {
             _running = true;
             _listener.Start();
             _logger.LogInformation($"PFire Server listening on {_listener.LocalEndpoint}");
-            Task.Run(() => Accept().ConfigureAwait(false));
+            await Accept().ConfigureAwait(false);
         }
 
         public void Shutdown()
