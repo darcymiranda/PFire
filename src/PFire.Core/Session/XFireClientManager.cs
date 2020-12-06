@@ -39,14 +39,9 @@ namespace PFire.Core.Session
 
         public IXFireClient GetSession(User user)
         {
-            var keyValuePair = _sessions.ToList().FirstOrDefault(a => a.Value.User == user);
+            var session = _sessions.ToList().Select(x => x.Value).FirstOrDefault(a => a.User == user);
 
-            if (!keyValuePair.Equals(default(KeyValuePair<Guid, IXFireClient>)))
-            {
-                return keyValuePair.Value;
-            }
-
-            return null;
+            return session == null ? null : GetSession(session.SessionId);
         }
 
         public void RemoveSession(IXFireClient session)
