@@ -9,7 +9,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public FriendRequestDecline() : base(XFireMessageType.FriendRequestDecline) {}
 
         [XMessageField("name")]
-        public string RequesterUsername { get; private set; }
+        public string RequesterUsername { get; set; }
 
         public override async Task Process(IXFireClient context)
         {

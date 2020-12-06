@@ -11,52 +11,52 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public LoginSuccess() : base(XFireMessageType.LoginSuccess) {}
 
         [XMessageField("userid")]
-        public int UserId { get; private set; }
+        public int UserId { get; set; }
 
         [XMessageField("sid")]
-        public Guid SessionId { get; private set; }
+        public Guid SessionId { get; set; }
 
         [XMessageField("nick")]
-        public string Nickname { get; private set; }
+        public string Nickname { get; set; }
 
         [XMessageField("status")]
-        public int Status { get; private set; }
+        public int Status { get; set; }
 
         [XMessageField("dlset")]
-        public string DlSet { get; private set; }
+        public string DlSet { get; set; }
 
         [XMessageField("p2pset")]
-        public string P2PSet { get; private set; }
+        public string P2PSet { get; set; }
 
         [XMessageField("clntset")]
-        public string ClientSet { get; private set; }
+        public string ClientSet { get; set; }
 
         [XMessageField("minrect")]
-        public int MinRect { get; private set; }
+        public int MinRect { get; set; }
 
         [XMessageField("maxrect")]
-        public int MaxRect { get; private set; }
+        public int MaxRect { get; set; }
 
         [XMessageField("ctry")]
-        public int Country { get; private set; }
+        public int Country { get; set; }
 
         [XMessageField("n1")]
-        public int N1 { get; private set; }
+        public int N1 { get; set; }
 
         [XMessageField("n2")]
-        public int N2 { get; private set; }
+        public int N2 { get; set; }
 
         [XMessageField("n3")]
-        public int N3 { get; private set; }
+        public int N3 { get; set; }
 
         [XMessageField("pip")]
-        public int PublicIp { get; private set; }
+        public int PublicIp { get; set; }
 
         [XMessageField("salt")]
-        public string Salt { get; private set; }
+        public string Salt { get; set; }
 
         [XMessageField("reason")]
-        public string Reason { get; private set; }
+        public string Reason { get; set; }
 
         public override Task Process(IXFireClient context)
         {

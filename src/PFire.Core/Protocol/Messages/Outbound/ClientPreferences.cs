@@ -9,7 +9,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public ClientPreferences() : base(XFireMessageType.ClientPreferences) {}
 
         [XMessageField(0x4c)]
-        public Dictionary<byte, string> preferences { get; private set; }
+        public Dictionary<byte, string> preferences { get; set; }
 
         public override Task Process(IXFireClient context)
         {

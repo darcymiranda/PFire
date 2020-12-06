@@ -11,7 +11,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public NicknameChange() : base(XFireMessageType.NicknameChange) {}
 
         [XMessageField("nick")]
-        public string Nickname { get; private set; }
+        public string Nickname { get; set; }
 
         public override async Task Process(IXFireClient context)
         {

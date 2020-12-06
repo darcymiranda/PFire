@@ -9,16 +9,16 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public UserLookup() : base(XFireMessageType.UserLookup) {}
 
         [XMessageField("name")]
-        public string Username { get; private set; }
+        public string Username { get; set; }
 
         [XMessageField("fname")]
-        public string FirstName { get; private set; }
+        public string FirstName { get; set; }
 
         [XMessageField("lname")]
-        public string LastName { get; private set; }
+        public string LastName { get; set; }
 
         [XMessageField("email")]
-        public string Email { get; private set; }
+        public string Email { get; set; }
 
         public override async Task Process(IXFireClient context)
         {

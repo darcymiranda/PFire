@@ -25,7 +25,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public List<Guid> SessionIds { get; }
 
         [XMessageField(0x0b)]
-        public byte Unknown { get; private set; }
+        public byte Unknown { get; set; }
 
         public override async Task Process(IXFireClient client)
         {

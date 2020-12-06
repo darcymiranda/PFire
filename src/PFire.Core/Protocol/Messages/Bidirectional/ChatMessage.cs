@@ -14,10 +14,10 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
         public ChatMessage() : base(XFireMessageType.ServerChatMessage) {}
 
         [XMessageField("sid")]
-        public Guid SessionId { get; private set; }
+        public Guid SessionId { get; set; }
 
         [XMessageField("peermsg")]
-        public Dictionary<string, dynamic> MessagePayload { get; private set; }
+        public Dictionary<string, dynamic> MessagePayload { get; set; }
 
         // TODO: Create test for this message so we can refactor and build this message the same way as the others to avoid the switch statement
         // TODO: How to tell the client we didn't receive the ACK?

@@ -9,7 +9,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public StatusChange() : base(XFireMessageType.StatusChange) {}
 
         [XMessageField(0x2e)]
-        public string Message { get; private set; }
+        public string Message { get; set; }
 
         public override async Task Process(IXFireClient context)
         {

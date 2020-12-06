@@ -8,7 +8,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public LoginChallenge() : base(XFireMessageType.LoginChallenge) {}
 
         [XMessageField("salt")]
-        public string Salt { get; private set; }
+        public string Salt { get; set; }
 
         public override Task Process(IXFireClient context)
         {

@@ -9,10 +9,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public FriendRequest() : base(XFireMessageType.FriendRequest) {}
 
         [XMessageField("name")]
-        public string Username { get; private set; }
+        public string Username { get; set; }
 
         [XMessageField("msg")]
-        public string Message { get; private set; }
+        public string Message { get; set; }
 
         public override async Task Process(IXFireClient context)
         {
