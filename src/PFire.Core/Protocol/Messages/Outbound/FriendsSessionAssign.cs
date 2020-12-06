@@ -29,7 +29,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
 
         public override async Task Process(IXFireClient client)
         {
-            var friends = client.Server.Database.QueryFriends(_ownerUser);
+            var friends = await client.Server.Database.QueryFriends(_ownerUser);
             foreach (var friend in friends)
             {
                 var friendSession = client.Server.GetSession(friend);

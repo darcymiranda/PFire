@@ -19,7 +19,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            var user = context.Server.Database.QueryUser(Username);
+            var user = await context.Server.Database.QueryUser(Username);
             if (user != null)
             {
                 if (user.Password != Password)
@@ -31,7 +31,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
             else
             {
-                user = context.Server.Database.InsertUser(Username, Password, context.Salt);
+                user = await context.Server.Database.InsertUser(Username, Password, context.Salt);
             }
 
             // Remove any older sessions from this user (duplicate logins)

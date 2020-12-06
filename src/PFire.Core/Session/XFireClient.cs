@@ -116,7 +116,7 @@ namespace PFire.Core.Session
             await _tcpClient.Client.SendAsync(payload, SocketFlags.None);
 
             var username = User?.Username ?? "unknown";
-            var userId = User?.Id ?? -1;
+            var userId = User?.UserId ?? -1;
 
             Logger.LogDebug($"Sent message[{username},{userId}]: {message}");
         }
@@ -239,7 +239,7 @@ namespace PFire.Core.Session
                 var message = MessageSerializer.Deserialize(messageBuffer);
 
                 var username = User?.Username ?? "unknown";
-                var userId = User?.Id ?? -1;
+                var userId = User?.UserId ?? -1;
 
                 Logger.LogDebug($"Recv message[{username},{userId}]: {message}");
 

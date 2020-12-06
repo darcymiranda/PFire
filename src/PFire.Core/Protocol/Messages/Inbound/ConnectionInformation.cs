@@ -51,7 +51,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
             // Tell friends this user came online
             //if (context.User.Username == "test") Debugger.Break();
-            var friends = context.Server.Database.QueryFriends(context.User);
+            var friends = await context.Server.Database.QueryFriends(context.User);
             foreach (var friend in friends)
             {
                 var otherSession = context.Server.GetSession(friend);
@@ -61,10 +61,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 }
             }
 
-            var pendingFriendRequests = context.Server.Database.QueryPendingFriendRequests(context.User);
+            var pendingFriendRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
             foreach (var request in pendingFriendRequests)
             {
-                var requester = context.Server.Database.QueryUser(request.UserId);
+                var requester = await context.Server.Database.QueryUser(request.UserId);
                 await context.SendAndProcessMessage(new FriendInvite(requester.Username, requester.Nickname, request.Message));
             }
         }
