@@ -20,12 +20,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("email")]
         public string Email { get; private set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             var result = new UserLookupResult(Username);
-            context.SendAndProcessMessage(result);
-
-            return Task.CompletedTask;
+            await context.SendAndProcessMessage(result);
         }
     }
 }

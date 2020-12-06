@@ -13,24 +13,25 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("nick")]
         public string Nickname { get; private set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             if (Nickname.Length > MAX_LENGTH)
             {
                 Nickname = Nickname.Substring(0, MAX_LENGTH);
             }
 
-            context.Server.Database.UpdateNickname(context.User, Nickname);
+            await context.Server.Database.UpdateNickname(context.User, Nickname);
 
             var updatedFriendsList = new FriendsList(context.User);
-            context.Server.Database.QueryFriends(context.User)
-                   .ForEach(friend =>
+            var queryFriends = await context.Server.Database.QueryFriends(context.User);
+            foreach (var friend in queryFriends)
             {
                 var friendSession = context.Server.GetSession(friend);
-                friendSession?.SendAndProcessMessage(updatedFriendsList);
-            });
-
-            return Task.CompletedTask;
+                if (friendSession != null)
+                {
+                    await friendSession.SendAndProcessMessage(updatedFriendsList);
+                }
+            }
         }
     }
 }

@@ -14,18 +14,19 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("msg")]
         public string Message { get; private set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var recipient = context.Server.Database.QueryUser(Username);
+            var recipient = await context.Server.Database.QueryUser(Username);
             var invite = new FriendInvite(context.User.Username, context.User.Nickname, Message);
-            invite.Process(context);
+            await invite.Process(context);
 
-            context.Server.Database.InsertFriendRequest(context.User, Username, Message);
+            await context.Server.Database.InsertFriendRequest(context.User, Username, Message);
 
             var recipientSession = context.Server.GetSession(recipient);
-            recipientSession?.SendMessage(invite);
-
-            return Task.CompletedTask;
+            if (recipientSession != null)
+            {
+                await recipientSession.SendMessage(invite);
+            }
         }
     }
 }

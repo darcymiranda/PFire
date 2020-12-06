@@ -11,17 +11,18 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField(0x2e)]
         public string Message { get; private set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             var statusChange = new FriendStatusChange(context.SessionId, Message);
-            var friends = context.Server.Database.QueryFriends(context.User);
-            friends.ForEach(friend =>
+            var friends = await context.Server.Database.QueryFriends(context.User);
+            foreach (var friend in friends)
             {
                 var friendSession = context.Server.GetSession(friend);
-                friendSession?.SendAndProcessMessage(statusChange);
-            });
-
-            return Task.CompletedTask;
+                if (friendSession != null)
+                {
+                    await friendSession.SendAndProcessMessage(statusChange);
+                }
+            }
         }
     }
 }

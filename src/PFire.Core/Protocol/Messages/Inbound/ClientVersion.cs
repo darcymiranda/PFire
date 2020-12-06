@@ -14,13 +14,11 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("major_version")]
         public int MajorVersion { get; private set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             var loginChallenge = new LoginChallenge();
-            loginChallenge.Process(context);
-            context.SendMessage(loginChallenge);
-
-            return Task.CompletedTask;
+            await loginChallenge.Process(context);
+            await context.SendMessage(loginChallenge);
         }
 
         public override string ToString()

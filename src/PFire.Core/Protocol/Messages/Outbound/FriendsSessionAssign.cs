@@ -27,19 +27,16 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField(0x0b)]
         public byte Unknown { get; private set; }
 
-        public override Task Process(IXFireClient client)
+        public override async Task Process(IXFireClient client)
         {
-            var friends = client.Server.Database.QueryFriends(_ownerUser);
-
+            var friends = await client.Server.Database.QueryFriends(_ownerUser);
             foreach (var friend in friends)
             {
                 var friendSession = client.Server.GetSession(friend);
 
-                UserIds.Add(friend.UserId);
-                SessionIds.Add(friendSession != null ? friendSession.SessionId : FriendIsOffLineSessionId);
+                UserIds.Add(friend.Id);
+                SessionIds.Add(friendSession?.SessionId ?? FriendIsOffLineSessionId);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

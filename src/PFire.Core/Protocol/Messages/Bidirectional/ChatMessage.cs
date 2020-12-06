@@ -22,12 +22,12 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
         // TODO: Create test for this message so we can refactor and build this message the same way as the others to avoid the switch statement
         // TODO: How to tell the client we didn't receive the ACK?
         // TODO: P2P stuff???
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             var otherSession = context.Server.GetSession(SessionId);
             if (otherSession == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var messageType = (ChatMessageType)(byte)MessagePayload["msgtype"];
@@ -36,23 +36,21 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
             {
                 case ChatMessageType.Content:
                     var responseAck = BuildAckResponse(otherSession.SessionId);
-                    context.SendMessage(responseAck);
+                    await context.SendMessage(responseAck);
 
                     var chatMsg = BuildChatMessageResponse(context.SessionId);
-                    otherSession.SendMessage(chatMsg);
+                    await otherSession.SendMessage(chatMsg);
                     break;
 
                 case ChatMessageType.TypingNotification:
                     var typingMsg = BuildChatMessageResponse(context.SessionId);
-                    otherSession.SendMessage(typingMsg);
+                    await otherSession.SendMessage(typingMsg);
                     break;
 
                 default:
                     context.Logger.LogDebug($"NOT BUILT: Got {messageType} for session: {context.SessionId}");
                     break;
             }
-
-            return Task.CompletedTask;
         }
 
         private ChatMessage BuildChatMessageResponse(Guid sessionId)

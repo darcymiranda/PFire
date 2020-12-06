@@ -31,9 +31,10 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("email")]
         public List<string> Emails { get; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var usernames = context.Server.Database.QueryUsers(_queryByUsername).Select(a => a.Username).ToList();
+            var queryUsers = await context.Server.Database.QueryUsers(_queryByUsername);
+            var usernames = queryUsers.Select(a => a.Username).ToList();
 
             Usernames.AddRange(usernames);
 
@@ -43,8 +44,6 @@ namespace PFire.Core.Protocol.Messages.Outbound
             FirstNames.AddRange(unknowns);
             LastNames.AddRange(unknowns);
             Emails.AddRange(unknowns);
-            
-            return Task.CompletedTask;
         }
     }
 }

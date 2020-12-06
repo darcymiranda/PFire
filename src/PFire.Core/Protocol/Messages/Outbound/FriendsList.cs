@@ -27,17 +27,15 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("nick")]
         public List<string> Nicks { get; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var friends = context.Server.Database.QueryFriends(_ownerUser);
+            var friends = await context.Server.Database.QueryFriends(_ownerUser);
             friends.ForEach(f =>
             {
-                UserIds.Add(f.UserId);
+                UserIds.Add(f.Id);
                 Usernames.Add(f.Username);
                 Nicks.Add(f.Nickname);
             });
-
-            return Task.CompletedTask;
         }
     }
 }

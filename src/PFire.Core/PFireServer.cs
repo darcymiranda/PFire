@@ -43,38 +43,40 @@ namespace PFire.Core
             return Task.CompletedTask;
         }
 
-        private void OnDisconnection(IXFireClient disconnectedClient)
+        private async Task OnDisconnection(IXFireClient disconnectedClient)
         {
             // we have to remove the session first 
             // because of the friends of this user processing
             RemoveSession(disconnectedClient);
 
-            UpdateFriendsWithDisconnetedStatus(disconnectedClient);
+            await UpdateFriendsWithDisconnetedStatus(disconnectedClient);
         }
 
-        private void UpdateFriendsWithDisconnetedStatus(IXFireClient disconnectedClient)
+        private async Task UpdateFriendsWithDisconnetedStatus(IXFireClient disconnectedClient)
         {
-            var friends = Database.QueryFriends(disconnectedClient.User);
+            var friends = await Database.QueryFriends(disconnectedClient.User);
 
-            friends.ForEach(friend =>
+            foreach (var friend in friends)
             {
                 var friendClient = GetSession(friend);
                 if (friendClient != null)
                 {
-                    friendClient.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                    await friendClient.SendAndProcessMessage(new FriendsSessionAssign(friend));
                 }
-            });
+            }
         }
 
-        private void HandleNewConnection(IXFireClient sessionContext)
+        private Task HandleNewConnection(IXFireClient sessionContext)
         {
             AddSession(sessionContext);
+
+            return Task.CompletedTask;
         }
 
-        private void HandleRequest(IXFireClient context, IMessage message)
+        private async Task HandleRequest(IXFireClient context, IMessage message)
         {
             context.Server = this;
-            message.Process(context);
+            await message.Process(context);
         }
 
         public IXFireClient GetSession(Guid sessionId)

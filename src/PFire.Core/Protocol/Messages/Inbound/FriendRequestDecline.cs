@@ -11,18 +11,14 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("name")]
         public string RequesterUsername { get; private set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var requesterUser = context.Server.Database.QueryUser(RequesterUsername);
-            var pendingRequests = context.Server.Database.QueryPendingFriendRequestsSelf(requesterUser);
+            var requesterUser = await context.Server.Database.QueryUser(RequesterUsername);
+            var pendingRequests = await context.Server.Database.QueryPendingFriendRequestsSelf(requesterUser);
 
-            var requestsIds = pendingRequests.Where(a => a.UserId == requesterUser.UserId && a.FriendUserId == context.User.UserId)
-                                             .Select(a => a.PendingFriendRequestId)
-                                             .ToArray();
+            var requestsIds = pendingRequests.Where(a => a.Id == requesterUser.Id && a.FriendUserId == context.User.Id).Select(a => a.Id).ToArray();
 
-            context.Server.Database.DeletePendingFriendRequest(requestsIds);
-
-            return Task.CompletedTask;
+            await context.Server.Database.DeletePendingFriendRequest(requestsIds);
         }
     }
 }

@@ -20,11 +20,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("partner")]
         public string Partner { get; set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            context.SendAndProcessMessage(new Did());
+            await context.SendAndProcessMessage(new Did());
 
-            return Task.CompletedTask;
         }
     }
 }

@@ -17,20 +17,21 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("flags")]
         public int Flags { get; private set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var user = context.Server.Database.QueryUser(Username);
+            var user = await context.Server.Database.QueryUser(Username);
             if (user != null)
             {
                 if (user.Password != Password)
                 {
-                    context.SendAndProcessMessage(new LoginFailure());
+                    await context.SendAndProcessMessage(new LoginFailure());
+
                     return;
                 }
-                }
+            }
             else
             {
-                user = context.Server.Database.InsertUser(Username, Password, context.Salt);
+                user = await context.Server.Database.InsertUser(Username, Password, context.Salt);
             }
 
             // Remove any older sessions from this user (duplicate logins)
@@ -39,9 +40,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             context.User = user;
 
             var success = new LoginSuccess();
-            context.SendAndProcessMessage(success);
-
-            return Task.CompletedTask;
+            await context.SendAndProcessMessage(success);
         }
     }
 }
