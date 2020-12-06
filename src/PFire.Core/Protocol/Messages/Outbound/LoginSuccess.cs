@@ -60,7 +60,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
 
         public override Task Process(IXFireClient context)
         {
-            UserId = context.User.UserId;
+            UserId = context.User.Id;
             SessionId = context.SessionId;
             Status = 0;
             Nickname = string.IsNullOrEmpty(context.User.Nickname) ? context.User.Username : context.User.Nickname;
@@ -71,7 +71,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             Salt = context.Salt;
             Reason = "Mq_P8Ad3aMEUvFinw0ceu6FITnZTWXxg46XU8xHW";
 
-            context.Logger.LogDebug($"User {context.User.Username}[{context.User.UserId}] logged in successfully with session id {context.SessionId}");
+            context.Logger.LogDebug($"User {context.User.Username}[{context.User.Id}] logged in successfully with session id {context.SessionId}");
             context.Logger.LogInformation($"User {context.User.Username} logged in");
 
             return Task.CompletedTask;

@@ -16,9 +16,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             var requesterUser = await context.Server.Database.QueryUser(RequesterUsername);
             var pendingRequests = await context.Server.Database.QueryPendingFriendRequestsSelf(requesterUser);
 
-            var requestsIds = pendingRequests.Where(a => a.UserId == requesterUser.UserId && a.FriendUserId == context.User.UserId)
-                                             .Select(a => a.PendingFriendRequestId)
-                                             .ToArray();
+            var requestsIds = pendingRequests.Where(a => a.MeId == requesterUser.Id && a.ThemId == context.User.Id).ToArray();
 
             await context.Server.Database.DeletePendingFriendRequest(requestsIds);
         }

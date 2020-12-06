@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using PFire.Infrastructure.Database;
+using PFire.Infrastructure.Entities;
 
 namespace PFire.Core.Session
 {

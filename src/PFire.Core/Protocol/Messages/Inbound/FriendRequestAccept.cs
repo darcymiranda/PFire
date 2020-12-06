@@ -30,11 +30,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
 
             var pendingRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
-            var pq = pendingRequests.FirstOrDefault(a => a.FriendUserId == context.User.UserId);
-            if (pq != null)
-            {
-                await context.Server.Database.DeletePendingFriendRequest(pq.PendingFriendRequestId);
-            }
+            var pq = pendingRequests.Where(a => a.ThemId == friend.Id).ToArray();
+            await context.Server.Database.DeletePendingFriendRequest(pq);
         }
     }
 }

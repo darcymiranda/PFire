@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
@@ -62,10 +63,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
 
             var pendingFriendRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
-            foreach (var request in pendingFriendRequests)
+            foreach (var xFireMessage in pendingFriendRequests.Select(
+                request => new FriendInvite(request.Them.Username, request.Them.Nickname, request.Message)))
             {
-                var requester = await context.Server.Database.QueryUser(request.UserId);
-                await context.SendAndProcessMessage(new FriendInvite(requester.Username, requester.Nickname, request.Message));
+                await context.SendAndProcessMessage(xFireMessage);
             }
         }
     }

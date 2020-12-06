@@ -9,7 +9,7 @@ using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Util;
-using PFire.Infrastructure.Database;
+using PFire.Infrastructure.Entities;
 
 namespace PFire.Core.Session
 {
@@ -116,7 +116,7 @@ namespace PFire.Core.Session
             await _tcpClient.Client.SendAsync(payload, SocketFlags.None);
 
             var username = User?.Username ?? "unknown";
-            var userId = User?.UserId ?? -1;
+            var userId = User?.Id ?? -1;
 
             Logger.LogDebug($"Sent message[{username},{userId}]: {message}");
         }
@@ -239,7 +239,7 @@ namespace PFire.Core.Session
                 var message = MessageSerializer.Deserialize(messageBuffer);
 
                 var username = User?.Username ?? "unknown";
-                var userId = User?.UserId ?? -1;
+                var userId = User?.Id ?? -1;
 
                 Logger.LogDebug($"Recv message[{username},{userId}]: {message}");
 

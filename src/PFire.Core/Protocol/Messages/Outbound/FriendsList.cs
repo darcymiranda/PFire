@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PFire.Core.Session;
-using PFire.Infrastructure.Database;
+using PFire.Infrastructure.Entities;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
@@ -32,7 +32,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             var friends = await context.Server.Database.QueryFriends(_ownerUser);
             friends.ForEach(f =>
             {
-                UserIds.Add(f.UserId);
+                UserIds.Add(f.Id);
                 Usernames.Add(f.Username);
                 Nicks.Add(f.Nickname);
             });

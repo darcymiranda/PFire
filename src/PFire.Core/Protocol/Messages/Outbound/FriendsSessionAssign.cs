@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PFire.Core.Session;
-using PFire.Infrastructure.Database;
+using PFire.Infrastructure.Entities;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
@@ -34,7 +34,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             {
                 var friendSession = client.Server.GetSession(friend);
 
-                UserIds.Add(friend.UserId);
+                UserIds.Add(friend.Id);
                 SessionIds.Add(friendSession?.SessionId ?? FriendIsOffLineSessionId);
             }
         }

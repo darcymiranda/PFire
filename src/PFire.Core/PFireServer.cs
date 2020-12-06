@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
-using PFire.Infrastructure.Database;
+using PFire.Infrastructure.Entities;
+using PFire.Infrastructure.Services;
 
 namespace PFire.Core
 {
