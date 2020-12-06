@@ -16,11 +16,11 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            var recipient = await context.Server.Database.QueryUser(Username);
+            var recipient = context.Server.Database.QueryUser(Username);
             var invite = new FriendInvite(context.User.Username, context.User.Nickname, Message);
             await invite.Process(context);
 
-            await context.Server.Database.InsertFriendRequest(context.User, Username, Message);
+            context.Server.Database.InsertFriendRequest(context.User, Username, Message);
 
             var recipientSession = context.Server.GetSession(recipient);
             if (recipientSession != null)

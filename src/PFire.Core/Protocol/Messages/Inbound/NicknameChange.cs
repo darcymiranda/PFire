@@ -20,10 +20,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 Nickname = Nickname.Substring(0, MAX_LENGTH);
             }
 
-            await context.Server.Database.UpdateNickname(context.User, Nickname);
+            context.Server.Database.UpdateNickname(context.User, Nickname);
 
             var updatedFriendsList = new FriendsList(context.User);
-            var queryFriends = await context.Server.Database.QueryFriends(context.User);
+            var queryFriends = context.Server.Database.QueryFriends(context.User);
             foreach (var friend in queryFriends)
             {
                 var friendSession = context.Server.GetSession(friend);

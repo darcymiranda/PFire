@@ -33,7 +33,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
 
         public override async Task Process(IXFireClient context)
         {
-            var queryUsers = await context.Server.Database.QueryUsers(_queryByUsername);
+            var queryUsers = context.Server.Database.QueryUsers(_queryByUsername);
             var usernames = queryUsers.Select(a => a.Username).ToList();
 
             Usernames.AddRange(usernames);

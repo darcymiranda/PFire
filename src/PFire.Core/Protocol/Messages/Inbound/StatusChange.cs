@@ -14,7 +14,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public override async Task Process(IXFireClient context)
         {
             var statusChange = new FriendStatusChange(context.SessionId, Message);
-            var friends = await context.Server.Database.QueryFriends(context.User);
+            var friends = context.Server.Database.QueryFriends(context.User);
             foreach (var friend in friends)
             {
                 var friendSession = context.Server.GetSession(friend);

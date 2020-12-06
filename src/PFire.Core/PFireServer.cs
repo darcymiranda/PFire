@@ -54,7 +54,7 @@ namespace PFire.Core
 
         private async Task UpdateFriendsWithDisconnetedStatus(IXFireClient disconnectedClient)
         {
-            var friends = await Database.QueryFriends(disconnectedClient.User);
+            var friends = Database.QueryFriends(disconnectedClient.User);
 
             foreach (var friend in friends)
             {

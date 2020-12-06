@@ -14,9 +14,9 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            var friend = await context.Server.Database.QueryUser(FriendUsername);
+            var friend = context.Server.Database.QueryUser(FriendUsername);
 
-            await context.Server.Database.InsertMutualFriend(context.User, friend);
+            context.Server.Database.InsertMutualFriend(context.User, friend);
 
             await context.SendAndProcessMessage(new FriendsList(context.User));
             await context.SendAndProcessMessage(new FriendsSessionAssign(context.User));
@@ -29,11 +29,11 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 await friendSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
             }
 
-            var pendingRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
-            var pq = pendingRequests.FirstOrDefault(a => a.FriendUserId == context.User.Id);
+            var pendingRequests = context.Server.Database.QueryPendingFriendRequests(context.User);
+            var pq = pendingRequests.FirstOrDefault(a => a.FriendUserId == context.User.UserId);
             if (pq != null)
             {
-                await context.Server.Database.DeletePendingFriendRequest(pq.Id);
+                context.Server.Database.DeletePendingFriendRequest(pq.PendingFriendRequestId);
             }
         }
     }
