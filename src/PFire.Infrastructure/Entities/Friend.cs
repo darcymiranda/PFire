@@ -2,7 +2,7 @@
 
 namespace PFire.Infrastructure.Entities
 {
-    public class Friend : Entity
+    internal class Friend : Entity
     {
         public int MeId { get; set; }
         public User Me { get; set; }

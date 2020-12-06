@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
-using PFire.Infrastructure.Entities;
 using PFire.Infrastructure.Services;
 
 namespace PFire.Core
@@ -59,7 +58,7 @@ namespace PFire.Core
 
             foreach (var friend in friends)
             {
-                var friendClient = GetSession(friend);
+                var friendClient = GetSession(friend.Id);
                 if (friendClient != null)
                 {
                     await friendClient.SendAndProcessMessage(new FriendsSessionAssign(friend));
@@ -85,9 +84,9 @@ namespace PFire.Core
             return _clientManager.GetSession(sessionId);
         }
 
-        public IXFireClient GetSession(User user)
+        public IXFireClient GetSession(int userId)
         {
-            return _clientManager.GetSession(user);
+            return _clientManager.GetSession(userId);
         }
 
         private void AddSession(IXFireClient session)

@@ -5,7 +5,7 @@ using PFire.Infrastructure.Services;
 
 namespace PFire.Infrastructure.Entities
 {
-    public class User : Entity
+    internal class User : Entity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

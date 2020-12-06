@@ -9,13 +9,13 @@ using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Util;
-using PFire.Infrastructure.Entities;
+using PFire.Infrastructure.Models;
 
 namespace PFire.Core.Session
 {
     internal interface IXFireClient
     {
-        User User { get; set; }
+        UserModel User { get; set; }
         Guid SessionId { get; }
         EndPoint RemoteEndPoint { get; }
         PFireServer Server { get; set; }
@@ -25,7 +25,7 @@ namespace PFire.Core.Session
         void Dispose();
         Task SendAndProcessMessage(XFireMessage message);
         Task SendMessage(XFireMessage invite);
-        void RemoveDuplicatedSessions(User user);
+        void RemoveDuplicatedSessions(int userId);
     }
 
     internal sealed class XFireClient : Disposable, IXFireClient
@@ -83,7 +83,7 @@ namespace PFire.Core.Session
 
         public Guid SessionId { get; }
 
-        public User User { get; set; }
+        public UserModel User { get; set; }
 
         public ILogger Logger { get; }
 
@@ -123,9 +123,9 @@ namespace PFire.Core.Session
 
         // A login has been successful, and as part of the login processing
         // we should remove any duplicate/old sessions
-        public void RemoveDuplicatedSessions(User user)
+        public void RemoveDuplicatedSessions(int userId)
         {
-            var otherSession = _clientManager.GetSession(user);
+            var otherSession = _clientManager.GetSession(userId);
             if (otherSession != null)
             {
                 _clientManager.RemoveSession(otherSession);

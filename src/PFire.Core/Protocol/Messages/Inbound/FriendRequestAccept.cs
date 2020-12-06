@@ -22,7 +22,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             await context.SendAndProcessMessage(new FriendsSessionAssign(context.User));
 
             // It's possible to accept a friend request where the inviter is not online
-            var friendSession = context.Server.GetSession(friend);
+            var friendSession = context.Server.GetSession(friend.Id);
             if (friendSession != null)
             {
                 await friendSession.SendAndProcessMessage(new FriendsList(friend));
@@ -30,8 +30,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
 
             var pendingRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
-            var pq = pendingRequests.Where(a => a.ThemId == friend.Id).ToArray();
-            await context.Server.Database.DeletePendingFriendRequest(pq);
+            var pq = pendingRequests.Where(a => a.Id == friend.Id).ToArray();
+            await context.Server.Database.DeletePendingFriendRequest(context.User, pq);
         }
     }
 }

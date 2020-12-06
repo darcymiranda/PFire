@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PFire.Core.Session;
-using PFire.Infrastructure.Entities;
+using PFire.Infrastructure.Models;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
     internal sealed class FriendsSessionAssign : XFireMessage
     {
         private static readonly Guid FriendIsOffLineSessionId = Guid.Empty;
-        private readonly User _ownerUser;
+        private readonly UserModel _ownerUser;
 
-        public FriendsSessionAssign(User owner) : base(XFireMessageType.FriendsSessionAssign)
+        public FriendsSessionAssign(UserModel owner) : base(XFireMessageType.FriendsSessionAssign)
         {
             _ownerUser = owner;
             UserIds = new List<int>();
@@ -32,7 +32,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             var friends = await client.Server.Database.QueryFriends(_ownerUser);
             foreach (var friend in friends)
             {
-                var friendSession = client.Server.GetSession(friend);
+                var friendSession = client.Server.GetSession(friend.Id);
 
                 UserIds.Add(friend.Id);
                 SessionIds.Add(friendSession?.SessionId ?? FriendIsOffLineSessionId);

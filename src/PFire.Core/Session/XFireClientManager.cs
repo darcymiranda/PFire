@@ -2,14 +2,13 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using PFire.Infrastructure.Entities;
 
 namespace PFire.Core.Session
 {
     internal interface IXFireClientManager
     {
         IXFireClient GetSession(Guid sessionId);
-        IXFireClient GetSession(User user);
+        IXFireClient GetSession(int userId);
         void AddSession(IXFireClient session);
         void RemoveSession(IXFireClient session);
     }
@@ -36,9 +35,9 @@ namespace PFire.Core.Session
             return _sessions.TryGetValue(sessionId, out var result) ? result : null;
         }
 
-        public IXFireClient GetSession(User user)
+        public IXFireClient GetSession(int userId)
         {
-            var session = _sessions.ToList().Select(x => x.Value).FirstOrDefault(a => a.User == user);
+            var session = _sessions.ToList().Select(x => x.Value).FirstOrDefault(a => a.User.Id == userId);
 
             return session == null ? null : GetSession(session.SessionId);
         }

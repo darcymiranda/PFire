@@ -35,7 +35,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
 
             // Remove any older sessions from this user (duplicate logins)
-            context.RemoveDuplicatedSessions(user);
+            context.RemoveDuplicatedSessions(user.Id);
 
             context.User = user;
 

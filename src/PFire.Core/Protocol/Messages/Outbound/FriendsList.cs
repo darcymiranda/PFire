@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PFire.Core.Session;
-using PFire.Infrastructure.Entities;
+using PFire.Infrastructure.Models;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
     internal sealed class FriendsList : XFireMessage
     {
-        private readonly User _ownerUser;
+        private readonly UserModel _ownerUser;
 
-        public FriendsList(User owner) : base(XFireMessageType.FriendsList)
+        public FriendsList(UserModel owner) : base(XFireMessageType.FriendsList)
         {
             _ownerUser = owner;
 

@@ -5,22 +5,22 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PFire.Infrastructure.Entities;
+using PFire.Infrastructure.Models;
 
 namespace PFire.Infrastructure.Services
 {
     public interface IPFireDatabase
     {
-        Task<User> InsertUser(string username, string password, string salt);
-        Task InsertMutualFriend(User user1, User user2);
-        Task InsertFriendRequest(User owner, User requestedUsername, string message);
-        Task<User> QueryUser(int userId);
-        Task<User> QueryUser(string username);
-        Task<List<User>> QueryUsers(string username);
-        Task<List<User>> QueryFriends(User user);
-        Task<List<Friend>> QueryPendingFriendRequestsSelf(User user);
-        Task<List<Friend>> QueryPendingFriendRequests(User otherUser);
-        Task DeletePendingFriendRequest(params Friend[] pendingFriendRequestIds);
-        Task UpdateNickname(User user, string nickname);
+        Task<UserModel> InsertUser(string username, string password, string salt);
+        Task InsertMutualFriend(UserModel user1, UserModel user2);
+        Task InsertFriendRequest(UserModel owner, UserModel requestedUsername, string message);
+        Task<UserModel> QueryUser(string username);
+        Task<List<UserModel>> QueryUsers(string username);
+        Task<List<UserModel>> QueryFriends(UserModel user);
+        Task<List<FriendRequestModel>> QueryPendingFriendRequestsSelf(UserModel user);
+        Task<List<FriendRequestModel>> QueryPendingFriendRequests(UserModel otherUser);
+        Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] pendingFriendRequestIds);
+        Task UpdateNickname(UserModel user, string nickname);
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -32,7 +32,7 @@ namespace PFire.Infrastructure.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<User> InsertUser(string username, string password, string salt)
+        public async Task<UserModel> InsertUser(string username, string password, string salt)
         {
             using var scope = _serviceProvider.CreateScope();
             var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
@@ -48,10 +48,15 @@ namespace PFire.Infrastructure.Services
             await databaseContext.SaveChangesAsync();
 
             //TODO: is model updated with new id?
-            return newUser;
+            return new UserModel
+            {
+                Id = newUser.Id,
+                Username = newUser.Username,
+                Nickname = newUser.Nickname
+            };
         }
 
-        public async Task InsertMutualFriend(User user1, User user2)
+        public async Task InsertMutualFriend(UserModel user1, UserModel user2)
         {
             using var scope = _serviceProvider.CreateScope();
             var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
@@ -75,7 +80,7 @@ namespace PFire.Infrastructure.Services
             await databaseContext.SaveChangesAsync();
         }
 
-        public async Task InsertFriendRequest(User owner, User requestedUsername, string message)
+        public async Task InsertFriendRequest(UserModel owner, UserModel requestedUsername, string message)
         {
             using var scope = _serviceProvider.CreateScope();
             var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
@@ -93,31 +98,40 @@ namespace PFire.Infrastructure.Services
             await databaseContext.SaveChangesAsync();
         }
 
-        public async Task<User> QueryUser(int userId)
+        public async Task<UserModel> QueryUser(string username)
         {
             using var scope = _serviceProvider.CreateScope();
             var reader = scope.ServiceProvider.GetRequiredService<IReader>();
 
-            return await reader.Query<User>().FirstOrDefaultAsync(a => a.Id == userId);
+            return await reader.Query<User>()
+                               .Where(a => a.Username == username)
+                               .Select(x => new UserModel
+                               {
+                                   Id = x.Id,
+                                   Username = x.Username,
+                                   Password = x.Password,
+                                   Nickname = x.Nickname
+                               })
+                               .FirstOrDefaultAsync();
         }
 
-        public async Task<User> QueryUser(string username)
+        public async Task<List<UserModel>> QueryUsers(string username)
         {
             using var scope = _serviceProvider.CreateScope();
             var reader = scope.ServiceProvider.GetRequiredService<IReader>();
 
-            return await reader.Query<User>().FirstOrDefaultAsync(a => a.Username == username);
+            return await reader.Query<User>()
+                               .Where(a => a.Username.Contains(username))
+                               .Select(x => new UserModel
+                               {
+                                   Id = x.Id,
+                                   Username = x.Username,
+                                   Nickname = x.Nickname
+                               })
+                               .ToListAsync();
         }
 
-        public async Task<List<User>> QueryUsers(string username)
-        {
-            using var scope = _serviceProvider.CreateScope();
-            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
-
-            return await reader.Query<User>().Where(a => a.Username.Contains(username)).ToListAsync();
-        }
-
-        public async Task<List<User>> QueryFriends(User user)
+        public async Task<List<UserModel>> QueryFriends(UserModel user)
         {
             using var scope = _serviceProvider.CreateScope();
             var reader = scope.ServiceProvider.GetRequiredService<IReader>();
@@ -126,28 +140,55 @@ namespace PFire.Infrastructure.Services
                                .Where(a => a.Id == user.Id)
                                .SelectMany(a => a.MyFriends)
                                .Where(x => x.Pending == false)
-                               .Select(x => x.Them)
+                               .Select(x => new UserModel
+                               {
+                                   Id = x.Them.Id,
+                                   Username = x.Them.Username,
+                                   Nickname = x.Them.Nickname
+                               })
                                .ToListAsync();
         }
 
-        public async Task<List<Friend>> QueryPendingFriendRequestsSelf(User user)
+        public async Task<List<FriendRequestModel>> QueryPendingFriendRequestsSelf(UserModel user)
         {
             using var scope = _serviceProvider.CreateScope();
             var reader = scope.ServiceProvider.GetRequiredService<IReader>();
 
-            return await reader.Query<User>().Where(a => a.Id == user.Id).SelectMany(x => x.MyFriends).Where(x => x.Pending).ToListAsync();
+            return await reader.Query<User>()
+                               .Where(a => a.Id == user.Id)
+                               .SelectMany(x => x.MyFriends)
+                               .Where(x => x.Pending)
+                               .Select(x => new FriendRequestModel
+                               {
+                                   Id = x.Them.Id,
+                                   Username = x.Them.Username,
+                                   Nickname = x.Them.Nickname,
+                                   Message = x.Message
+                               })
+                               .ToListAsync();
         }
 
-        public async Task<List<Friend>> QueryPendingFriendRequests(User user)
+        public async Task<List<FriendRequestModel>> QueryPendingFriendRequests(UserModel user)
         {
             using var scope = _serviceProvider.CreateScope();
             var reader = scope.ServiceProvider.GetRequiredService<IReader>();
 
             //TODO: use Model instead of Entity
-            return await reader.Query<User>().Where(a => a.Id == user.Id).SelectMany(x => x.FriendsOf).Where(x => x.Pending).ToListAsync();
+            return await reader.Query<User>()
+                               .Where(a => a.Id == user.Id)
+                               .SelectMany(x => x.FriendsOf)
+                               .Where(x => x.Pending)
+                               .Select(x => new FriendRequestModel
+                               {
+                                   Id = x.Them.Id,
+                                   Username = x.Them.Username,
+                                   Nickname = x.Them.Nickname,
+                                   Message = x.Message
+                               })
+                               .ToListAsync();
         }
 
-        public async Task DeletePendingFriendRequest(params Friend[] pendingFriendRequestIds)
+        public async Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] pendingFriendRequestIds)
         {
             using var scope = _serviceProvider.CreateScope();
             var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
@@ -155,8 +196,8 @@ namespace PFire.Infrastructure.Services
 
             foreach (var pendingFriendRequest in pendingFriendRequestIds)
             {
-                var pendingFriendRequest1 = await pendingFriendRequests.FindAsync(pendingFriendRequest.MeId, pendingFriendRequest.ThemId);
-                var pendingFriendRequest2 = await pendingFriendRequests.FindAsync(pendingFriendRequest.ThemId, pendingFriendRequest.MeId);
+                var pendingFriendRequest1 = await pendingFriendRequests.FindAsync(me.Id, pendingFriendRequest.Id);
+                var pendingFriendRequest2 = await pendingFriendRequests.FindAsync(pendingFriendRequest.Id, me.Id);
 
                 pendingFriendRequests.Remove(pendingFriendRequest1);
                 pendingFriendRequests.Remove(pendingFriendRequest2);
@@ -165,7 +206,7 @@ namespace PFire.Infrastructure.Services
             await databaseContext.SaveChangesAsync();
         }
 
-        public async Task UpdateNickname(User user, string nickname)
+        public async Task UpdateNickname(UserModel user, string nickname)
         {
             using var scope = _serviceProvider.CreateScope();
             var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
