@@ -10,13 +10,13 @@ namespace PFire.Console.Extensions
 {
     internal static class ServiceCollectionExtensions
     {
-        public static IServiceCollection RegisterAll(this IServiceCollection serviceCollection, IHostEnvironment hostEnvironment, IConfiguration configuration)
+        public static IServiceCollection RegisterAll(this IServiceCollection services, IHostEnvironment hostEnvironment, IConfiguration configuration)
         {
-            return serviceCollection.AddHostedService<PFireServerService>()
-                                    .RegisterCore()
-                                    .RegisterInfrastructure()
-                                    .RegisterCommon(configuration)
-                                    .AddLogging(builder => builder.AddLogging(hostEnvironment));
+            return services
+                .AddHostedService<PFireServerService>()
+                .RegisterCore()
+                .RegisterInfrastructure()
+                .RegisterCommon(configuration);
         }
     }
 }
