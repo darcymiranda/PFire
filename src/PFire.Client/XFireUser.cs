@@ -18,6 +18,78 @@ namespace PFire.Client
 {
     public class XFireUser
     {
+        #region Public structs
+        public struct FriendInviteMessage
+        {
+            public string Username;
+            public string Nickname;
+            public string Message;
+        }
+
+
+        public struct FriendRequestMessage
+        {
+            public string Username;
+            public string Message;
+        }
+
+
+        public struct ListOfFriends
+        {
+            public string Username;
+            public string Nickname;
+            public int UserId;
+        }
+
+
+        public struct FriendSessions
+        {
+            public int UserId;
+            public Guid SessionId;
+        }
+
+
+        public struct GameInfo
+        {
+            public int GameId;
+            public int GameIP;
+            public int GamePort;
+        }
+
+
+        public struct GroupInfo
+        {
+            public string GroupName;
+            public int GroupId;
+        }
+
+
+        public struct FriendsInGroups
+        {
+            public int GroupId;
+            public int UserId;
+        }
+
+        public struct LoginInfo
+        {
+            public string ClientSet;
+            public int Country;
+            public string DlSet;
+            public int MaxRect;
+            public int MinRect;
+            public int N1;
+            public int N2;
+            public int N3;
+            public string Nickname;
+            public string P2PSet;
+            public int PublicIp;
+            public string Reason;
+            public Guid SessionId;
+            public int Status;
+            public int UserId;
+        }
+        #endregion
+
         #region Private Variables
         private XFireClient _xFireClient;
         private Thread _listenerThread;
@@ -29,23 +101,112 @@ namespace PFire.Client
         public event EventHandler<MessageReceivedEventArgs> MessageReceivedHandler;
         #endregion
 
+        #region Public Properties
+        /// <summary>
+        /// List of chat messages received.
+        /// </summary>
+        public Dictionary<string, dynamic> ChatMessages { get; private set; }
+
+        /// <summary>
+        /// Server chat messages received.
+        /// </summary>
+        public Dictionary<string, dynamic> ServerChatMessages { get; private set; }
+
+        /// <summary>
+        /// The list of chat room Ids.
+        /// </summary>
+        public List<int> ChatRooms { get; private set; }
+
+        /// <summary>
+        /// List of friend invites.
+        /// </summary>
+        public List<FriendInviteMessage> FriendInvites { get; private set; }
+
+        /// <summary>
+        /// List of friend requests.
+        /// </summary>
+        public List<FriendRequestMessage> FriendRequests { get; private set; }
+
+        /// <summary>
+        /// The list of friends for the user.
+        /// </summary>
+        public List<ListOfFriends> UserFriendsList { get; private set; }
+
+        /// <summary>
+        /// List of friends sessions.
+        /// </summary>
+        public List<FriendSessions> FriendsSessions { get; private set; }
+
+        /// <summary>
+        /// Info for games being played.
+        /// </summary>
+        public List<GameInfo> GameInfos { get; private set; }
+
+        /// <summary>
+        /// Info for groups that various friends are a part of.
+        /// </summary>
+        public List<GroupInfo> GroupsInfo { get; private set; }
+
+        /// <summary>
+        /// List of friends in particular groups.
+        /// </summary>
+        public List<FriendsInGroups> GroupsFriends { get; private set; }
+
+        /// <summary>
+        /// The returned login information when a successful login is completed.
+        /// </summary>
+        public LoginInfo LoginInformation { get; private set; }
+
+        /// <summary>
+        /// List of game servers.
+        /// </summary>
+        public List<GameInfo> ListOfServers { get; private set; }
+        #endregion
+
         #region Constructor
-        public XFireUser(string host, int port, string userName, string passWord)
+        public XFireUser(string host, int port, string userName, string passWord, PFireServer server)
         {
-            LoginUser(host, port);
+            LoginUser(host, port, server);
             _xFireClient.User = new PFire.Database.User()
             {
                 Username = userName,
                 Password = passWord
             };
+
+            this.FriendInvites = new List<FriendInviteMessage>();
+            this.FriendRequests = new List<FriendRequestMessage>();
+            this.UserFriendsList = new List<ListOfFriends>();
+            this.FriendsSessions = new List<FriendSessions>();
+            this.GameInfos = new List<GameInfo>();
+            this.GroupsInfo = new List<GroupInfo>();
+            this.GroupsFriends = new List<FriendsInGroups>();
+            this.ListOfServers = new List<GameInfo>();
+        }
+
+
+        public XFireUser(string host, int port, string userName, string passWord)
+        {
+            LoginUser(host, port, null);
+            _xFireClient.User = new PFire.Database.User()
+            {
+                Username = userName,
+                Password = passWord
+            };
+
+            this.FriendInvites = new List<FriendInviteMessage>();
+            this.FriendRequests = new List<FriendRequestMessage>();
+            this.UserFriendsList = new List<ListOfFriends>();
+            this.FriendsSessions = new List<FriendSessions>();
+            this.GameInfos = new List<GameInfo>();
+            this.GroupsInfo = new List<GroupInfo>();
+            this.GroupsFriends = new List<FriendsInGroups>();
+            this.ListOfServers = new List<GameInfo>();
         }
         #endregion
 
         #region Public Methods
         public void Connect()
         {
-            //IPEndPoint ipAddy = IPEndPoint.Parse("127.0.0.1:25999");
-            
             _listenerThread = new Thread(this.RunListener);
             _listenerThread.Start();
             
@@ -83,7 +244,9 @@ namespace PFire.Client
             _xFireClient.SendMessage(connInfo);
         }
 
-
+        /// <summary>
+        /// Disconnects from the server.
+        /// </summary>
         public void Disconnect()
         {
             if (_xFireClient == null)
@@ -94,30 +257,53 @@ namespace PFire.Client
             _xFireClient.TcpClient.Close();
         }
 
-
-        public void SendFriendRequest(string user, string nickname, string msg)
+        /// <summary>
+        /// Sends a friend request to the specified user with a message
+        /// </summary>
+        /// <param name="user">The user to friend.</param>
+        /// <param name="msg">The message to send to the user.</param>
+        public void SendFriendRequest(string user, string msg)
         {
             FriendRequest request = new FriendRequest()
             {
                 Username = user,
-                Message = msg
+                Message = msg,
             };
             _xFireClient.SendMessage(request);
         }
 
-        public void GetFriendRequests()
+        /// <summary>
+        /// Accepts a given friend request.
+        /// </summary>
+        /// <param name="request">The FriendRequest to accept.</param>
+        public void AcceptFriendRequest(string userName)
         {
+            FriendRequestAccept accept = new FriendRequestAccept();
+            accept.FriendUsername = userName;
+            _xFireClient.SendMessage(accept);
         }
 
+        /// <summary>
+        /// Sets the end-server information for the client.
+        /// </summary>
+        /// <param name="server">A PFireServer instance.</param>
+        public void SetServer(PFireServer server)
+        {
+            _xFireClient.Server = server;
+        }
         #endregion
 
         #region Private Methods
-        private void LoginUser(string hostName, int port)
+        private void LoginUser(string hostName, int port, PFireServer server)
         {
 
             _client = new TcpClient();
             _client.Connect(hostName, port);
             _xFireClient = new XFireClient(_client);
+            if (server != null)
+            {
+                _xFireClient.Server = server;
+            }
             _xFireClient.InitializeClient();
         }
 
@@ -132,7 +318,7 @@ namespace PFire.Client
 
         private void RunListener()
         {
-            Byte[] bytesReceived = new Byte[4096];
+            Byte[] bytesReceived = new Byte[256];
             string page = String.Empty;
             IMessage message = null;
 
@@ -162,7 +348,7 @@ namespace PFire.Client
                 {
                     message = MessageSerializer.Deserialize(bytesReceived);
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
                     Console.WriteLine("Conversion of message failed! Message: {0}", Encoding.Default.GetString(bytesReceived));
                     continue;
@@ -171,30 +357,24 @@ namespace PFire.Client
                 switch(message.MessageTypeId)
                 {
                     case PFire.Core.Protocol.Messages.XFireMessageType.ChatContent:
-                        Console.WriteLine("Chat message received");
+                        Console.WriteLine("Chat messages received");
 
                         if (((ChatMessage)message).MessagePayload == null)
                         {
                             break;
                         }
 
-                        foreach (KeyValuePair<string, dynamic> kvp in ((ChatMessage)message).MessagePayload)
-                        {
-                            Console.WriteLine("Key:{0}  Value:{1}", kvp.Key, kvp.Value);
-                        }
+                        this.ChatMessages = ((ChatMessage)message).MessagePayload;
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.ServerChatMessage:
-                        Console.WriteLine("Server Chat message received");
+                        Console.WriteLine("Server Chat messages received");
 
                         if (((ChatMessage)message).MessagePayload == null)
                         {
                             break;
                         }
 
-                        foreach (KeyValuePair<string, dynamic> kvp in ((ChatMessage)message).MessagePayload)
-                        {
-                            Console.WriteLine("Key:{0}  Value:{1}", kvp.Key, kvp.Value);
-                        }
+                        this.ServerChatMessages = ((ChatMessage)message).MessagePayload;
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.ChatRooms:
                         Console.WriteLine("Chat rooms message received. Chat Ids:");
@@ -203,12 +383,7 @@ namespace PFire.Client
                         {
                             break;
                         }
-
-                        foreach (int chatId in ((ChatRooms)message).ChatIds)
-                        {
-                            Console.WriteLine("\t{0}", chatId);
-
-                        }
+                        this.ChatRooms = ((ChatRooms)message).ChatIds;
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.ClientConfiguration:
                         Console.WriteLine("Received ClientConfiguration, which shouldn't happen...");
@@ -237,16 +412,23 @@ namespace PFire.Client
 
                         for (int i = 0; i<invite.Messages.Count; i++)
                         {
-                            Console.WriteLine($"User: {0}.\tNickname: {1}.\tMessage: {2}.",
-                                invite.Usernames[i], invite.Nicknames[i], invite.Messages[i]);
+                            this.FriendInvites.Add(new FriendInviteMessage() {
+                                Username = invite.Usernames[i],
+                                Nickname = invite.Nicknames[i],
+                                Message = invite.Messages[i]
+                            });
                         }
                             
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.FriendRequest:
                         Console.WriteLine("Received a FriendRequest");
                         FriendRequest request = (FriendRequest)message;
-                        Console.WriteLine($"User: {0}.\tMessage: {1}.",
-                            request.Username, request.Message);
+                        FriendRequestMessage msg = new FriendRequestMessage()
+                        {
+                            Username = request.Username,
+                            Message = request.Message
+                        };
+                        this.FriendRequests.Add(msg);
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.FriendRequestAccept:
                         Console.WriteLine("Received a FriendRequestAccept");
@@ -268,8 +450,12 @@ namespace PFire.Client
 
                         for(int i=0; i<list.UserIds.Count; i++)
                         {
-                            Console.WriteLine($"User: {0}.\tNickname: {1}.\tUser Id: {2}",
-                                list.Usernames[i], list.Nicks[i], list.UserIds[i]);
+                            this.UserFriendsList.Add(new ListOfFriends()
+                            {
+                                UserId = list.UserIds[i],
+                                Username = list.Usernames[i],
+                                Nickname = list.Nicks[i]
+                            });
                         }
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.FriendsSessionAssign:
@@ -284,8 +470,11 @@ namespace PFire.Client
 
                         for(int i=0; i<assign.UserIds.Count; i++)
                         {
-                            Console.WriteLine($"",
-                                assign.UserIds[i], assign.SessionIds[i]);
+                            this.FriendsSessions.Add(new FriendSessions()
+                            {
+                                SessionId = assign.SessionIds[i],
+                                UserId = assign.UserIds[i]
+                            });
                         }
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.FriendStatusChange:
@@ -306,8 +495,12 @@ namespace PFire.Client
                     case PFire.Core.Protocol.Messages.XFireMessageType.GameInformation:
                         Console.WriteLine("Received GameInformation");
                         GameInformation info = (GameInformation)message;
-                        Console.WriteLine($"Game Id: {0}.\tGame IP: {1}.Game Port: {2}",
-                            info.GameId, info.GameIP, info.GamePort);
+                        this.GameInfos.Add(new GameInfo()
+                        {
+                            GameId = info.GameId,
+                            GameIP = info.GameIP,
+                            GamePort = info.GamePort
+                        });
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.Groups:
                         Console.WriteLine("Received Groups");
@@ -320,8 +513,11 @@ namespace PFire.Client
 
                         for(int i=0; i<groups.GroupIds.Count; i++)
                         {
-                            Console.WriteLine($"Group Id: {0}.\tGroup Name: {1}.",
-                                groups.GroupIds[i], groups.GroupNames[i]);
+                            this.GroupsInfo.Add(new GroupInfo()
+                            {
+                                GroupName = groups.GroupNames[i],
+                                GroupId = groups.GroupIds[i]
+                            });
                         }
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.GroupsFriends:
@@ -335,8 +531,11 @@ namespace PFire.Client
 
                         for(int i=0; i<friends.GroupIds.Count; i++)
                         {
-                            Console.WriteLine($"Group Id: {0}.\tUser Id: {1}",
-                                friends.GroupIds[i], friends.UserIds[i]);
+                            this.GroupsFriends.Add(new FriendsInGroups()
+                            {
+                                GroupId = friends.GroupIds[i],
+                                UserId = friends.UserIds[i]
+                            });
                         }
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.KeepAlive:
@@ -355,25 +554,24 @@ namespace PFire.Client
                     case PFire.Core.Protocol.Messages.XFireMessageType.LoginSuccess:
                         Console.WriteLine("Received LoginSuccess");
                         LoginSuccess loginSuccess = (LoginSuccess)message;
-                        Console.WriteLine($"ClientSet: {0}\n" +
-                            $"Country: {1}\nDlSet: {2}\nMaxRect: {3}\nMinRect: {4}\nN1: {5}\nN2: {6}\n" +
-                            $"N3: {7}\nNickname: {8}\nP2PSet: {9}\nPublicIp: {10}\nReason: {11}\n" +
-                            $"Session Id: {12}\nStatus: {13}\nUser Id: {14}\n",
-                            loginSuccess.ClientSet,
-                            loginSuccess.Country,
-                            loginSuccess.DlSet,
-                            loginSuccess.MaxRect,
-                            loginSuccess.MinRect,
-                            loginSuccess.N1,
-                            loginSuccess.N2,
-                            loginSuccess.N3,
-                            loginSuccess.Nickname,
-                            loginSuccess.P2PSet,
-                            loginSuccess.PublicIp,
-                            loginSuccess.Reason,
-                            loginSuccess.SessionId,
-                            loginSuccess.Status,
-                            loginSuccess.UserId);
+                        this.LoginInformation = new LoginInfo()
+                        {
+                            ClientSet = loginSuccess.ClientSet,
+                            Country = loginSuccess.Country,
+                            DlSet = loginSuccess.DlSet,
+                            MaxRect = loginSuccess.MaxRect,
+                            MinRect = loginSuccess.MinRect,
+                            N1 = loginSuccess.N1,
+                            N2 = loginSuccess.N2,
+                            N3 = loginSuccess.N3,
+                            Nickname = loginSuccess.Nickname,
+                            P2PSet = loginSuccess.P2PSet,
+                            PublicIp = loginSuccess.PublicIp,
+                            Reason = loginSuccess.Reason,
+                            SessionId = loginSuccess.SessionId,
+                            Status = loginSuccess.Status,
+                            UserId = loginSuccess.UserId
+                        };
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.NicknameChange:
                         Console.WriteLine("Received NicknameChange");
@@ -392,10 +590,12 @@ namespace PFire.Client
 
                         for(int i=0; i<serverList.GameIds.Count; i++)
                         {
-                            Console.WriteLine($"",
-                                serverList.GameIds[i],
-                                serverList.GameIPs[i],
-                                serverList.GamePorts[i]);
+                            this.ListOfServers.Add(new GameInfo()
+                            {
+                                GameId = serverList.GameIds[i],
+                                GameIP = serverList.GameIPs[i],
+                                GamePort = serverList.GamePorts[i]
+                            });
                         }
                         break;
                     case PFire.Core.Protocol.Messages.XFireMessageType.StatusChange:

@@ -84,9 +84,21 @@ namespace PFire.Protocol
                         }
                         catch
                         {
-                            object instance = Activator.CreateInstance(field.PropertyType);
-                            IList list = (IList)instance;
-                            field.SetValue(messageBase, list);
+                            // Might need to handle other generic types here...
+                            if ((field.PropertyType.GetGenericTypeDefinition() == typeof(List<>)) &&
+                                (value.Count > 0))
+                            {
+                                Type t = field.PropertyType;
+                                var constructedListType = typeof(List<>).MakeGenericType(t);
+                                IList instance = (IList)Activator.CreateInstance(t);
+                                
+                                foreach(object val in (IList)value)
+                                {
+                                    instance.Add(val);
+                                }
+                                
+                                field.SetValue(messageBase, instance);
+                            }
                         }
                     }
                     else

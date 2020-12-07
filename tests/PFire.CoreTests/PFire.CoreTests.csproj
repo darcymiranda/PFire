@@ -14,8 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PFire.Client\PFire.Client.csproj" />
-    <ProjectReference Include="..\PFire.Core\PFire.Core.csproj" />
+    <ProjectReference Include="..\..\src\PFire.Client\PFire.Client.csproj" />
+    <ProjectReference Include="..\..\src\PFire.Core\PFire.Core.csproj" />
+    <ProjectReference Include="..\..\src\PFire.Infrastructure\PFire.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

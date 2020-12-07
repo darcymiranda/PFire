@@ -13,5 +13,10 @@ namespace PFire.CoreTests
         public const int Port = 25999;
         public const string UserName = "b";
         public const string Password = "71fa140c7fa2fff09ff4de0a1a273510b93013c6";
+        public const string UserName2 = "c";
+        public const string Password2 = "c";
+        public const string UserName3 = "d";
+        public const string Password3 = "d";
+        public const string FriendMessage = "Add me as a friend";
     }
 }

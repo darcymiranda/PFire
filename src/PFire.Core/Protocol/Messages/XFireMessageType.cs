@@ -35,6 +35,7 @@ namespace PFire.Core.Protocol.Messages
         ChatRooms = 155,
 
         Did = 400,
+        ServerInfo = 500,
 
         Unknown = 999
     }

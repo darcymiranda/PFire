@@ -1,4 +1,5 @@
 ﻿using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Protocol.Messages.Outbound;
 using PFire.Session;
 

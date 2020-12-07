@@ -68,7 +68,7 @@ namespace PFire.Session
                 TcpClient.Client.LocalEndPoint);
         }
 
-
+        /*
         public void ReceiveMessage()
         {
             Byte[] bytesReceived = new Byte[256];
@@ -92,16 +92,7 @@ namespace PFire.Session
 
                 Socket handler = _listener.Accept();
                 bytes = handler.Receive(bytesReceived);
-                /*
-                // The following will block until the page is transmitted.
-                do
-                {
-                    bytes = stream.Read(bytesReceived, 0, bytesReceived.Length);
-                    page = page + Encoding.ASCII.GetString(bytesReceived, 0, bytes);
-                }
-                while (bytes > 0);
-                IMessage message = MessageSerializer.Deserialize(Encoding.ASCII.GetBytes(page));
-                */
+
                 IMessage message = MessageSerializer.Deserialize(bytesReceived);
                 if (message.MessageTypeId == PFire.Core.Protocol.Messages.XFireMessageType.LoginChallenge)
                 {
@@ -120,7 +111,7 @@ namespace PFire.Session
                 }
             }
         }
-
+        */
         public void TestSend(byte[] data)
         {
             Debug.WriteLine("[XFireClient] Sent message to client {0}: {1}", TcpClient.Client.RemoteEndPoint, BitConverter.ToString(data));

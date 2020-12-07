@@ -19,9 +19,18 @@ namespace PFire
         private readonly TcpServer _server;
         private readonly Dictionary<Guid, XFireClient> _sessions;
 
+        public PFireServer(IPEndPoint endPoint = null)
+        {
+            Database = new PFireDatabase(Assembly.GetExecutingAssembly().Location);
+            _sessions = new Dictionary<Guid, XFireClient>();
+            _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), this);
+            _server.OnReceive += HandleRequest;
+            _server.OnConnection += HandleNewConnection;
+            _server.OnDisconnection += OnDisconnection;
+        }
+
         public PFireServer(string baseDirectory, IPEndPoint endPoint = null)
         {
-            
             Database = new PFireDatabase(baseDirectory);
             _sessions = new Dictionary<Guid, XFireClient>();
             _server = new TcpServer(endPoint ?? new IPEndPoint(IPAddress.Any, 25999), this);

@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PFire.Client\PFire.Client.csproj" />
+    <ProjectReference Include="..\..\src\PFire.Core\PFire.Core.csproj" />
+    <ProjectReference Include="..\..\src\PFire.Infrastructure\PFire.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NetCoreServer">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\NetCoreServer.dll</HintPath>
+    </Reference>
+    <Reference Include="PFire.Core">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\PFire.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PFire.Infrastructure">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\PFire.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLite-net">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\SQLite-net.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.batteries_v2">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\SQLitePCLRaw.batteries_v2.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.core">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\SQLitePCLRaw.core.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.nativelibrary">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\SQLitePCLRaw.nativelibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.provider.dynamic_cdecl">
+      <HintPath>..\..\..\..\Documents\Code\PFire\src\PFire.Console\bin\Debug\net5.0\SQLitePCLRaw.provider.dynamic_cdecl.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
