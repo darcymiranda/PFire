@@ -12,14 +12,14 @@ namespace PFire.Data.Services
     public interface IPFireDatabase
     {
         Task<UserModel> InsertUser(string username, string password, string salt);
-        Task InsertMutualFriend(UserModel user1, UserModel user2);
-        Task InsertFriendRequest(UserModel owner, UserModel requestedUsername, string message);
+        Task InsertMutualFriend(UserModel me, UserModel them);
+        Task InsertFriendRequest(UserModel me, UserModel them, string message);
         Task<UserModel> QueryUser(string username);
         Task<List<UserModel>> QueryUsers(string username);
         Task<List<UserModel>> QueryFriends(UserModel user);
         Task<List<FriendRequestModel>> QueryPendingFriendRequestsSelf(UserModel user);
         Task<List<FriendRequestModel>> QueryPendingFriendRequests(UserModel otherUser);
-        Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] pendingFriendRequestIds);
+        Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] thems);
         Task UpdateNickname(UserModel user, string nickname);
     }
 
@@ -35,67 +35,67 @@ namespace PFire.Data.Services
         public async Task<UserModel> InsertUser(string username, string password, string salt)
         {
             using var scope = _serviceProvider.CreateScope();
-            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
-
-            var newUser = new User
+            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
+            using (var transaction = await commandTransactionProvider.StartTransaction())
             {
-                Username = username,
-                Password = password,
-                Salt = salt
-            };
+                //assume valid for now
+                await transaction.CreateEntity<User>().Run(x => x.Username = username).Run(x => x.Password = password).Run(x => x.Salt = salt).SaveChanges();
 
-            databaseContext.Set<User>().Add(newUser);
-            await databaseContext.SaveChanges();
+                //assume valid for now
+                await transaction.Commit();
+            }
 
-            //TODO: is model updated with new id?
-            return new UserModel
-            {
-                Id = newUser.Id,
-                Username = newUser.Username,
-                Nickname = newUser.Nickname
-            };
+            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
+
+            return await reader.Query<User>()
+                               .Where(x => x.Username == username)
+                               .Select(x => new UserModel
+                               {
+                                   Id = x.Id,
+                                   Username = x.Username,
+                                   Password = x.Password,
+                                   Nickname = x.Nickname
+                               })
+                               .SingleOrDefaultAsync();
         }
 
-        public async Task InsertMutualFriend(UserModel user1, UserModel user2)
+        public async Task InsertMutualFriend(UserModel me, UserModel them)
         {
             using var scope = _serviceProvider.CreateScope();
-            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
-            var friends = databaseContext.Set<Friend>();
+            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
 
-            var entity1 = new Friend
+            using (var transaction = await commandTransactionProvider.StartTransaction())
             {
-                MeId = user1.Id,
-                ThemId = user2.Id
-            };
+                //assume valid for now
+                await transaction.DeleteEntity<Friend>(me.Id, them.Id);
+                await transaction.DeleteEntity<Friend>(them.Id, me.Id);
 
-            var entity2 = new Friend
-            {
-                MeId = user2.Id,
-                ThemId = user1.Id
-            };
+                await transaction.CreateEntity<Friend>().Run(x => x.MeId = me.Id).Run(x => x.ThemId = them.Id).SaveChanges();
+                await transaction.CreateEntity<Friend>().Run(x => x.ThemId = me.Id).Run(x => x.MeId = them.Id).SaveChanges();
 
-            friends.Add(entity1);
-            friends.Add(entity2);
-
-            await databaseContext.SaveChanges();
+                //assume valid for now
+                await transaction.Commit();
+            }
         }
 
-        public async Task InsertFriendRequest(UserModel owner, UserModel requestedUsername, string message)
+        public async Task InsertFriendRequest(UserModel me, UserModel them, string message)
         {
             using var scope = _serviceProvider.CreateScope();
-            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
 
-            var pendingFriendRequest = new Friend
+            using (var transaction = await commandTransactionProvider.StartTransaction())
             {
-                MeId = owner.Id,
-                ThemId = requestedUsername.Id,
-                Message = message,
-                Pending = true
-            };
+                //assume valid for now
+                await transaction.CreateEntity<Friend>()
+                                 .Run(x => x.MeId = me.Id)
+                                 .Run(x => x.ThemId = them.Id)
+                                 .Run(x => x.Pending = true)
+                                 .Run(x => x.Message = message)
+                                 .SaveChanges();
 
-            databaseContext.Set<Friend>().Add(pendingFriendRequest);
-
-            await databaseContext.SaveChanges();
+                //assume valid for now
+                await transaction.Commit();
+            }
         }
 
         public async Task<UserModel> QueryUser(string username)
@@ -173,7 +173,6 @@ namespace PFire.Data.Services
             using var scope = _serviceProvider.CreateScope();
             var reader = scope.ServiceProvider.GetRequiredService<IReader>();
 
-            //TODO: use Model instead of Entity
             return await reader.Query<User>()
                                .Where(a => a.Id == user.Id)
                                .SelectMany(x => x.FriendsOf)
@@ -188,33 +187,38 @@ namespace PFire.Data.Services
                                .ToListAsync();
         }
 
-        public async Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] pendingFriendRequestIds)
+        public async Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] thems)
         {
             using var scope = _serviceProvider.CreateScope();
-            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
-            var pendingFriendRequests = databaseContext.Set<Friend>();
+            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
 
-            foreach (var pendingFriendRequest in pendingFriendRequestIds)
+            using (var transaction = await commandTransactionProvider.StartTransaction())
             {
-                var pendingFriendRequest1 = await pendingFriendRequests.FindAsync(me.Id, pendingFriendRequest.Id);
-                var pendingFriendRequest2 = await pendingFriendRequests.FindAsync(pendingFriendRequest.Id, me.Id);
+                foreach (var them in thems)
+                {
+                    //assume valid for now
+                    await transaction.DeleteEntity<Friend>(me.Id, them.Id);
+                    await transaction.DeleteEntity<Friend>(them.Id, me.Id);
+                }
 
-                pendingFriendRequests.Remove(pendingFriendRequest1);
-                pendingFriendRequests.Remove(pendingFriendRequest2);
+                //assume valid for now
+                await transaction.Commit();
             }
-
-            await databaseContext.SaveChanges();
         }
 
         public async Task UpdateNickname(UserModel user, string nickname)
         {
             using var scope = _serviceProvider.CreateScope();
-            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
 
-            var userToUpdate = await databaseContext.Set<User>().SingleAsync(x => x.Id == user.Id);
-            userToUpdate.Nickname = nickname;
+            using (var transaction = await commandTransactionProvider.StartTransaction())
+            {
+                //assume valid for now
+                await transaction.UpdateEntity<User>(user.Id).Run(x => x.Nickname = nickname).SaveChanges();
 
-            await databaseContext.SaveChanges();
+                //assume valid for now
+                await transaction.Commit();
+            }
         }
     }
 }
