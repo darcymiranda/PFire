@@ -9,16 +9,14 @@ namespace PFire.Common.Extensions
     {
         public static IServiceCollection RegisterCommon(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            return serviceCollection
-                   .AddSettings(configuration)
-                   .AddSingleton<IDateTimeService, DateTimeService>();
+            return serviceCollection.AddSettings(configuration)
+                                    .AddSingleton<IDateTimeService, DateTimeService>();
         }
 
         private static IServiceCollection AddSettings(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            return serviceCollection
-                   .ConfigureSettings<DatabaseSettings>(configuration)
-                   .ConfigureSettings<LoggingSettings>(configuration);
+            return serviceCollection.ConfigureSettings<DatabaseSettings>(configuration)
+                                    .ConfigureSettings<LoggingSettings>(configuration);
         }
 
         private static IServiceCollection ConfigureSettings<T>(this IServiceCollection serviceCollection, IConfiguration configuration) where T : class
