@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
 using PFire.Common.Extensions;
+using PFire.Data.Services;
 
-namespace PFire.Data.Services
+namespace PFire.Data.Commands
 {
     public interface ICommand<out T> where T : Entity, new()
     {
@@ -15,15 +16,14 @@ namespace PFire.Data.Services
         Task<ValidationResult> SaveChanges(CancellationToken cancellationToken = default);
     }
 
-    internal class Command<T> : ICommand<T> where T : Entity, new()
+    internal abstract class Command<T> : ICommand<T> where T : Entity, new()
     {
         private readonly List<Func<T, Task>> _actions;
         private readonly IValidator<T> _validator;
         private IDatabaseContext _databaseContext;
-        private Func<IDatabaseContext, CancellationToken, Task<T>> _getAction;
-        private Action<IDatabaseContext, T> _saveAction;
+        private int[] _id;
 
-        public Command(IValidator<T> validator)
+        protected Command(IValidator<T> validator)
         {
             _validator = validator;
             _actions = new List<Func<T, Task>>();
@@ -85,7 +85,7 @@ namespace PFire.Data.Services
         {
             try
             {
-                var entity = await _getAction(_databaseContext, cancellationToken);
+                var entity = await Get(_databaseContext, _id, cancellationToken);
 
                 return (entity, new ValidationResult());
             }
@@ -116,7 +116,7 @@ namespace PFire.Data.Services
             return new ValidationResult();
         }
 
-        private async Task<ValidationResult> ValidateEntity(T entity, CancellationToken cancellationToken)
+        protected virtual async Task<ValidationResult> ValidateEntity(T entity, CancellationToken cancellationToken)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace PFire.Data.Services
         {
             try
             {
-                _saveAction(_databaseContext, entity);
+                Save(_databaseContext, entity);
 
                 return new ValidationResult();
             }
@@ -144,36 +144,13 @@ namespace PFire.Data.Services
             }
         }
 
-        internal ICommand<T> Create()
-        {
-            _getAction = (databaseContext, cancellationToken) => Task.FromResult(new T());
+        protected abstract Task<T> Get(IDatabaseContext databaseContext, int[] id, CancellationToken cancellationToken);
+        protected abstract void Save(IDatabaseContext databaseContext, T entity);
 
-            _saveAction = (databaseContext, entity) => databaseContext.Set<T>().Add(entity);
-
-            return this;
-        }
-
-        internal ICommand<T> Update(int[] id)
-        {
-            _getAction = async (databaseContext, cancellationToken) => await databaseContext.Set<T>().FindAsync(id, cancellationToken);
-
-            _saveAction = (databaseContext, entity) => databaseContext.Set<T>().Update(entity);
-
-            return this;
-        }
-
-        public ICommand<T> Delete(int[] id)
-        {
-            _getAction = async (databaseContext, cancellationToken) => await databaseContext.Set<T>().FindAsync(id, cancellationToken);
-
-            _saveAction = (databaseContext, entity) => databaseContext.Set<T>().Remove(entity);
-
-            return this;
-        }
-
-        public void Initialize(IDatabaseContext databaseContext)
+        public void Initialize(IDatabaseContext databaseContext, int[] id = null)
         {
             _databaseContext = databaseContext;
+            _id = id;
         }
     }
 }

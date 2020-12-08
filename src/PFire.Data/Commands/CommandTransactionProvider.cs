@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace PFire.Data.Services
+namespace PFire.Data.Commands
 {
     public interface ICommandTransactionProvider
     {

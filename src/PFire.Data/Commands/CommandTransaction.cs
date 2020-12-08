@@ -4,8 +4,9 @@ using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using PFire.Common.Extensions;
+using PFire.Data.Services;
 
-namespace PFire.Data.Services
+namespace PFire.Data.Commands
 {
     public interface ICommandTransaction : IDisposable
     {
@@ -50,17 +51,26 @@ namespace PFire.Data.Services
 
         public ICommand<T> CreateEntity<T>() where T : Entity, new()
         {
-            return GetCommand<T>().Create();
+            var command = _serviceProvider.GetRequiredService<CreateCommand<T>>();
+            command.Initialize(_databaseContext);
+
+            return command;
         }
 
         public ICommand<T> UpdateEntity<T>(params int[] id) where T : Entity, new()
         {
-            return GetCommand<T>().Update(id);
+            var command = _serviceProvider.GetRequiredService<UpdateCommand<T>>();
+            command.Initialize(_databaseContext, id);
+
+            return command;
         }
 
         public Task<ValidationResult> DeleteEntity<T>(params int[] id) where T : Entity, new()
         {
-            return GetCommand<T>().Delete(id).SaveChanges();
+            var command = _serviceProvider.GetRequiredService<DeleteCommand<T>>();
+            command.Initialize(_databaseContext, id);
+
+            return command.SaveChanges();
         }
 
         public void Dispose()
@@ -71,14 +81,6 @@ namespace PFire.Data.Services
         public async Task BeginTransaction()
         {
             _transaction = await _databaseContext.BeginTransaction();
-        }
-
-        private Command<T> GetCommand<T>() where T : Entity, new()
-        {
-            var command = _serviceProvider.GetRequiredService<Command<T>>();
-            command.Initialize(_databaseContext);
-
-            return command;
         }
     }
 }

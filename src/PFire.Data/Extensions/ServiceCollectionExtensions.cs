@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PFire.Data.Commands;
 using PFire.Data.Services;
 using PFire.Data.Validators;
 
@@ -20,7 +21,9 @@ namespace PFire.Data.Extensions
                                     .AddTransient<IReader, Reader>()
                                     .AddSingleton<ICommandTransactionProvider, CommandTransactionProvider>()
                                     .AddTransient<CommandTransaction>()
-                                    .AddTransient(typeof(Command<>))
+                                    .AddTransient(typeof(CreateCommand<>))
+                                    .AddTransient(typeof(UpdateCommand<>))
+                                    .AddTransient(typeof(DeleteCommand<>))
                                     .RegisterValidators();
         }
 

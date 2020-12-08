@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using PFire.Data.Commands;
 using PFire.Data.Entities;
 using PFire.Data.Models;
 
