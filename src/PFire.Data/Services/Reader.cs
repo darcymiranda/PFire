@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace PFire.Infrastructure.Services
+namespace PFire.Data.Services
 {
     internal interface IReader
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using PFire.Infrastructure.Services;
+using PFire.Data.Services;
 
-namespace PFire.Infrastructure.Entities
+namespace PFire.Data.Entities
 {
     internal class User : Entity
     {

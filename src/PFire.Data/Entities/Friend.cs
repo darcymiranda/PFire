@@ -1,6 +1,6 @@
-﻿using PFire.Infrastructure.Services;
+﻿using PFire.Data.Services;
 
-namespace PFire.Infrastructure.Entities
+namespace PFire.Data.Entities
 {
     internal class Friend : Entity
     {

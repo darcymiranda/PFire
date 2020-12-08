@@ -9,7 +9,7 @@ using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Util;
-using PFire.Infrastructure.Models;
+using PFire.Data.Models;
 
 namespace PFire.Core.Session
 {

@@ -1,14 +1,15 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using PFire.Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
+using PFire.Data.Entities;
 
-namespace PFire.Infrastructure.Services
+namespace PFire.Data.Services
 {
     internal interface IDatabaseContext
     {
         DbSet<T> Set<T>() where T : Entity;
-        Task SaveChangesAsync();
+        Task SaveChanges();
+        Task<IDbContextTransaction> BeginTransaction();
     }
 
     internal class DatabaseContext : DbContext, IDatabaseContext
@@ -23,9 +24,14 @@ namespace PFire.Infrastructure.Services
             return Set<T>();
         }
 
-        Task IDatabaseContext.SaveChangesAsync()
+        Task IDatabaseContext.SaveChanges()
         {
             return SaveChangesAsync();
+        }
+
+        public Task<IDbContextTransaction> BeginTransaction()
+        {
+            return Database.BeginTransactionAsync();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -54,17 +60,6 @@ namespace PFire.Infrastructure.Services
                         .WithMany(t => t.FriendsOf)
                         .HasForeignKey(m => m.ThemId)
                         .OnDelete(DeleteBehavior.Restrict);
-        }
-    }
-
-    internal class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
-    {
-        public DatabaseContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseSqlite("Data Source=blog.db");
-
-            return new DatabaseContext(optionsBuilder.Options);
         }
     }
 }

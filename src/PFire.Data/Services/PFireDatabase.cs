@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PFire.Infrastructure.Entities;
-using PFire.Infrastructure.Models;
+using PFire.Data.Entities;
+using PFire.Data.Models;
 
-namespace PFire.Infrastructure.Services
+namespace PFire.Data.Services
 {
     public interface IPFireDatabase
     {
@@ -45,7 +45,7 @@ namespace PFire.Infrastructure.Services
             };
 
             databaseContext.Set<User>().Add(newUser);
-            await databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChanges();
 
             //TODO: is model updated with new id?
             return new UserModel
@@ -77,7 +77,7 @@ namespace PFire.Infrastructure.Services
             friends.Add(entity1);
             friends.Add(entity2);
 
-            await databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChanges();
         }
 
         public async Task InsertFriendRequest(UserModel owner, UserModel requestedUsername, string message)
@@ -95,7 +95,7 @@ namespace PFire.Infrastructure.Services
 
             databaseContext.Set<Friend>().Add(pendingFriendRequest);
 
-            await databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChanges();
         }
 
         public async Task<UserModel> QueryUser(string username)
@@ -203,7 +203,7 @@ namespace PFire.Infrastructure.Services
                 pendingFriendRequests.Remove(pendingFriendRequest2);
             }
 
-            await databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChanges();
         }
 
         public async Task UpdateNickname(UserModel user, string nickname)
@@ -214,7 +214,7 @@ namespace PFire.Infrastructure.Services
             var userToUpdate = await databaseContext.Set<User>().SingleAsync(x => x.Id == user.Id);
             userToUpdate.Nickname = nickname;
 
-            await databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChanges();
         }
     }
 }

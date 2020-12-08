@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PFire.Infrastructure.Services;
+using PFire.Data.Services;
 
-namespace PFire.Infrastructure.Extensions
+namespace PFire.Data.Extensions
 {
     public static class ServiceCollectionExtensions
     {
