@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
@@ -22,8 +23,8 @@ namespace PFire.Core.Session
         string Salt { get; }
         void Disconnect();
         void Dispose();
-        void SendAndProcessMessage(XFireMessage message);
-        void SendMessage(XFireMessage invite);
+        Task SendAndProcessMessage(XFireMessage message);
+        Task SendMessage(XFireMessage invite);
         void RemoveDuplicatedSessions(User user);
     }
 
@@ -91,13 +92,13 @@ namespace PFire.Core.Session
             _connected = false;
         }
 
-        public void SendAndProcessMessage(XFireMessage message)
+        public async Task SendAndProcessMessage(XFireMessage message)
         {
-            message.Process(this);
-            SendMessage(message);
+            await message.Process(this);
+            await SendMessage(message);
         }
 
-        public void SendMessage(XFireMessage message)
+        public async Task SendMessage(XFireMessage message)
         {
             if (Disposed)
             {
@@ -112,10 +113,10 @@ namespace PFire.Core.Session
 
             var payload = MessageSerializer.Serialize(message);
 
-            _tcpClient.Client.Send(payload);
+            await _tcpClient.Client.SendAsync(payload, SocketFlags.None);
 
-            var username = User != null ? User.Username : "unknown";
-            var userId = User != null ? User.UserId : -1;
+            var username = User?.Username ?? "unknown";
+            var userId = User?.UserId ?? -1;
 
             Logger.LogDebug($"Sent message[{username},{userId}]: {message}");
         }
@@ -237,8 +238,8 @@ namespace PFire.Core.Session
             {
                 var message = MessageSerializer.Deserialize(messageBuffer);
 
-                var username = User != null ? User.Username : "unknown";
-                var userId = User != null ? User.UserId : -1;
+                var username = User?.Username ?? "unknown";
+                var userId = User?.UserId ?? -1;
 
                 Logger.LogDebug($"Recv message[{username},{userId}]: {message}");
 

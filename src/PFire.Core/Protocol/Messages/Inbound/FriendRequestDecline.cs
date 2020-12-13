@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -8,18 +9,18 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public FriendRequestDecline() : base(XFireMessageType.FriendRequestDecline) {}
 
         [XMessageField("name")]
-        public string RequesterUsername { get; private set; }
+        public string RequesterUsername { get; set; }
 
-        public override void Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var requesterUser = context.Server.Database.QueryUser(RequesterUsername);
-            var pendingRequests = context.Server.Database.QueryPendingFriendRequestsSelf(requesterUser);
+            var requesterUser = await context.Server.Database.QueryUser(RequesterUsername);
+            var pendingRequests = await context.Server.Database.QueryPendingFriendRequestsSelf(requesterUser);
 
             var requestsIds = pendingRequests.Where(a => a.UserId == requesterUser.UserId && a.FriendUserId == context.User.UserId)
                                              .Select(a => a.PendingFriendRequestId)
                                              .ToArray();
 
-            context.Server.Database.DeletePendingFriendRequest(requestsIds);
+            await context.Server.Database.DeletePendingFriendRequest(requestsIds);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -19,9 +20,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
         [XMessageField("partner")]
         public string Partner { get; set; }
 
-        public override void Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            context.SendAndProcessMessage(new Did());
+            await context.SendAndProcessMessage(new Did());
+
         }
     }
 }

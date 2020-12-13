@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Outbound
@@ -30,9 +31,10 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField("email")]
         public List<string> Emails { get; }
 
-        public override void Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var usernames = context.Server.Database.QueryUsers(_queryByUsername).Select(a => a.Username).ToList();
+            var queryUsers = await context.Server.Database.QueryUsers(_queryByUsername);
+            var usernames = queryUsers.Select(a => a.Username).ToList();
 
             Usernames.AddRange(usernames);
 

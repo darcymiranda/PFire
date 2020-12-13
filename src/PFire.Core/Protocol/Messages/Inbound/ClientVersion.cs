@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -8,16 +9,16 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public ClientVersion() : base(XFireMessageType.ClientVersion) {}
 
         [XMessageField("version")]
-        public int Version { get; private set; }
+        public int Version { get; set; }
 
         [XMessageField("major_version")]
-        public int MajorVersion { get; private set; }
+        public int MajorVersion { get; set; }
 
-        public override void Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             var loginChallenge = new LoginChallenge();
-            loginChallenge.Process(context);
-            context.SendMessage(loginChallenge);
+            await loginChallenge.Process(context);
+            await context.SendMessage(loginChallenge);
         }
 
         public override string ToString()

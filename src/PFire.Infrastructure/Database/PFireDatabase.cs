@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PFire.Common.Models;
@@ -10,17 +11,17 @@ namespace PFire.Infrastructure.Database
 {
     public interface IPFireDatabase
     {
-        User InsertUser(string username, string password, string salt);
-        void InsertMutualFriend(User user1, User user2);
-        void InsertFriendRequest(User owner, string requestedUsername, string message);
-        User QueryUser(int userId);
-        User QueryUser(string username);
-        List<User> QueryUsers(string username);
-        List<User> QueryFriends(User user);
-        List<PendingFriendRequest> QueryPendingFriendRequestsSelf(User user);
-        List<PendingFriendRequest> QueryPendingFriendRequests(User otherUser);
-        void DeletePendingFriendRequest(params int[] sequenceIds);
-        void UpdateNickname(User user, string nickname);
+        Task<User> InsertUser(string username, string password, string salt);
+        Task InsertMutualFriend(User user1, User user2);
+        Task InsertFriendRequest(User owner, string requestedUsername, string message);
+        Task<User> QueryUser(int userId);
+        Task<User> QueryUser(string username);
+        Task<List<User>> QueryUsers(string username);
+        Task<List<User>> QueryFriends(User user);
+        Task<List<PendingFriendRequest>> QueryPendingFriendRequestsSelf(User user);
+        Task<List<PendingFriendRequest>> QueryPendingFriendRequests(User otherUser);
+        Task DeletePendingFriendRequest(params int[] sequenceIds);
+        Task UpdateNickname(User user, string nickname);
     }
 
     internal class PFireDatabase : SQLiteConnection, IPFireDatabase
@@ -33,63 +34,85 @@ namespace PFire.Infrastructure.Database
             CreateTable<PendingFriendRequest>();
         }
 
-        public User InsertUser(string username, string password, string salt)
+        public async Task<User> InsertUser(string username, string password, string salt)
         {
+            await Task.Yield();
+
             var newUser = new User(username, password, salt);
             Insert(newUser);
-            return QueryUser(newUser.UserId);
+            return await QueryUser(newUser.UserId);
         }
 
-        public void InsertMutualFriend(User user1, User user2)
+        public async Task InsertMutualFriend(User user1, User user2)
         {
+            await Task.Yield();
             Insert(new Friend(user1.UserId, user2.UserId));
             Insert(new Friend(user2.UserId, user1.UserId));
         }
 
-        public void InsertFriendRequest(User owner, string requestedUsername, string message)
+        public async Task InsertFriendRequest(User owner, string requestedUsername, string message)
         {
-            Insert(new PendingFriendRequest(owner.UserId, QueryUser(requestedUsername).UserId, message));
+            await Task.Yield();
+
+            var queryUser = await QueryUser(requestedUsername);
+            Insert(new PendingFriendRequest(owner.UserId, queryUser.UserId, message));
         }
 
-        public User QueryUser(int userId)
+        public async Task<User> QueryUser(int userId)
         {
+            await Task.Yield();
+
             return Table<User>().FirstOrDefault(a => a.UserId == userId);
         }
 
-        public User QueryUser(string username)
+        public async Task<User> QueryUser(string username)
         {
+            await Task.Yield();
+
             return Table<User>().FirstOrDefault(a => a.Username == username);
         }
 
-        public List<User> QueryUsers(string username)
+        public async Task<List<User>> QueryUsers(string username)
         {
+            await Task.Yield();
+
             return Table<User>().Where(a => a.Username.Contains(username)).ToList();
         }
 
-        public List<User> QueryFriends(User user)
+        public async Task<List<User>> QueryFriends(User user)
         {
+            await Task.Yield();
+
             var friendMatches = Table<Friend>().Where(a => a.UserId == user.UserId).ToList();
             var friends = friendMatches.Select(a => a.FriendUserId).ToList();
             return Table<User>().Where(a => friends.Contains(a.UserId)).ToList();
         }
 
-        public List<PendingFriendRequest> QueryPendingFriendRequestsSelf(User user)
+        public async Task<List<PendingFriendRequest>> QueryPendingFriendRequestsSelf(User user)
         {
+            await Task.Yield();
+
             return Table<PendingFriendRequest>().Where(a => a.UserId == user.UserId).ToList();
         }
 
-        public List<PendingFriendRequest> QueryPendingFriendRequests(User otherUser)
+        public async Task<List<PendingFriendRequest>> QueryPendingFriendRequests(User otherUser)
         {
+            await Task.Yield();
+
             return Table<PendingFriendRequest>().Where(a => a.FriendUserId == otherUser.UserId).ToList();
         }
 
-        public void DeletePendingFriendRequest(params int[] sequenceIds)
+        public async Task DeletePendingFriendRequest(params int[] sequenceIds)
         {
+            await Task.Yield();
+
             sequenceIds.ToList().ForEach(a => Delete<PendingFriendRequest>(a));
         }
 
-        public void UpdateNickname(User user, string nickname)
+        public async Task UpdateNickname(User user, string nickname)
         {
+            await Task.Yield();
+
             Execute("UPDATE User SET Nickname = ? WHERE UserId = ?", nickname, user.UserId);
         }
     }

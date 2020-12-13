@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -8,21 +9,24 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public FriendRequest() : base(XFireMessageType.FriendRequest) {}
 
         [XMessageField("name")]
-        public string Username { get; private set; }
+        public string Username { get; set; }
 
         [XMessageField("msg")]
-        public string Message { get; private set; }
+        public string Message { get; set; }
 
-        public override void Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
-            var recipient = context.Server.Database.QueryUser(Username);
+            var recipient = await context.Server.Database.QueryUser(Username);
             var invite = new FriendInvite(context.User.Username, context.User.Nickname, Message);
-            invite.Process(context);
+            await invite.Process(context);
 
-            context.Server.Database.InsertFriendRequest(context.User, Username, Message);
+            await context.Server.Database.InsertFriendRequest(context.User, Username, Message);
 
             var recipientSession = context.Server.GetSession(recipient);
-            recipientSession?.SendMessage(invite);
+            if (recipientSession != null)
+            {
+                await recipientSession.SendMessage(invite);
+            }
         }
     }
 }

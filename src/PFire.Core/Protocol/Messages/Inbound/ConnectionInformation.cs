@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -8,61 +9,64 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public ConnectionInformation() : base(XFireMessageType.ConnectionInformation) {}
 
         [XMessageField("conn")]
-        public int Connection { get; private set; }
+        public int Connection { get; set; }
 
         [XMessageField("nat")]
-        public int Nat { get; private set; }
+        public int Nat { get; set; }
 
         [XMessageField("naterr")]
-        public int NatError { get; private set; }
+        public int NatError { get; set; }
 
         [XMessageField("sec")]
-        public int Sec { get; private set; }
+        public int Sec { get; set; }
 
         [XMessageField("clientip")]
-        public int ClientIp { get; private set; }
+        public int ClientIp { get; set; }
 
         [XMessageField("upnpinfo")]
-        public string UpnpInfo { get; private set; }
+        public string UpnpInfo { get; set; }
 
-        public override void Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             var clientPrefs = new Unknown10();
-            context.SendAndProcessMessage(clientPrefs);
+            await context.SendAndProcessMessage(clientPrefs);
 
             var groups = new Groups();
-            context.SendAndProcessMessage(groups);
+            await context.SendAndProcessMessage(groups);
 
             var groupsFriends = new GroupsFriends();
-            context.SendAndProcessMessage(groupsFriends);
+            await context.SendAndProcessMessage(groupsFriends);
 
             var serverList = new ServerList();
-            context.SendAndProcessMessage(serverList);
+            await context.SendAndProcessMessage(serverList);
 
             var chatRooms = new ChatRooms();
-            context.SendAndProcessMessage(chatRooms);
+            await context.SendAndProcessMessage(chatRooms);
 
             var friendsList = new FriendsList(context.User);
-            context.SendAndProcessMessage(friendsList);
+            await context.SendAndProcessMessage(friendsList);
 
             var friendsStatus = new FriendsSessionAssign(context.User);
-            context.SendAndProcessMessage(friendsStatus);
+            await context.SendAndProcessMessage(friendsStatus);
 
             // Tell friends this user came online
             //if (context.User.Username == "test") Debugger.Break();
-            var friends = context.Server.Database.QueryFriends(context.User);
-            friends.ForEach(friend =>
+            var friends = await context.Server.Database.QueryFriends(context.User);
+            foreach (var friend in friends)
             {
                 var otherSession = context.Server.GetSession(friend);
-                otherSession?.SendAndProcessMessage(new FriendsSessionAssign(friend));
-            });
+                if (otherSession != null)
+                {
+                    await otherSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                }
+            }
 
-            var pendingFriendRequests = context.Server.Database.QueryPendingFriendRequests(context.User);
-            pendingFriendRequests.ForEach(request =>
+            var pendingFriendRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
+            foreach (var request in pendingFriendRequests)
             {
-                var requester = context.Server.Database.QueryUser(request.UserId);
-                context.SendAndProcessMessage(new FriendInvite(requester.Username, requester.Nickname, request.Message));
-            });
+                var requester = await context.Server.Database.QueryUser(request.UserId);
+                await context.SendAndProcessMessage(new FriendInvite(requester.Username, requester.Nickname, request.Message));
+            }
         }
     }
 }

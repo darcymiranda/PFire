@@ -6,11 +6,11 @@ namespace PFire.Core
 {
     internal interface ITcpServer
     {
-        delegate void OnConnectionHandler(IXFireClient sessionContext);
+        delegate Task OnConnectionHandler(IXFireClient sessionContext);
 
-        delegate void OnDisconnectionHandler(IXFireClient sessionContext);
+        delegate Task OnDisconnectionHandler(IXFireClient sessionContext);
 
-        delegate void OnReceiveHandler(IXFireClient sessionContext, IMessage message);
+        delegate Task OnReceiveHandler(IXFireClient sessionContext, IMessage message);
 
         event OnReceiveHandler OnReceive;
         event OnConnectionHandler OnConnection;

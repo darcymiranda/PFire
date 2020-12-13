@@ -5,6 +5,6 @@
         public LoginFailure() : base(XFireMessageType.LoginFailure) {}
 
         [XMessageField("reason")]
-        public int Reason { get; private set; }
+        public int Reason { get; set; }
     }
 }
