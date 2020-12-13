@@ -39,8 +39,8 @@ namespace PFire.Data.Services
 
             friendEntity.HasIndex(x => new
                         {
-                            RequesterId = x.MeId,
-                            RecipientId = x.ThemId
+                            x.MeId,
+                            x.ThemId
                         })
                         .IsUnique();
 
@@ -54,13 +54,18 @@ namespace PFire.Data.Services
                         .HasForeignKey(x => x.ThemId)
                         .OnDelete(DeleteBehavior.Restrict);
 
+            friendEntity.Property(x => x.Message).HasMaxLength(1000);
+
             var userEntity = modelBuilder.Entity<User>();
 
             userEntity.HasKey(x => x.Id);
             userEntity.Property(x => x.Id).ValueGeneratedOnAdd();
-            userEntity.Property(x => x.Username).IsRequired();
+            userEntity.HasIndex(x => x.Id);
+            userEntity.Property(x => x.Username).IsRequired().HasMaxLength(1000);
+            userEntity.HasIndex(x => x.Username);
             userEntity.Property(x => x.Password).IsRequired();
             userEntity.Property(x => x.Salt).IsRequired();
+            userEntity.Property(x => x.Nickname).HasMaxLength(1000);
         }
     }
 }
