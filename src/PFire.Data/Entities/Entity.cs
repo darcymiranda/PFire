@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PFire.Data.Services
+namespace PFire.Data.Entities
 {
     public abstract class Entity
     {

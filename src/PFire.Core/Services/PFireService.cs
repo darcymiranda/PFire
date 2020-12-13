@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PFire.Data.Commands;
+using PFire.Core.Models;
 using PFire.Data.Entities;
-using PFire.Data.Models;
+using PFire.Data.Services;
 
-namespace PFire.Data.Services
+namespace PFire.Core.Services
 {
-    public interface IPFireDatabase
+    internal interface IPFireService
     {
         Task<UserModel> InsertUser(string username, string password, string salt);
         Task InsertMutualFriend(UserModel me, UserModel them);
@@ -24,11 +24,11 @@ namespace PFire.Data.Services
         Task UpdateNickname(UserModel user, string nickname);
     }
 
-    internal class PFireDatabase : IPFireDatabase
+    internal class PFireService : IPFireService
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public PFireDatabase(IServiceProvider serviceProvider)
+        public PFireService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

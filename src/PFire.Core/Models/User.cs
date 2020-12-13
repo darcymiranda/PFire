@@ -1,4 +1,4 @@
-﻿namespace PFire.Data.Models
+﻿namespace PFire.Core.Models
 {
     public class UserModel
     {
