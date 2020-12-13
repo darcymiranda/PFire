@@ -4,7 +4,7 @@ using PFire.Data.Entities;
 
 namespace PFire.Data.Services
 {
-    internal interface IDatabaseContext
+    public interface IDatabaseContext
     {
         DbSet<T> Set<T>() where T : Entity;
         Task SaveChanges();

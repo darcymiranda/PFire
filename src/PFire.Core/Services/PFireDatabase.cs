@@ -36,190 +36,223 @@ namespace PFire.Core.Services
         public async Task<UserModel> InsertUser(string username, string password, string salt)
         {
             using var scope = _serviceProvider.CreateScope();
-            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
-            using (var transaction = await commandTransactionProvider.StartTransaction())
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var newUser = new User
             {
-                //assume valid for now
-                await transaction.CreateEntity<User>().Run(x => x.Username = username).Run(x => x.Password = password).Run(x => x.Salt = salt).SaveChanges();
+                Username = username,
+                Password = password,
+                Salt = salt,
+                DateCreated = DateTime.Now
+            };
 
-                //assume valid for now
-                await transaction.Commit();
-            }
+            await databaseContext.Set<User>().AddAsync(newUser);
 
-            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
-
-            return await reader.Query<User>()
-                               .Where(x => x.Username == username)
-                               .Select(x => new UserModel
-                               {
-                                   Id = x.Id,
-                                   Username = x.Username,
-                                   Password = x.Password,
-                                   Nickname = x.Nickname
-                               })
-                               .SingleOrDefaultAsync();
+            return new UserModel
+            {
+                Id = newUser.Id,
+                Username = newUser.Username,
+                Password = newUser.Password,
+                Nickname = newUser.Nickname
+            };
         }
 
         public async Task InsertMutualFriend(UserModel me, UserModel them)
         {
             using var scope = _serviceProvider.CreateScope();
-            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+            var friends = databaseContext.Set<Friend>();
 
-            using (var transaction = await commandTransactionProvider.StartTransaction())
+            var myFriend = await friends.FindAsync(me.Id, them.Id);
+            if (myFriend == null)
             {
-                //assume valid for now
-                await transaction.DeleteEntity<Friend>(me.Id, them.Id);
-                await transaction.DeleteEntity<Friend>(them.Id, me.Id);
-
-                await transaction.CreateEntity<Friend>().Run(x => x.MeId = me.Id).Run(x => x.ThemId = them.Id).SaveChanges();
-                await transaction.CreateEntity<Friend>().Run(x => x.ThemId = me.Id).Run(x => x.MeId = them.Id).SaveChanges();
-
-                //assume valid for now
-                await transaction.Commit();
+                await friends.AddAsync(new Friend
+                {
+                    MeId = me.Id,
+                    ThemId = them.Id,
+                    Pending = false,
+                    DateCreated = DateTime.Now
+                });
             }
+            else
+            {
+                myFriend.Message = null;
+                myFriend.Pending = false;
+                myFriend.DateModified = DateTime.Now;
+            }
+
+            var friendOf = await friends.FindAsync(them.Id, me.Id);
+            if (friendOf == null)
+            {
+                await friends.AddAsync(new Friend
+                {
+                    MeId = them.Id,
+                    ThemId = me.Id,
+                    Pending = false,
+                    DateCreated = DateTime.Now
+                });
+            }
+            else
+            {
+                friendOf.Message = null;
+                friendOf.Pending = false;
+                friendOf.DateModified = DateTime.Now;
+            }
+
+            await databaseContext.SaveChanges();
         }
 
         public async Task InsertFriendRequest(UserModel me, UserModel them, string message)
         {
             using var scope = _serviceProvider.CreateScope();
-            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            using (var transaction = await commandTransactionProvider.StartTransaction())
+            var friendRequest = new Friend
             {
-                //assume valid for now
-                await transaction.CreateEntity<Friend>()
-                                 .Run(x => x.MeId = me.Id)
-                                 .Run(x => x.ThemId = them.Id)
-                                 .Run(x => x.Pending = true)
-                                 .Run(x => x.Message = message)
-                                 .SaveChanges();
+                MeId = me.Id,
+                ThemId = them.Id,
+                Pending = true,
+                DateCreated = DateTime.Now,
+                Message = message
+            };
 
-                //assume valid for now
-                await transaction.Commit();
-            }
+            await databaseContext.Set<Friend>().AddAsync(friendRequest);
+
+            await databaseContext.SaveChanges();
         }
 
         public async Task<UserModel> QueryUser(string username)
         {
             using var scope = _serviceProvider.CreateScope();
-            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            return await reader.Query<User>()
-                               .Where(a => a.Username == username)
-                               .Select(x => new UserModel
-                               {
-                                   Id = x.Id,
-                                   Username = x.Username,
-                                   Password = x.Password,
-                                   Nickname = x.Nickname
-                               })
-                               .FirstOrDefaultAsync();
+            return await databaseContext.Set<User>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Username == username)
+                                        .Select(x => new UserModel
+                                        {
+                                            Id = x.Id,
+                                            Username = x.Username,
+                                            Password = x.Password,
+                                            Nickname = x.Nickname
+                                        })
+                                        .FirstOrDefaultAsync();
         }
 
         public async Task<List<UserModel>> QueryUsers(string username)
         {
             using var scope = _serviceProvider.CreateScope();
-            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            return await reader.Query<User>()
-                               .Where(a => a.Username.Contains(username))
-                               .Select(x => new UserModel
-                               {
-                                   Id = x.Id,
-                                   Username = x.Username,
-                                   Nickname = x.Nickname
-                               })
-                               .ToListAsync();
+            return await databaseContext.Set<User>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Username.Contains(username))
+                                        .Select(x => new UserModel
+                                        {
+                                            Id = x.Id,
+                                            Username = x.Username,
+                                            Nickname = x.Nickname
+                                        })
+                                        .ToListAsync();
         }
 
         public async Task<List<UserModel>> QueryFriends(UserModel user)
         {
             using var scope = _serviceProvider.CreateScope();
-            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            return await reader.Query<User>()
-                               .Where(a => a.Id == user.Id)
-                               .SelectMany(a => a.MyFriends)
-                               .Where(x => x.Pending == false)
-                               .Select(x => new UserModel
-                               {
-                                   Id = x.Them.Id,
-                                   Username = x.Them.Username,
-                                   Nickname = x.Them.Nickname
-                               })
-                               .ToListAsync();
+            return await databaseContext.Set<User>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Id == user.Id)
+                                        .SelectMany(a => a.MyFriends)
+                                        .Where(x => x.Pending == false)
+                                        .Select(x => new UserModel
+                                        {
+                                            Id = x.Them.Id,
+                                            Username = x.Them.Username,
+                                            Nickname = x.Them.Nickname
+                                        })
+                                        .ToListAsync();
         }
 
         public async Task<List<FriendRequestModel>> QueryPendingFriendRequestsSelf(UserModel user)
         {
             using var scope = _serviceProvider.CreateScope();
-            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            return await reader.Query<User>()
-                               .Where(a => a.Id == user.Id)
-                               .SelectMany(x => x.MyFriends)
-                               .Where(x => x.Pending)
-                               .Select(x => new FriendRequestModel
-                               {
-                                   Id = x.Them.Id,
-                                   Username = x.Them.Username,
-                                   Nickname = x.Them.Nickname,
-                                   Message = x.Message
-                               })
-                               .ToListAsync();
+            return await databaseContext.Set<User>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Id == user.Id)
+                                        .SelectMany(x => x.MyFriends)
+                                        .Where(x => x.Pending)
+                                        .Select(x => new FriendRequestModel
+                                        {
+                                            Id = x.Them.Id,
+                                            Username = x.Them.Username,
+                                            Nickname = x.Them.Nickname,
+                                            Message = x.Message
+                                        })
+                                        .ToListAsync();
         }
 
         public async Task<List<FriendRequestModel>> QueryPendingFriendRequests(UserModel user)
         {
             using var scope = _serviceProvider.CreateScope();
-            var reader = scope.ServiceProvider.GetRequiredService<IReader>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            return await reader.Query<User>()
-                               .Where(a => a.Id == user.Id)
-                               .SelectMany(x => x.FriendsOf)
-                               .Where(x => x.Pending)
-                               .Select(x => new FriendRequestModel
-                               {
-                                   Id = x.Them.Id,
-                                   Username = x.Them.Username,
-                                   Nickname = x.Them.Nickname,
-                                   Message = x.Message
-                               })
-                               .ToListAsync();
+            return await databaseContext.Set<User>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Id == user.Id)
+                                        .SelectMany(x => x.FriendsOf)
+                                        .Where(x => x.Pending)
+                                        .Select(x => new FriendRequestModel
+                                        {
+                                            Id = x.Them.Id,
+                                            Username = x.Them.Username,
+                                            Nickname = x.Them.Nickname,
+                                            Message = x.Message
+                                        })
+                                        .ToListAsync();
         }
 
         public async Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] thems)
         {
             using var scope = _serviceProvider.CreateScope();
-            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            using (var transaction = await commandTransactionProvider.StartTransaction())
+            var friends = databaseContext.Set<Friend>();
+            foreach (var them in thems)
             {
-                foreach (var them in thems)
+                var myFriend = await friends.FindAsync(me.Id, them.Id);
+                if (myFriend != null)
                 {
-                    //assume valid for now
-                    await transaction.DeleteEntity<Friend>(me.Id, them.Id);
-                    await transaction.DeleteEntity<Friend>(them.Id, me.Id);
+                    friends.Remove(myFriend);
                 }
 
-                //assume valid for now
-                await transaction.Commit();
+                var friendOf = await friends.FindAsync(them.Id, me.Id);
+                if (friendOf != null)
+                {
+                    friends.Remove(friendOf);
+                }
             }
+
+            await databaseContext.SaveChanges();
         }
 
         public async Task UpdateNickname(UserModel user, string nickname)
         {
             using var scope = _serviceProvider.CreateScope();
-            var commandTransactionProvider = scope.ServiceProvider.GetRequiredService<ICommandTransactionProvider>();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            using (var transaction = await commandTransactionProvider.StartTransaction())
+            var entity = await databaseContext.Set<User>().FindAsync(user.Id);
+            if (entity == null)
             {
-                //assume valid for now
-                await transaction.UpdateEntity<User>(user.Id).Run(x => x.Nickname = nickname).SaveChanges();
-
-                //assume valid for now
-                await transaction.Commit();
+                return;
             }
+
+            entity.Nickname = nickname;
+
+            await databaseContext.SaveChanges();
         }
     }
 }

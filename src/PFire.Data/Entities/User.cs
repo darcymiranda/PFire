@@ -2,7 +2,7 @@
 
 namespace PFire.Data.Entities
 {
-    internal class User : Entity
+    public class User : Entity
     {
         public int Id { get; set; }
         public string Username { get; set; }

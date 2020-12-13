@@ -12,8 +12,7 @@ namespace PFire.Data.Extensions
             var connectionString = configuration.GetConnectionString("PFire");
 
             return serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>()
-                                    .AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString))
-                                    .AddTransient<IReader, Reader>();
+                                    .AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString));
         }
     }
 }

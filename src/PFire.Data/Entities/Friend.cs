@@ -1,8 +1,6 @@
-﻿using PFire.Data.Services;
-
-namespace PFire.Data.Entities
+﻿namespace PFire.Data.Entities
 {
-    internal class Friend : Entity
+    public class Friend : Entity
     {
         public int MeId { get; set; }
         public User Me { get; set; }
