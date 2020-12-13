@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using PFire.Data.Entities;
 
 namespace PFire.Data.Services
@@ -9,7 +8,6 @@ namespace PFire.Data.Services
     {
         DbSet<T> Set<T>() where T : Entity;
         Task SaveChanges();
-        Task<IDbContextTransaction> BeginTransaction();
     }
 
     internal class DatabaseContext : DbContext, IDatabaseContext
@@ -27,11 +25,6 @@ namespace PFire.Data.Services
         Task IDatabaseContext.SaveChanges()
         {
             return SaveChangesAsync();
-        }
-
-        public Task<IDbContextTransaction> BeginTransaction()
-        {
-            return Database.BeginTransactionAsync();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,14 +45,22 @@ namespace PFire.Data.Services
                         .IsUnique();
 
             friendEntity.HasOne(x => x.Me)
-                        .WithMany(t => t.MyFriends)
-                        .HasForeignKey(m => m.MeId)
+                        .WithMany(x => x.MyFriends)
+                        .HasForeignKey(x => x.MeId)
                         .OnDelete(DeleteBehavior.Restrict);
 
             friendEntity.HasOne(x => x.Them)
-                        .WithMany(t => t.FriendsOf)
-                        .HasForeignKey(m => m.ThemId)
+                        .WithMany(x => x.FriendsOf)
+                        .HasForeignKey(x => x.ThemId)
                         .OnDelete(DeleteBehavior.Restrict);
+
+            var userEntity = modelBuilder.Entity<User>();
+
+            userEntity.HasKey(x => x.Id);
+            userEntity.Property(x => x.Id).ValueGeneratedOnAdd();
+            userEntity.Property(x => x.Username).IsRequired();
+            userEntity.Property(x => x.Password).IsRequired();
+            userEntity.Property(x => x.Salt).IsRequired();
         }
     }
 }

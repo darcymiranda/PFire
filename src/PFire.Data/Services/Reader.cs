@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using PFire.Data.Entities;
 
 namespace PFire.Data.Services
 {
