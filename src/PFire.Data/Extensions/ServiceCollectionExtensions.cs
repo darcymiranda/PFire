@@ -13,7 +13,7 @@ namespace PFire.Data.Extensions
     {
         public static IServiceCollection RegisterInfrastructure(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            var connectionString = configuration["ConnectionStrings:PFire"];
+            var connectionString = configuration.GetConnectionString("PFire");
 
             return serviceCollection.AddSingleton<IPFireDatabase, PFireDatabase>()
                                     .AddScoped<IDatabaseContext, DatabaseContext>()

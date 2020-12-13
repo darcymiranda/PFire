@@ -17,18 +17,16 @@ namespace PFire.Console
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
-                    .ReadFrom.Configuration(hostingContext.Configuration)
-                )
-                .UseWindowsService()
-                .UseSystemd()
-                .ConfigureServices((hostBuilderContext, services) =>
-                {
-                    services.RegisterAll(
-                        hostBuilderContext.HostingEnvironment,
-                        hostBuilderContext.Configuration
-                    );
-                });
+                       .UseSerilog((hostingContext, loggerConfiguration) =>
+                       {
+                           loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
+                       })
+                       .UseWindowsService()
+                       .UseSystemd()
+                       .ConfigureServices((hostBuilderContext, services) =>
+                       {
+                           services.RegisterAll(hostBuilderContext.Configuration);
+                       });
         }
     }
 }
