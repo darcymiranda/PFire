@@ -5,11 +5,11 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PFire.Core.Models;
 using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Util;
-using PFire.Data.Models;
 
 namespace PFire.Core.Session
 {

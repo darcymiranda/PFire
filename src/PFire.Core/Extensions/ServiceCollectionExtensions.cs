@@ -13,7 +13,7 @@ namespace PFire.Core.Extensions
             return serviceCollection.AddSingleton<IPFireServer, PFireServer>()
                                     .AddSingleton<IXFireClientManager, XFireClientManager>()
                                     .AddSingleton<ITcpServer, TcpServer>()
-                                    .AddSingleton<IPFireService, PFireService>()
+                                    .AddSingleton<IPFireDatabase, PFireDatabase>()
                                     .AddSingleton(x => new TcpListener(new IPEndPoint(IPAddress.Any, 25999)));
         }
     }

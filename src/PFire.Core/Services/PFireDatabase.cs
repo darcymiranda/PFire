@@ -10,7 +10,7 @@ using PFire.Data.Services;
 
 namespace PFire.Core.Services
 {
-    internal interface IPFireService
+    internal interface IPFireDatabase
     {
         Task<UserModel> InsertUser(string username, string password, string salt);
         Task InsertMutualFriend(UserModel me, UserModel them);
@@ -24,11 +24,11 @@ namespace PFire.Core.Services
         Task UpdateNickname(UserModel user, string nickname);
     }
 
-    internal class PFireService : IPFireService
+    internal class PFireDatabase : IPFireDatabase
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public PFireService(IServiceProvider serviceProvider)
+        public PFireDatabase(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PFire.Core.Models;
 using PFire.Core.Session;
-using PFire.Data.Models;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
