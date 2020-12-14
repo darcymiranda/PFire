@@ -63,9 +63,9 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
 
             var pendingFriendRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
-            foreach (var xFireMessage in pendingFriendRequests.Select(request => new FriendInvite(request.Username, request.Nickname, request.Message)))
+            foreach (var request in pendingFriendRequests.Select(request => new FriendInvite(request.Username, request.Nickname, request.Message)))
             {
-                await context.SendAndProcessMessage(xFireMessage);
+                await context.SendAndProcessMessage(request);
             }
         }
     }

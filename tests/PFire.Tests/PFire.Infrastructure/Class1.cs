@@ -1,4 +1,4 @@
-﻿namespace PFire.Tests.PFire.Data
+﻿namespace PFire.Tests.PFire.Infrastructure
 {
     public class Class1
     {
