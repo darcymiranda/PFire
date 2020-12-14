@@ -22,7 +22,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             await context.SendAndProcessMessage(new FriendsSessionAssign(context.User));
 
             // It's possible to accept a friend request where the inviter is not online
-            var friendSession = context.Server.GetSession(friend.Id);
+            var friendSession = context.Server.GetSession(friend);
             if (friendSession != null)
             {
                 await friendSession.SendAndProcessMessage(new FriendsList(friend));

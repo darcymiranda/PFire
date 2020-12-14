@@ -17,7 +17,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             var friends = await context.Server.Database.QueryFriends(context.User);
             foreach (var friend in friends)
             {
-                var friendSession = context.Server.GetSession(friend.Id);
+                var friendSession = context.Server.GetSession(friend);
                 if (friendSession != null)
                 {
                     await friendSession.SendAndProcessMessage(statusChange);

@@ -32,7 +32,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             var friends = await client.Server.Database.QueryFriends(_ownerUser);
             foreach (var friend in friends)
             {
-                var friendSession = client.Server.GetSession(friend.Id);
+                var friendSession = client.Server.GetSession(friend);
 
                 UserIds.Add(friend.Id);
                 SessionIds.Add(friendSession?.SessionId ?? FriendIsOffLineSessionId);

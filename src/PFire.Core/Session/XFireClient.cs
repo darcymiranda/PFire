@@ -25,7 +25,7 @@ namespace PFire.Core.Session
         void Dispose();
         Task SendAndProcessMessage(XFireMessage message);
         Task SendMessage(XFireMessage invite);
-        void RemoveDuplicatedSessions(int userId);
+        void RemoveDuplicatedSessions(UserModel user);
     }
 
     internal sealed class XFireClient : Disposable, IXFireClient
@@ -123,9 +123,9 @@ namespace PFire.Core.Session
 
         // A login has been successful, and as part of the login processing
         // we should remove any duplicate/old sessions
-        public void RemoveDuplicatedSessions(int userId)
+        public void RemoveDuplicatedSessions(UserModel user)
         {
-            var otherSession = _clientManager.GetSession(userId);
+            var otherSession = _clientManager.GetSession(user);
             if (otherSession != null)
             {
                 _clientManager.RemoveSession(otherSession);
