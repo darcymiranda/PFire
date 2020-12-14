@@ -48,6 +48,8 @@ namespace PFire.Core.Services
 
             await databaseContext.Set<User>().AddAsync(newUser);
 
+            await databaseContext.SaveChanges();
+
             return new UserModel
             {
                 Id = newUser.Id,
