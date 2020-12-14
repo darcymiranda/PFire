@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PFire.Core.Models;
 using PFire.Core.Session;
-using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Protocol.Messages.Outbound
 {
     internal sealed class FriendsList : XFireMessage
     {
-        private readonly User _ownerUser;
+        private readonly UserModel _ownerUser;
 
-        public FriendsList(User owner) : base(XFireMessageType.FriendsList)
+        public FriendsList(UserModel owner) : base(XFireMessageType.FriendsList)
         {
             _ownerUser = owner;
 
@@ -32,7 +32,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             var friends = await context.Server.Database.QueryFriends(_ownerUser);
             friends.ForEach(f =>
             {
-                UserIds.Add(f.UserId);
+                UserIds.Add(f.Id);
                 Usernames.Add(f.Username);
                 Nicks.Add(f.Nickname);
             });

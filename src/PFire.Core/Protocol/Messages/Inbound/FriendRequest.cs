@@ -20,7 +20,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             var invite = new FriendInvite(context.User.Username, context.User.Nickname, Message);
             await invite.Process(context);
 
-            await context.Server.Database.InsertFriendRequest(context.User, Username, Message);
+            await context.Server.Database.InsertFriendRequest(context.User, recipient, Message);
 
             var recipientSession = context.Server.GetSession(recipient);
             if (recipientSession != null)

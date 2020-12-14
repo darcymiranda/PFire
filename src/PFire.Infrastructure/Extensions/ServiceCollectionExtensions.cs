@@ -1,14 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using PFire.Infrastructure.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using PFire.Infrastructure.Services;
 
 namespace PFire.Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection RegisterInfrastructure(this IServiceCollection serviceCollection)
+        public static IServiceCollection RegisterInfrastructure(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            return serviceCollection
-                .AddSingleton<IPFireDatabase, PFireDatabase>();
+            var connectionString = configuration.GetConnectionString("PFire");
+
+            return serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>()
+                                    .AddScoped<IDatabaseMigrator, DatabaseContext>()
+                                    .AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString));
         }
     }
 }

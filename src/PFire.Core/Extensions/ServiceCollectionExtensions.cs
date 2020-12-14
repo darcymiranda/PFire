@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.DependencyInjection;
+using PFire.Core.Services;
 using PFire.Core.Session;
 
 namespace PFire.Core.Extensions
@@ -12,6 +13,7 @@ namespace PFire.Core.Extensions
             return serviceCollection.AddSingleton<IPFireServer, PFireServer>()
                                     .AddSingleton<IXFireClientManager, XFireClientManager>()
                                     .AddSingleton<ITcpServer, TcpServer>()
+                                    .AddSingleton<IPFireDatabase, PFireDatabase>()
                                     .AddSingleton(x => new TcpListener(new IPEndPoint(IPAddress.Any, 25999)));
         }
     }

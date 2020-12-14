@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PFire.Core.Models;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.Messages.Outbound;
+using PFire.Core.Services;
 using PFire.Core.Session;
-using PFire.Infrastructure.Database;
 
 namespace PFire.Core
 {
@@ -84,7 +85,7 @@ namespace PFire.Core
             return _clientManager.GetSession(sessionId);
         }
 
-        public IXFireClient GetSession(User user)
+        public IXFireClient GetSession(UserModel user)
         {
             return _clientManager.GetSession(user);
         }
