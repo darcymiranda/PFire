@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using PFire.Data.Entities;
+using PFire.Infrastructure.Entities;
 
-namespace PFire.Data.Services
+namespace PFire.Infrastructure.Services
 {
     public interface IDatabaseMigrator
     {
@@ -18,9 +18,6 @@ namespace PFire.Data.Services
     internal class DatabaseContext : DbContext, IDatabaseContext, IDatabaseMigrator
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) {}
-
-        public DbSet<User> Users { get; set; }
-        public DbSet<Friend> Friends { get; set; }
 
         DbSet<T> IDatabaseContext.Set<T>()
         {

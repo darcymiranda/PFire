@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace PFire.Data.Migrations
+namespace PFire.Infrastructure.Migrations
 {
     public partial class InitialMigration : Migration
     {

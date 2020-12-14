@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PFire.Console.Extensions;
-using PFire.Data.Services;
+using PFire.Infrastructure.Services;
 using Serilog;
 
 namespace PFire.Console

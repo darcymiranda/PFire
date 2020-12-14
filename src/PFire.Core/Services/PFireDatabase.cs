@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PFire.Core.Models;
-using PFire.Data.Entities;
-using PFire.Data.Services;
+using PFire.Infrastructure.Entities;
+using PFire.Infrastructure.Services;
 
 namespace PFire.Core.Services
 {

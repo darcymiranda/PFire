@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace PFire.Data.Services
+namespace PFire.Infrastructure.Services
 {
     /// <summary>
     ///     Used to generate a <see cref="DatabaseContext" /> for creating migrations.

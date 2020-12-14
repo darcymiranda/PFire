@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PFire.Data.Entities
+namespace PFire.Infrastructure.Entities
 {
     public class User : Entity
     {

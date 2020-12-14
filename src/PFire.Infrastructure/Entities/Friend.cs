@@ -1,4 +1,4 @@
-﻿namespace PFire.Data.Entities
+﻿namespace PFire.Infrastructure.Entities
 {
     public class Friend : Entity
     {

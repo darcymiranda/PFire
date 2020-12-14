@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PFire.Common.Extensions;
 using PFire.Console.Services;
 using PFire.Core.Extensions;
-using PFire.Data.Extensions;
+using PFire.Infrastructure.Extensions;
 
 namespace PFire.Console.Extensions
 {
