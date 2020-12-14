@@ -4,13 +4,18 @@ using PFire.Data.Entities;
 
 namespace PFire.Data.Services
 {
+    public interface IDatabaseMigrator
+    {
+        Task Migrate();
+    }
+
     public interface IDatabaseContext
     {
         DbSet<T> Set<T>() where T : Entity;
         Task SaveChanges();
     }
 
-    internal class DatabaseContext : DbContext, IDatabaseContext
+    internal class DatabaseContext : DbContext, IDatabaseContext, IDatabaseMigrator
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) {}
 
@@ -25,6 +30,11 @@ namespace PFire.Data.Services
         Task IDatabaseContext.SaveChanges()
         {
             return SaveChangesAsync();
+        }
+
+        public Task Migrate()
+        {
+            return Database.MigrateAsync();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

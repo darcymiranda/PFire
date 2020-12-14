@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Console", "src\PFire.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Core", "src\PFire.Core\PFire.Core.csproj", "{62FD083C-F667-44FA-99E7-7A35F363886B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Data", "src\PFire.Data\PFire.Data.csproj", "{CB7EC8E0-436A-4E63-9F24-020238058DB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Infrastructure", "src\PFire.Infrastructure\PFire.Infrastructure.csproj", "{CB7EC8E0-436A-4E63-9F24-020238058DB2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PFire.Tests", "tests\PFire.Tests\PFire.Tests.csproj", "{F28C1DF0-F867-4435-8165-7F1699994047}"
 EndProject
