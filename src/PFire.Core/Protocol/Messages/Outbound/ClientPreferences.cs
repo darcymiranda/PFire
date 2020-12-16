@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Outbound
@@ -8,9 +9,9 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public ClientPreferences() : base(XFireMessageType.ClientPreferences) {}
 
         [XMessageField(0x4c)]
-        public Dictionary<byte, string> preferences { get; private set; }
+        public Dictionary<byte, string> preferences { get; set; }
 
-        public override void Process(IXFireClient context)
+        public override Task Process(IXFireClient context)
         {
             preferences = new Dictionary<byte, string>
             {
@@ -51,6 +52,8 @@ namespace PFire.Core.Protocol.Messages.Outbound
                     21, "0"
                 }
             };
+
+            return Task.CompletedTask;
         }
     }
 }

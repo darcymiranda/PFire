@@ -1,10 +1,11 @@
-﻿using PFire.Core.Session;
+﻿using System.Threading.Tasks;
+using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages
 {
     internal interface IMessage
     {
         XFireMessageType MessageTypeId { get; }
-        void Process(IXFireClient client);
+        Task Process(IXFireClient client);
     }
 }

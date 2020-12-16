@@ -3,18 +3,19 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PFire.Core.Models;
 using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Util;
-using PFire.Infrastructure.Database;
 
 namespace PFire.Core.Session
 {
     internal interface IXFireClient
     {
-        User User { get; set; }
+        UserModel User { get; set; }
         Guid SessionId { get; }
         EndPoint RemoteEndPoint { get; }
         PFireServer Server { get; set; }
@@ -22,9 +23,9 @@ namespace PFire.Core.Session
         string Salt { get; }
         void Disconnect();
         void Dispose();
-        void SendAndProcessMessage(XFireMessage message);
-        void SendMessage(XFireMessage invite);
-        void RemoveDuplicatedSessions(User user);
+        Task SendAndProcessMessage(XFireMessage message);
+        Task SendMessage(XFireMessage invite);
+        void RemoveDuplicatedSessions(UserModel user);
     }
 
     internal sealed class XFireClient : Disposable, IXFireClient
@@ -82,7 +83,7 @@ namespace PFire.Core.Session
 
         public Guid SessionId { get; }
 
-        public User User { get; set; }
+        public UserModel User { get; set; }
 
         public ILogger Logger { get; }
 
@@ -91,13 +92,13 @@ namespace PFire.Core.Session
             _connected = false;
         }
 
-        public void SendAndProcessMessage(XFireMessage message)
+        public async Task SendAndProcessMessage(XFireMessage message)
         {
-            message.Process(this);
-            SendMessage(message);
+            await message.Process(this);
+            await SendMessage(message);
         }
 
-        public void SendMessage(XFireMessage message)
+        public async Task SendMessage(XFireMessage message)
         {
             if (Disposed)
             {
@@ -112,17 +113,17 @@ namespace PFire.Core.Session
 
             var payload = MessageSerializer.Serialize(message);
 
-            _tcpClient.Client.Send(payload);
+            await _tcpClient.Client.SendAsync(payload, SocketFlags.None);
 
-            var username = User != null ? User.Username : "unknown";
-            var userId = User != null ? User.UserId : -1;
+            var username = User?.Username ?? "unknown";
+            var userId = User?.Id ?? -1;
 
             Logger.LogDebug($"Sent message[{username},{userId}]: {message}");
         }
 
         // A login has been successful, and as part of the login processing
         // we should remove any duplicate/old sessions
-        public void RemoveDuplicatedSessions(User user)
+        public void RemoveDuplicatedSessions(UserModel user)
         {
             var otherSession = _clientManager.GetSession(user);
             if (otherSession != null)
@@ -237,8 +238,8 @@ namespace PFire.Core.Session
             {
                 var message = MessageSerializer.Deserialize(messageBuffer);
 
-                var username = User != null ? User.Username : "unknown";
-                var userId = User != null ? User.UserId : -1;
+                var username = User?.Username ?? "unknown";
+                var userId = User?.Id ?? -1;
 
                 Logger.LogDebug($"Recv message[{username},{userId}]: {message}");
 

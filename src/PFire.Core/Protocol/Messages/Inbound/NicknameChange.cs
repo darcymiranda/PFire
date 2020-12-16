@@ -1,4 +1,5 @@
-﻿using PFire.Core.Protocol.Messages.Outbound;
+﻿using System.Threading.Tasks;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -10,24 +11,27 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public NicknameChange() : base(XFireMessageType.NicknameChange) {}
 
         [XMessageField("nick")]
-        public string Nickname { get; private set; }
+        public string Nickname { get; set; }
 
-        public override void Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             if (Nickname.Length > MAX_LENGTH)
             {
                 Nickname = Nickname.Substring(0, MAX_LENGTH);
             }
 
-            context.Server.Database.UpdateNickname(context.User, Nickname);
+            await context.Server.Database.UpdateNickname(context.User, Nickname);
 
             var updatedFriendsList = new FriendsList(context.User);
-            context.Server.Database.QueryFriends(context.User)
-                   .ForEach(friend =>
-                   {
-                       var friendSession = context.Server.GetSession(friend);
-                       friendSession?.SendAndProcessMessage(updatedFriendsList);
-                   });
+            var queryFriends = await context.Server.Database.QueryFriends(context.User);
+            foreach (var friend in queryFriends)
+            {
+                var friendSession = context.Server.GetSession(friend);
+                if (friendSession != null)
+                {
+                    await friendSession.SendAndProcessMessage(updatedFriendsList);
+                }
+            }
         }
     }
 }

@@ -5,12 +5,12 @@
         public GameInformation() : base(XFireMessageType.GameInformation) {}
 
         [XMessageField("gameid")]
-        public int GameId { get; private set; }
+        public int GameId { get; set; }
 
         [XMessageField("gip")]
-        public int GameIP { get; private set; }
+        public int GameIP { get; set; }
 
         [XMessageField("gport")]
-        public int GamePort { get; private set; }
+        public int GamePort { get; set; }
     }
 }
