@@ -19,8 +19,6 @@ namespace PFire.Infrastructure.Extensions
             var connectionString = configuration.GetConnectionString("PFire");
             SqliteConnection connection = new(connectionString);
 
-            System.Console.WriteLine(serverSettings.OpenSqlConnection);
-
             if (serverSettings.OpenSqlConnection) {
                 connection.Open();  
             }
