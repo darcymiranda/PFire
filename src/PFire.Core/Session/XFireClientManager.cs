@@ -38,7 +38,7 @@ namespace PFire.Core.Session
 
         public IXFireClient GetSession(UserModel user)
         {
-            var session = _sessions.ToList().Select(x => x.Value).FirstOrDefault(a => a.User.Id == user.Id);
+            var session = _sessions.ToList().Select(x => x.Value).FirstOrDefault(a => a.User?.Id == user?.Id);
 
             return session == null ? null : GetSession(session.SessionId);
         }
