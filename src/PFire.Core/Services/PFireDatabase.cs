@@ -209,9 +209,9 @@ namespace PFire.Core.Services
                                         .Where(x => x.Pending)
                                         .Select(x => new FriendRequestModel
                                         {
-                                            Id = x.Them.Id,
-                                            Username = x.Them.Username,
-                                            Nickname = x.Them.Nickname,
+                                            Id = x.Me.Id,
+                                            Username = x.Me.Username,
+                                            Nickname = x.Me.Nickname,
                                             Message = x.Message
                                         })
                                         .ToListAsync();
