@@ -74,8 +74,5 @@ namespace PFire.Infrastructure.Services
             userEntity.Property(x => x.Salt).IsRequired();
             userEntity.Property(x => x.Nickname).HasMaxLength(1000);
         }
-
-        public DbSet<User> Users { get; set; }
-        public DbSet<Friend> Friends { get; set;}
     }
 }
