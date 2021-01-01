@@ -49,24 +49,6 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
             var friendsStatus = new FriendsSessionAssign(context.User);
             await context.SendAndProcessMessage(friendsStatus);
-
-            // Tell friends this user came online
-            //if (context.User.Username == "test") Debugger.Break();
-            var friends = await context.Server.Database.QueryFriends(context.User);
-            foreach (var friend in friends)
-            {
-                var otherSession = context.Server.GetSession(friend);
-                if (otherSession != null)
-                {
-                    await otherSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
-                }
-            }
-
-            var pendingFriendRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);
-            foreach (var request in pendingFriendRequests.Select(request => new FriendInvite(request.Username, request.Nickname, request.Message)))
-            {
-                await context.SendAndProcessMessage(request);
-            }
         }
     }
 }

@@ -25,7 +25,6 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 if (!BCrypt.Net.BCrypt.Verify(Password, user.Password))
                 {
                     await context.SendAndProcessMessage(new LoginFailure());
-
                     return;
                 }
             }
@@ -35,10 +34,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 user = await context.Server.Database.InsertUser(Username, hashPassword, context.Salt);
             }
 
-            // Remove any older sessions from this user (duplicate logins)
-            context.RemoveDuplicatedSessions(user);
-
-            context.User = user;
+            await context.StartSession(user);
 
             var success = new LoginSuccess();
             await context.SendAndProcessMessage(success);

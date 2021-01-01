@@ -21,7 +21,7 @@ namespace PFire.Core.Protocol
             var messageTypeId = reader.ReadInt16();
             var xMessageType = (XFireMessageType)messageTypeId;
 
-            var messageType = MessageTypeFactory.Instance.GetMessageType(xMessageType);
+            var messageType = XFireMessageTypeFactory.Instance.GetMessageType(xMessageType);
             var message = Activator.CreateInstance(messageType) as IMessage;
             return Deserialize(reader, message);
         }

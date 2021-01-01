@@ -7,13 +7,13 @@ using PFire.Core.Protocol.Messages.Outbound;
 
 namespace PFire.Core.Protocol
 {
-    public class MessageTypeFactory
+    public class XFireMessageTypeFactory
     {
-        private static readonly MessageTypeFactory instance = null;
+        private static readonly XFireMessageTypeFactory instance = null;
 
         private readonly Dictionary<XFireMessageType, IMessage> _messages = new Dictionary<XFireMessageType, IMessage>();
 
-        private MessageTypeFactory()
+        private XFireMessageTypeFactory()
         {
             Add(new ClientVersion());
             Add(new LoginRequest());
@@ -36,6 +36,7 @@ namespace PFire.Core.Protocol
             Add(new FriendRequestDecline());
             Add(new NicknameChange());
             Add(new StatusChange());
+            Add(new Logout());
         }
 
         private void Add(IMessage message)
@@ -61,6 +62,6 @@ namespace PFire.Core.Protocol
             return message.GetType();
         }
 
-        public static MessageTypeFactory Instance => instance ?? new MessageTypeFactory();
+        public static XFireMessageTypeFactory Instance => instance ?? new XFireMessageTypeFactory();
     }
 }

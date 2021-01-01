@@ -18,6 +18,7 @@
         ConnectionInformation = 17,
         StatusChange = 32,
         Unknown37 = 37,
+        Logout = 36,
         LoginChallenge = 128,
         LoginFailure = 129,
         LoginSuccess = 130,

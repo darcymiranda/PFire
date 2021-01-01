@@ -11,6 +11,8 @@ namespace PFire.Core.Protocol
 
         private readonly Dictionary<byte, XFireAttribute> _attributeTypes = new Dictionary<byte, XFireAttribute>();
 
+        private static readonly byte[] IgnoreKnownUnimplementedTypes = {18};
+
         private XFireAttributeFactory()
         {
             Add(new StringAttribute());
@@ -22,6 +24,7 @@ namespace PFire.Core.Protocol
             Add(new StringKeyMapAttribute());
             Add(new Int8Attribute());
             Add(new MessageAttribute());
+            Add(new NullAttribute());
         }
 
         private void Add(XFireAttribute attributeValue)
@@ -31,9 +34,16 @@ namespace PFire.Core.Protocol
 
         public XFireAttribute GetAttribute(byte type)
         {
-            if(_attributeTypes.TryGetValue(type, out var xFireAttribute))
+            if (_attributeTypes.TryGetValue(type, out var xFireAttribute))
             {
                 return xFireAttribute;
+            }
+
+            // Avoid having to implement these attribute types to continue processing other requests instead of
+            // throwing an exception
+            if (IgnoreKnownUnimplementedTypes.Contains(type))
+            {
+                return new NullAttribute();
             }
 
             throw new UnknownXFireAttributeTypeException(type);
@@ -46,7 +56,8 @@ namespace PFire.Core.Protocol
                 // Need to match on the first generic type for maps/dictionaries
                 if (type.GenericTypeArguments.Length > 1)
                 {
-                    if(type.GenericTypeArguments.FirstOrDefault() != keyValuePair.Value.AttributeType.GenericTypeArguments.FirstOrDefault())
+                    if (type.GenericTypeArguments.FirstOrDefault() !=
+                        keyValuePair.Value.AttributeType.GenericTypeArguments.FirstOrDefault())
                     {
                         continue;
                     }

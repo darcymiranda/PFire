@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using PFire.Core.Models;
 using PFire.Core.Protocol;
 using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Protocol.XFireAttributes;
 using PFire.Core.Util;
 
@@ -25,7 +27,8 @@ namespace PFire.Core.Session
         void Dispose();
         Task SendAndProcessMessage(XFireMessage message);
         Task SendMessage(XFireMessage invite);
-        void RemoveDuplicatedSessions(UserModel user);
+        Task StartSession(UserModel user);
+        Task EndSession();
     }
 
     internal sealed class XFireClient : Disposable, IXFireClient
@@ -43,10 +46,10 @@ namespace PFire.Core.Session
         private TcpClient _tcpClient;
 
         public XFireClient(TcpClient tcpClient,
-                           IXFireClientManager clientManager,
-                           ILogger logger,
-                           ITcpServer.OnReceiveHandler receiveHandler,
-                           ITcpServer.OnDisconnectionHandler disconnectionHandler)
+            IXFireClientManager clientManager,
+            ILogger logger,
+            ITcpServer.OnReceiveHandler receiveHandler,
+            ITcpServer.OnDisconnectionHandler disconnectionHandler)
         {
             _receiveHandler = receiveHandler;
             _disconnectionHandler = disconnectionHandler;
@@ -68,24 +71,63 @@ namespace PFire.Core.Session
 
             _lastReceivedFrom = DateTime.UtcNow;
 
-            Logger.LogInformation($"Client connected {_tcpClient.Client.RemoteEndPoint} and assigned session id {SessionId}");
+            Logger.LogInformation(
+                $"Client connected {_tcpClient.Client.RemoteEndPoint} and assigned session id {SessionId}");
 
             ThreadPool.QueueUserWorkItem(ClientThreadWorker);
         }
 
         private TimeSpan ClientTimeout => TimeSpan.FromMinutes(ClientTimeoutInMinutes);
-
         public EndPoint RemoteEndPoint => _tcpClient.Client.RemoteEndPoint;
-
         public string Salt { get; }
-
         public PFireServer Server { get; set; }
-
         public Guid SessionId { get; }
-
         public UserModel User { get; set; }
-
         public ILogger Logger { get; }
+
+        // TODO: Need to differentiate the difference between a domain xfire session and a net tcp session (clientManager.AddSession)
+        // TODO: Move StartSession and EndSession into some other domain level session management class
+        public async Task StartSession(UserModel user)
+        {
+            MaybeRemoveDuplicateSessions(user);
+            User = user;
+            await BroadcastSessionStatus();
+        }
+
+        private async Task BroadcastSessionStatus()
+        {
+            var friends = await Server.Database.QueryFriends(User);
+            foreach (var friend in friends)
+            {
+                var otherSession = Server.GetSession(friend);
+                if (otherSession != null)
+                {
+                    await otherSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                }
+            }
+
+            var pendingFriendRequests = await Server.Database.QueryPendingFriendRequests(User);
+            foreach (var request in pendingFriendRequests.Select(request =>
+                new FriendInvite(request.Username, request.Nickname, request.Message)))
+            {
+                await SendAndProcessMessage(request);
+            }
+        }
+
+        public async Task EndSession()
+        {
+            Disconnect();
+            Server.RemoveSession(this);
+            var friends = await Server.Database.QueryFriends(User);
+            foreach (var friend in friends)
+            {
+                var otherSession = Server.GetSession(friend);
+                if (otherSession != null)
+                {
+                    await otherSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                }
+            }
+        }
 
         public void Disconnect()
         {
@@ -123,7 +165,7 @@ namespace PFire.Core.Session
 
         // A login has been successful, and as part of the login processing
         // we should remove any duplicate/old sessions
-        public void RemoveDuplicatedSessions(UserModel user)
+        private void MaybeRemoveDuplicateSessions(UserModel user)
         {
             var otherSession = _clientManager.GetSession(user);
             if (otherSession != null)
