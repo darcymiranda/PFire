@@ -11,7 +11,7 @@ Emulated XFire server (Client 1.127)
 > _Note: If you don't trust the Dropbox link you can google for a copy of the installer._)
 
 ## Build
-1. `cd src\PFire.WindowsService`
+1. `cd src\PFire.Console`
 2. `dotnet build`
 
 ## Run & Connect
