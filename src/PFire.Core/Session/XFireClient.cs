@@ -199,7 +199,7 @@ namespace PFire.Core.Session
         {
             if (DateTime.UtcNow - _lastReceivedFrom > ClientTimeout)
             {
-                Logger.LogError($"Client: {User.Username}-{SessionId} has timed out -> {_lastReceivedFrom}");
+                Logger.LogError($"Client: {User?.Username ?? "Unknown"}-{SessionId} has timed out -> {_lastReceivedFrom}");
                 _clientManager.RemoveSession(this);
             }
         }
