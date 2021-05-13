@@ -12,6 +12,7 @@ namespace PFire.Core.Services
 {
     internal interface IPFireDatabase
     {
+        Task AddEveryoneAsFriends(UserModel user);
         Task<UserModel> InsertUser(string username, string password, string salt);
         Task InsertMutualFriend(UserModel me, UserModel them);
         Task InsertFriendRequest(UserModel me, UserModel them, string message);
@@ -31,6 +32,28 @@ namespace PFire.Core.Services
         public PFireDatabase(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+        }
+
+        public async Task AddEveryoneAsFriends(UserModel user)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var myFriendIds = await databaseContext.Set<Friend>()
+                .Where(x => x.MeId == user.Id)
+                .Select(y => y.ThemId)
+                .ToListAsync();
+
+            var otherUsers = await databaseContext.Set<User>()
+                .Where(x => x.Id != user.Id)
+                .Where(x => !myFriendIds.Contains(x.Id))
+                .Select(x => new UserModel { Id = x.Id})
+                .ToListAsync();
+            
+            foreach (var otherUser in otherUsers)
+            {
+                await InsertMutualFriend(user, otherUser);
+            }
         }
 
         public async Task<UserModel> InsertUser(string username, string password, string salt)
