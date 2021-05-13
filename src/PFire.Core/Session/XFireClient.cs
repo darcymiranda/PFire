@@ -25,8 +25,8 @@ namespace PFire.Core.Session
         string Salt { get; }
         void Disconnect();
         void Dispose();
-        Task SendAndProcessMessage(XFireMessage message);
-        Task SendMessage(XFireMessage invite);
+        Task SendAndProcessMessage(IMessage message);
+        Task SendMessage(IMessage invite);
         Task StartSession(UserModel user);
         Task EndSession();
     }
@@ -134,13 +134,13 @@ namespace PFire.Core.Session
             _connected = false;
         }
 
-        public async Task SendAndProcessMessage(XFireMessage message)
+        public async Task SendAndProcessMessage(IMessage message)
         {
             await message.Process(this);
             await SendMessage(message);
         }
 
-        public async Task SendMessage(XFireMessage message)
+        public async Task SendMessage(IMessage message)
         {
             if (Disposed)
             {
@@ -157,10 +157,7 @@ namespace PFire.Core.Session
 
             await _tcpClient.Client.SendAsync(payload, SocketFlags.None);
 
-            var username = User?.Username ?? "unknown";
-            var userId = User?.Id ?? -1;
-
-            Logger.LogDebug($"Sent message[{username},{userId}]: {message}");
+            Logger.LogXFireMessage(message, User);
         }
 
         // A login has been successful, and as part of the login processing
@@ -272,7 +269,7 @@ namespace PFire.Core.Session
 
             var messageLength = BitConverter.ToInt16(headerBuffer, 0) - headerBuffer.Length;
             var messageBuffer = new byte[messageLength];
-            read = stream.Read(messageBuffer, 0, messageLength);
+            _ = stream.Read(messageBuffer, 0, messageLength);
 
             Logger.LogTrace($"RECEIVED RAW: {BitConverter.ToString(messageBuffer)}");
 
@@ -280,11 +277,8 @@ namespace PFire.Core.Session
             {
                 var message = MessageSerializer.Deserialize(messageBuffer);
 
-                var username = User?.Username ?? "unknown";
-                var userId = User?.Id ?? -1;
-
-                Logger.LogDebug($"Recv message[{username},{userId}]: {message}");
-
+                Logger.LogXFireMessage(message, User);
+                
                 _receiveHandler?.Invoke(this, message);
             }
             catch (UnknownMessageTypeException messageTypeEx)
