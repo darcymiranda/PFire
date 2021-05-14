@@ -36,9 +36,6 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
             await context.StartSession(user);
 
-            // TODO: Remove chat room mode
-            await context.Server.Database.AddEveryoneAsFriends(user);
-
             var success = new LoginSuccess();
             await context.SendAndProcessMessage(success);
         }
