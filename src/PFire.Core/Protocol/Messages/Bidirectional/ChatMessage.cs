@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PFire.Core.Protocol.Messages.MessageEnums;
@@ -35,16 +36,23 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
             switch (messageType)
             {
                 case ChatMessageType.Content:
-                    var responseAck = BuildAckResponse(otherSession.SessionId);
-                    await context.SendMessage(responseAck);
-
                     var chatMsg = BuildChatMessageResponse(context.SessionId);
                     await otherSession.SendMessage(chatMsg);
+                    
                     break;
 
                 case ChatMessageType.TypingNotification:
                     var typingMsg = BuildChatMessageResponse(context.SessionId);
                     await otherSession.SendMessage(typingMsg);
+                    break;
+                
+                case ChatMessageType.ClientInformation:
+                    var infoMsg = BuildClientInfo(context);
+                    await otherSession.SendMessage(infoMsg);
+                    break;
+                
+                case ChatMessageType.Acknowledgement:
+                    // Do nothing for now.
                     break;
 
                 default:
@@ -64,14 +72,35 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
 
         private ChatMessage BuildAckResponse(Guid sessionId)
         {
-            var ack = new ChatMessage
+            return new ChatMessage
             {
                 SessionId = sessionId,
-                MessagePayload = new Dictionary<string, dynamic>()
+                MessagePayload = new Dictionary<string, dynamic>
+                {
+                    {"msgtyp", (byte)ChatMessageType.Acknowledgement},
+                    {"imindex", (int)MessagePayload["imindex"]}
+                }
+            };
+        }
+        
+        private ChatMessage BuildClientInfo(IXFireClient client)
+        {
+            var info = new ChatMessage
+            {
+                SessionId = client.SessionId,
+                MessagePayload = new Dictionary<string, dynamic>
+                {
+                    {"msgtyp", (byte)ChatMessageType.ClientInformation}
+                }
             };
 
-            ack.MessagePayload.Add("imindex", (int)MessagePayload["imindex"]);
-            return ack;
+            info.MessagePayload.Add("ip", client.RemoteEndPoint.ToString()?.Split(":").First());
+            info.MessagePayload.Add("port", 50_000);
+            info.MessagePayload.Add("localip", "192.168.1.38");
+            info.MessagePayload.Add("localport", 50_000);
+            info.MessagePayload.Add("status", 0);
+            info.MessagePayload.Add("salt", client.Salt);
+            return info;
         }
     }
 }
