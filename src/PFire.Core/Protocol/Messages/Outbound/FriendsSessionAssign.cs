@@ -28,16 +28,26 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField(0x0b)] 
         public byte Unknown { get; set; }
 
+        public static FriendsSessionAssign UserWentOffline(UserModel user)
+        {
+            return new FriendsSessionAssign(user) {UserIds = {user.Id}, SessionIds = {FriendIsOffLineSessionId}};
+        }
+        
+        public static FriendsSessionAssign UserCameOnline(UserModel user, Guid sessionId)
+        {
+            return new FriendsSessionAssign(user) {UserIds = {user.Id}, SessionIds = {sessionId}};
+        }
+
         public override async Task Process(IXFireClient client)
         {
-            // Client expects friends to be ordered by online first, then offline friends
             var friends = (await client.Server.Database.QueryFriends(_ownerUser))
                 .Select(x => new {User = x, Session = client.Server.GetSession(x)})
-                .OrderByDescending(x => x.Session != null).ToList();
+                .Where(x => x.Session != null);
+            
             foreach (var friend in friends)
             {
                 UserIds.Add(friend.User.Id);
-                SessionIds.Add(friend.Session?.SessionId ?? FriendIsOffLineSessionId);
+                SessionIds.Add(friend.Session.SessionId);
             }
         }
     }

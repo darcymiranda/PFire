@@ -124,7 +124,8 @@ namespace PFire.Core.Session
                 var otherSession = Server.GetSession(friend);
                 if (otherSession != null)
                 {
-                    await otherSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                    // TODO: Yuck - FriendsSessionAssign structure needs to be thought out differently as we aren't processing this one
+                    await otherSession.SendMessage(FriendsSessionAssign.UserWentOffline(this.User));
                 }
             }
         }
@@ -233,7 +234,9 @@ namespace PFire.Core.Session
                             // the client says the other end has gone, 
                             // lets shut down this client 
                             Logger.LogError($"Client: {User.Username}-{SessionId} has disconnected");
-                            _clientManager.RemoveSession(this);
+                            
+                            // TODO: Async
+                            this.EndSession();
                         }
                     }
                     catch (IOException ioe)
