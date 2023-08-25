@@ -52,7 +52,8 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
                     break;
                 
                 case ChatMessageType.Acknowledgement:
-                    // Do nothing for now.
+                    var ack = BuildChatMessageResponse(context.SessionId);
+                    await otherSession.SendMessage(ack);
                     break;
 
                 default:
