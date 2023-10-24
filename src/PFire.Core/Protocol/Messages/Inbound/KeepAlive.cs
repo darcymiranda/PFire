@@ -11,7 +11,6 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public async override Task Process(IXFireClient client)
         {
-            //Send a PONG response
             await client.SendAndProcessMessage(new ServerPong());
         }
     }
