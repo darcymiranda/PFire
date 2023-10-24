@@ -28,6 +28,7 @@
         FriendInvite = 138,
         ClientPreferences = 141,
         UserLookupResult = 143,
+        ServerPong = 144,
         ServerList = 148,
         Groups = 151,
         GroupsFriends = 152,

@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using PFire.Core.Session;
+using PFire.Core.Protocol.Messages;
+using PFire.Core.Protocol.Messages.Outbound;
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
@@ -7,9 +9,9 @@ namespace PFire.Core.Protocol.Messages.Inbound
     {
         public KeepAlive() : base(XFireMessageType.KeepAlive) {}
 
-        public override Task Process(IXFireClient client)
+        public async override Task Process(IXFireClient client)
         {
-            return Task.CompletedTask;
+            await client.SendAndProcessMessage(new ServerPong());
         }
     }
 }
