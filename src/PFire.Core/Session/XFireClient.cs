@@ -29,6 +29,7 @@ namespace PFire.Core.Session
         Task SendMessage(IMessage invite);
         Task StartSession(UserModel user);
         Task EndSession();
+        Task UpdateGameInfo();
     }
 
     internal sealed class XFireClient : Disposable, IXFireClient
@@ -126,6 +127,19 @@ namespace PFire.Core.Session
                 {
                     // TODO: Yuck - FriendsSessionAssign structure needs to be thought out differently as we aren't processing this one
                     await otherSession.SendMessage(FriendsSessionAssign.UserWentOffline(this.User));
+                }
+            }
+        }
+
+        public async Task UpdateGameInfo()
+        {
+            var friends = await Server.Database.QueryFriends(User);
+            foreach (var friend in friends)
+            {
+                var otherSession = Server.GetSession(friend);
+                if (otherSession != null)
+                {
+                    await otherSession.SendAndProcessMessage(new FriendsGamesInfo(this.User));
                 }
             }
         }
