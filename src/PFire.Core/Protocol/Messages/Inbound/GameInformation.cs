@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using PFire.Core.Session;
+using PFire.Core.Protocol.Messages.Outbound;
+
 
 namespace PFire.Core.Protocol.Messages.Inbound
 {
@@ -18,10 +20,22 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            context.User.GameID = GameId;
-            context.User.GameIP = GameIP;
-            context.User.GamePort = GamePort;
-            await context.UpdateGameInfo();
+            context.User.Game.GameID = GameId;
+            context.User.Game.GameIP = GameIP;
+            context.User.Game.GamePort = GamePort;
+            await SendGameInfoToFriends(context);
+        }
+        public async Task SendGameInfoToFriends(IXFireClient context)
+        {
+            var friends = await context.Server.Database.QueryFriends(context.User);
+            foreach (var friend in friends)
+            {
+                var otherSession = context.Server.GetSession(friend);
+                if (otherSession != null)
+                {
+                    await otherSession.SendAndProcessMessage(new FriendsGamesInfo(context.User));
+                }
+            }
         }
     }
 }

@@ -38,9 +38,9 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public override Task Process(IXFireClient client)
         {
             SessionIds.Add(client.Server.GetSession(_ownerUser).SessionId);
-            GameID.Add(_ownerUser.GameID);
-            GameIP.Add(_ownerUser.GameIP);
-            GamePort.Add(_ownerUser.GamePort);
+            GameID.Add(_ownerUser.Game.GameID);
+            GameIP.Add(_ownerUser.Game.GameIP);
+            GamePort.Add(_ownerUser.Game.GamePort);
             return Task.CompletedTask;
         }
 
