@@ -8,8 +8,8 @@ namespace PFire.Core.Models
 {
     public class GameModel
     {
-        public int GameID { get; set; }
-        public int GameIP { get; set; }
-        public int GamePort { get; set; }
+        public int Id { get; set; }
+        public int Ip { get; set; }
+        public int Port { get; set; }
     }
 }

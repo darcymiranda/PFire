@@ -20,9 +20,9 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            context.User.Game.GameID = GameId;
-            context.User.Game.GameIP = GameIP;
-            context.User.Game.GamePort = GamePort;
+            context.User.Game.Id = GameId;
+            context.User.Game.Ip = GameIP;
+            context.User.Game.Port = GamePort;
             await SendGameInfoToFriends(context);
         }
         public async Task SendGameInfoToFriends(IXFireClient context)
