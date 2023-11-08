@@ -25,6 +25,7 @@
         FriendsList = 131,
         FriendsSessionAssign = 132,
         ServerChatMessage = 133,
+        FriendsGameInfo = 135,
         FriendInvite = 138,
         ClientPreferences = 141,
         UserLookupResult = 143,
