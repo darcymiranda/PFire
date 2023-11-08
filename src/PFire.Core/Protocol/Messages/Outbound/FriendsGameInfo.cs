@@ -21,7 +21,6 @@ namespace PFire.Core.Protocol.Messages.Outbound
             GameID = new List<int>();
             GameIP = new List<int>();
             GamePort = new List<int>();
-
         }
 
         [XMessageField("sid")]
