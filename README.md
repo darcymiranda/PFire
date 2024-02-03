@@ -6,7 +6,7 @@ Emulated XFire server (Client 1.127)
 ![.NET Core](https://github.com/darcymiranda/PFire/workflows/.NET%20Core/badge.svg)
 
 ## Requirements
-* [.Net 5 SDK](https://dotnet.microsoft.com/download)
+* [.Net 8 SDK](https://dotnet.microsoft.com/download)
 * [XFire Client v1.127 (Dropbox)](https://www.dropbox.com/s/fjj5u0uksg6t46f/Xfire.rar?dl=0)
 > _Note: If you don't trust the Dropbox link you can google for a copy of the installer._)
 
