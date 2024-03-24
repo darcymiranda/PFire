@@ -17,12 +17,14 @@ namespace PFire.Core.Services
         Task InsertMutualFriend(UserModel me, UserModel them);
         Task InsertFriendRequest(UserModel me, UserModel them, string message);
         Task<UserModel> QueryUser(string username);
+        Task<UserModel> QueryUser(int userId);
         Task<List<UserModel>> QueryUsers(string username);
         Task<List<UserModel>> QueryFriends(UserModel user);
         Task<List<FriendRequestModel>> QueryPendingFriendRequestsSelf(UserModel user);
         Task<List<FriendRequestModel>> QueryPendingFriendRequests(UserModel otherUser);
         Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] thems);
         Task UpdateNickname(UserModel user, string nickname);
+        Task RemoveFriend(UserModel me, UserModel them);
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -166,6 +168,24 @@ namespace PFire.Core.Services
                                         .FirstOrDefaultAsync();
         }
 
+        public async Task<UserModel> QueryUser(int userId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            return await databaseContext.Set<User>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Id == userId)
+                                        .Select(x => new UserModel
+                                        {
+                                            Id = x.Id,
+                                            Username = x.Username,
+                                            Password = x.Password,
+                                            Nickname = x.Nickname
+                                        })
+                                        .FirstOrDefaultAsync();
+        }
+
         public async Task<List<UserModel>> QueryUsers(string username)
         {
             using var scope = _serviceProvider.CreateScope();
@@ -278,6 +298,28 @@ namespace PFire.Core.Services
             }
 
             entity.Nickname = nickname;
+
+            await databaseContext.SaveChanges();
+        }
+
+        public async Task RemoveFriend(UserModel me, UserModel them)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var friends = databaseContext.Set<Friend>();
+
+            var myFriend = await friends.FindAsync(me.Id, them.Id);
+            if (myFriend != null)
+            {
+                friends.Remove(myFriend);
+            }
+
+            var friendOf = await friends.FindAsync(them.Id, me.Id);
+            if (friendOf != null)
+            {
+                friends.Remove(friendOf);
+            }
 
             await databaseContext.SaveChanges();
         }
