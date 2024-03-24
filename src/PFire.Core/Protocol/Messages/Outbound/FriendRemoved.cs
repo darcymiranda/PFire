@@ -7,10 +7,10 @@ namespace PFire.Core.Protocol.Messages.Outbound
     {
         public FriendRemoved(int userId) : base(XFireMessageType.FriendRemoved)
         {
-            userid = userId;
+            UserId = userId;
         }
 
         [XMessageField("userid")]
-        public int userid { get; set; }
+        public int UserId { get; set; }
     }
 }

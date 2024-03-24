@@ -17,7 +17,7 @@ namespace PFire.Core.Services
         Task InsertMutualFriend(UserModel me, UserModel them);
         Task InsertFriendRequest(UserModel me, UserModel them, string message);
         Task<UserModel> QueryUser(string username);
-        Task<UserModel> QueryUser(int userid);
+        Task<UserModel> QueryUser(int userId);
         Task<List<UserModel>> QueryUsers(string username);
         Task<List<UserModel>> QueryFriends(UserModel user);
         Task<List<FriendRequestModel>> QueryPendingFriendRequestsSelf(UserModel user);
@@ -168,14 +168,14 @@ namespace PFire.Core.Services
                                         .FirstOrDefaultAsync();
         }
 
-        public async Task<UserModel> QueryUser(int userid)
+        public async Task<UserModel> QueryUser(int userId)
         {
             using var scope = _serviceProvider.CreateScope();
             var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
             return await databaseContext.Set<User>()
                                         .AsNoTracking()
-                                        .Where(a => a.Id == userid)
+                                        .Where(a => a.Id == userId)
                                         .Select(x => new UserModel
                                         {
                                             Id = x.Id,
