@@ -9,7 +9,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public FriendRemoval() : base(XFireMessageType.FriendRemoval) { }
 
         [XMessageField("userid")]
-        public int UserId { get; set; }
+        public uint UserId { get; set; }
 
         public override async Task Process(IXFireClient context)
         {

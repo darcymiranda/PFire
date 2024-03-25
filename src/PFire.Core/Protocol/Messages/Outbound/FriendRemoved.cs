@@ -5,12 +5,12 @@ namespace PFire.Core.Protocol.Messages.Outbound
 {
     internal sealed class FriendRemoved : XFireMessage
     {
-        public FriendRemoved(int userId) : base(XFireMessageType.FriendRemoved)
+        public FriendRemoved(uint userId) : base(XFireMessageType.FriendRemoved)
         {
             UserId = userId;
         }
 
         [XMessageField("userid")]
-        public int UserId { get; set; }
+        public uint UserId { get; set; }
     }
 }

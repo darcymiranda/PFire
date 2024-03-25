@@ -10,13 +10,13 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public GameInformation() : base(XFireMessageType.GameInformation) {}
 
         [XMessageField("gameid")]
-        public int GameId { get; set; }
+        public uint GameId { get; set; }
 
         [XMessageField("gip")]
-        public int GameIP { get; set; }
+        public uint GameIP { get; set; }
 
         [XMessageField("gport")]
-        public int GamePort { get; set; }
+        public uint GamePort { get; set; }
 
         public override async Task Process(IXFireClient context)
         {
