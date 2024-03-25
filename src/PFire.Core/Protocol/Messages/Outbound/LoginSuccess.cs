@@ -11,7 +11,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public LoginSuccess() : base(XFireMessageType.LoginSuccess) {}
 
         [XMessageField("userid")]
-        public int UserId { get; set; }
+        public uint UserId { get; set; }
 
         [XMessageField("sid")]
         public Guid SessionId { get; set; }
@@ -20,7 +20,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public string Nickname { get; set; }
 
         [XMessageField("status")]
-        public int Status { get; set; }
+        public uint Status { get; set; }
 
         [XMessageField("dlset")]
         public string DlSet { get; set; }
@@ -32,25 +32,25 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public string ClientSet { get; set; }
 
         [XMessageField("minrect")]
-        public int MinRect { get; set; }
+        public uint MinRect { get; set; }
 
         [XMessageField("maxrect")]
-        public int MaxRect { get; set; }
+        public uint MaxRect { get; set; }
 
         [XMessageField("ctry")]
-        public int Country { get; set; }
+        public uint Country { get; set; }
 
         [XMessageField("n1")]
-        public int N1 { get; set; }
+        public uint N1 { get; set; }
 
         [XMessageField("n2")]
-        public int N2 { get; set; }
+        public uint N2 { get; set; }
 
         [XMessageField("n3")]
-        public int N3 { get; set; }
+        public uint N3 { get; set; }
 
         [XMessageField("pip")]
-        public int PublicIp { get; set; }
+        public uint PublicIp { get; set; }
 
         [XMessageField("salt")]
         public string Salt { get; set; }
@@ -67,7 +67,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
             MinRect = 1;
             MaxRect = 164867;
             var ipAddress = StripPortFromIpAddress(context.RemoteEndPoint.ToString());
-            PublicIp = BitConverter.ToInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
+            PublicIp = BitConverter.ToUInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
             Salt = context.Salt;
             Reason = "Mq_P8Ad3aMEUvFinw0ceu6FITnZTWXxg46XU8xHW";
 

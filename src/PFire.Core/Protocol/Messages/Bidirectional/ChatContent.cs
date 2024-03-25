@@ -5,7 +5,7 @@
         public ChatContent() : base(XFireMessageType.ServerChatMessage) {}
 
         [XMessageField("imindex")]
-        public int MessageOrderIndex { get; set; }
+        public uint MessageOrderIndex { get; set; }
 
         [XMessageField("im")]
         public string MessageContent { get; set; }

@@ -16,7 +16,8 @@ namespace PFire.Core.Protocol
         private XFireAttributeFactory()
         {
             Add(new StringAttribute());
-            Add(new Int32Attribute());
+            //Add(new Int32Attribute());
+            Add(new UInt32Attribute());
             Add(new SessionIdAttribute());
             Add(new ListAttribute());
             Add(new DidAttribute());

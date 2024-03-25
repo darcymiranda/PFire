@@ -6,14 +6,14 @@ namespace PFire.Core.Protocol.Messages.Outbound
     {
         public GroupsFriends() : base(XFireMessageType.GroupsFriends)
         {
-            UserIds = new List<int>();
-            GroupIds = new List<int>();
+            UserIds = new List<uint>();
+            GroupIds = new List<uint>();
         }
 
         [XMessageField(0x01)]
-        public List<int> UserIds { get; }
+        public List<uint> UserIds { get; }
 
         [XMessageField(0x19)]
-        public List<int> GroupIds { get; }
+        public List<uint> GroupIds { get; }
     }
 }
