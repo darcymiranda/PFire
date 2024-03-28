@@ -35,6 +35,7 @@ namespace PFire.Core.Protocol
             Add(new FriendRequestAccept());
             Add(new FriendRequestDecline());
             Add(new FriendRemoval());
+            Add(new GameServerFetchAll());
             Add(new NicknameChange());
             Add(new StatusChange());
             Add(new Logout());
