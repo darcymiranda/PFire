@@ -39,6 +39,7 @@
         GroupsFriends = 152,
         FriendStatusChange = 154,
         ChatRooms = 155,
+        SystemBroadcast = 169,
 
         Did = 400
     }
