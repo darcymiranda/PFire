@@ -12,11 +12,11 @@ namespace PFire.Core.Protocol.Messages.Outbound
 {
     internal sealed class FriendsGamesInfo : XFireMessage
     {
-        private readonly UserModel _ownerUser;
+        private readonly List<UserModel> _users;
 
-        public FriendsGamesInfo(UserModel owner) : base(XFireMessageType.FriendsGameInfo)
+        public FriendsGamesInfo(List<UserModel> users) : base(XFireMessageType.FriendsGameInfo)
         {
-            _ownerUser = owner;
+            _users = users;
             SessionIds = new List<Guid>();
             GameID = new List<int>();
             GameIP = new List<int>();
@@ -37,10 +37,21 @@ namespace PFire.Core.Protocol.Messages.Outbound
 
         public override Task Process(IXFireClient client)
         {
-            SessionIds.Add(client.Server.GetSession(_ownerUser).SessionId);
-            GameID.Add(_ownerUser.Game.Id);
-            GameIP.Add(_ownerUser.Game.Ip);
-            GamePort.Add(_ownerUser.Game.Port);
+            foreach (var user in _users)
+            {
+                if (user.ShowGameStatusToFriends == true)
+                {
+                    SessionIds.Add(client.Server.GetSession(user).SessionId);
+                    GameID.Add(user.Game.Id);
+
+                    if (user.ShowGameServerData == true)
+                    {
+                        GameIP.Add(user.Game.Ip);
+                        GamePort.Add(user.Game.Port);
+                    }
+                }
+            }
+
             return Task.CompletedTask;
         }
 

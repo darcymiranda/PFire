@@ -20,7 +20,7 @@ namespace PFire.Core.Protocol
             Add(new LoginFailure());
             Add(new LoginSuccess());
             Add(new ClientConfiguration());
-            Add(new Unknown10());
+            Add(new UserPreferences());
             Add(new ConnectionInformation());
             Add(new Groups());
             Add(new GroupsFriends());
@@ -35,6 +35,7 @@ namespace PFire.Core.Protocol
             Add(new FriendRequestAccept());
             Add(new FriendRequestDecline());
             Add(new FriendRemoval());
+            Add(new FriendsOfFriendsRequest());
             Add(new GameServerFetchAll());
             Add(new GameServerFetchFriendsFavorites());
             Add(new NicknameChange());

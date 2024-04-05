@@ -103,6 +103,7 @@ namespace PFire.Core.Session
                 if (otherSession != null)
                 {
                     await otherSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                    await otherSession.SendMessage(FriendsSessionAssign.UserCameOnline(User, SessionId)); //For some reason this helps with the weird issues of not showing up online...
                 }
             }
 

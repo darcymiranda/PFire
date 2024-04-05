@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿//#define CHATROOMMODE //Uncomment this line to enable Chat Room Mode (when you log in, everybody adds you automatically)
+using System.Linq;
 using System.Threading.Tasks;
 using PFire.Core.Protocol.Messages.Outbound;
 using PFire.Core.Session;
@@ -29,7 +30,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            var clientPrefs = new Unknown10();
+            var clientPrefs = new ClientPreferences();
             await context.SendAndProcessMessage(clientPrefs);
 
             var groups = new Groups();
@@ -43,17 +44,28 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
             var chatRooms = new ChatRooms();
             await context.SendAndProcessMessage(chatRooms);
-            
-            // TODO: Remove chat room mode
+
+#if CHATROOMMODE
             var otherUsers = await context.Server.Database.AddEveryoneAsFriends(context.User);
+#endif
 
             var friendsList = new FriendsList(context.User);
             await context.SendAndProcessMessage(friendsList);
 
             var friendsStatus = new FriendsSessionAssign(context.User);
             await context.SendAndProcessMessage(friendsStatus);
-            
-            // TODO: Remove chat room mode
+
+            //Grab all your friends and friends of friends games, dump them into a list and send it to you in one payload.
+            var friendSessions = (await context.Server.Database.QueryFriends(context.User))
+                                 .Union(await context.Server.Database.QueryFriendsOfFriends(context.User))
+                                 .Distinct()
+                                 .Select(friendId => context.Server.GetSession(friendId)?.User)
+                                 .Where(friendUser => friendUser != null && friendUser.Id != context.User.Id)
+                                 .ToList();
+
+            await context.SendAndProcessMessage(new FriendsGamesInfo(friendSessions));
+
+#if CHATROOMMODE    
             foreach (var otherUser in otherUsers)
             {
                 var otherSession = context.Server.GetSession(otherUser);
@@ -64,6 +76,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
                         FriendsSessionAssign.UserCameOnline(context.User, context.SessionId));
                 }
             }
+#endif
         }
     }
 }

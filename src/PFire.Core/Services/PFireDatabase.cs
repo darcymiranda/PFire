@@ -20,11 +20,13 @@ namespace PFire.Core.Services
         Task<UserModel> QueryUser(int userId);
         Task<List<UserModel>> QueryUsers(string username);
         Task<List<UserModel>> QueryFriends(UserModel user);
+        Task<List<UserModel>> QueryFriendsOfFriends(UserModel user);
         Task<List<FriendRequestModel>> QueryPendingFriendRequestsSelf(UserModel user);
         Task<List<FriendRequestModel>> QueryPendingFriendRequests(UserModel otherUser);
         Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] thems);
         Task UpdateNickname(UserModel user, string nickname);
         Task RemoveFriend(UserModel me, UserModel them);
+        Task SaveUserPrefs(UserModel user);
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -70,7 +72,24 @@ namespace PFire.Core.Services
                 Username = username,
                 Password = password,
                 Salt = salt,
-                DateCreated = DateTime.Now
+                DateCreated = DateTime.Now,
+                ShowGameStatusToFriends = true,
+                ShowGameServerData = true,
+                ShowGameDataOnProfile = true,
+                PlaySoundOnNewMessages = true,
+                PlaySoundsOnNewMessagesInGame = true,
+                ShowTimeStampInChat = false,
+                PlaySoundsOnLogOn = true,
+                ShowFriendsOfFriends = true,
+                ShowOfflineFriends  = true,
+                ShowNicknames = true,
+                ShowVoiceChatServer = true,
+                ShowTyping = true,
+                ShowTooltipOnLogOn = true,
+                ShowTooltipOnDownload = true,
+                PlaySoundInChatrooms = true,
+                PlaySoundOnVoicecalls = true,
+                PlaySoundOnScreenshots = true
             };
 
             await databaseContext.Set<User>().AddAsync(newUser);
@@ -82,7 +101,24 @@ namespace PFire.Core.Services
                 Id = newUser.Id,
                 Username = newUser.Username,
                 Password = newUser.Password,
-                Nickname = newUser.Nickname
+                Nickname = newUser.Nickname,
+                ShowGameStatusToFriends = newUser.ShowGameStatusToFriends,
+                ShowGameServerData = newUser.ShowGameServerData,
+                ShowGameDataOnProfile = newUser.ShowGameDataOnProfile,
+                PlaySoundOnNewMessages = newUser.PlaySoundOnNewMessages,
+                PlaySoundsOnNewMessagesInGame = newUser.PlaySoundsOnNewMessagesInGame,
+                ShowTimeStampInChat = newUser.ShowTimeStampInChat,
+                PlaySoundsOnLogOn = newUser.PlaySoundsOnLogOn,
+                ShowFriendsOfFriends = newUser.ShowFriendsOfFriends,
+                ShowNicknames = newUser.ShowNicknames,
+                ShowOfflineFriends = newUser.ShowOfflineFriends,
+                ShowVoiceChatServer = newUser.ShowVoiceChatServer,
+                ShowTyping = newUser.ShowTyping,
+                ShowTooltipOnLogOn = newUser.ShowTooltipOnLogOn,
+                ShowTooltipOnDownload = newUser.ShowTooltipOnDownload,
+                PlaySoundInChatrooms = newUser.PlaySoundInChatrooms,
+                PlaySoundOnVoicecalls = newUser.PlaySoundOnVoicecalls,
+                PlaySoundOnScreenshots = newUser.PlaySoundOnScreenshots
             };
         }
 
@@ -163,7 +199,24 @@ namespace PFire.Core.Services
                                             Id = x.Id,
                                             Username = x.Username,
                                             Password = x.Password,
-                                            Nickname = x.Nickname
+                                            Nickname = x.Nickname,
+                                            ShowGameStatusToFriends = x.ShowGameStatusToFriends,
+                                            ShowGameServerData = x.ShowGameServerData,
+                                            ShowGameDataOnProfile = x.ShowGameDataOnProfile,
+                                            PlaySoundOnNewMessages = x.PlaySoundOnNewMessages,
+                                            PlaySoundsOnNewMessagesInGame = x.PlaySoundsOnNewMessagesInGame,
+                                            ShowTimeStampInChat = x.ShowTimeStampInChat,
+                                            PlaySoundsOnLogOn = x.PlaySoundsOnLogOn,
+                                            ShowOfflineFriends = x.ShowOfflineFriends,
+                                            ShowFriendsOfFriends = x.ShowFriendsOfFriends,
+                                            ShowNicknames = x.ShowNicknames,
+                                            ShowVoiceChatServer = x.ShowVoiceChatServer,
+                                            ShowTyping = x.ShowTyping,
+                                            ShowTooltipOnLogOn = x.ShowTooltipOnLogOn,
+                                            ShowTooltipOnDownload = x.ShowTooltipOnDownload,
+                                            PlaySoundInChatrooms = x.PlaySoundInChatrooms,
+                                            PlaySoundOnVoicecalls = x.PlaySoundOnVoicecalls,
+                                            PlaySoundOnScreenshots = x.PlaySoundOnScreenshots
                                         })
                                         .FirstOrDefaultAsync();
         }
@@ -212,6 +265,25 @@ namespace PFire.Core.Services
                                         .AsNoTracking()
                                         .Where(a => a.Id == user.Id)
                                         .SelectMany(a => a.MyFriends)
+                                        .Where(x => x.Pending == false)
+                                        .Select(x => new UserModel
+                                        {
+                                            Id = x.Them.Id,
+                                            Username = x.Them.Username,
+                                            Nickname = x.Them.Nickname
+                                        })
+                                        .ToListAsync();
+        }
+
+        public async Task<List<UserModel>> QueryFriendsOfFriends(UserModel user)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            return await databaseContext.Set<User>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Id == user.Id)
+                                        .SelectMany(a => a.MyFriends.SelectMany(b => b.Them.MyFriends))
                                         .Where(x => x.Pending == false)
                                         .Select(x => new UserModel
                                         {
@@ -320,6 +392,39 @@ namespace PFire.Core.Services
             {
                 friends.Remove(friendOf);
             }
+
+            await databaseContext.SaveChanges();
+        }
+
+        public async Task SaveUserPrefs(UserModel user)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var entity = await databaseContext.Set<User>().FindAsync(user.Id);
+            if (entity == null)
+            {
+                return;
+            }
+
+            // Update all preferences
+            entity.ShowGameStatusToFriends = user.ShowGameStatusToFriends;
+            entity.ShowGameServerData = user.ShowGameServerData;
+            entity.ShowGameDataOnProfile = user.ShowGameDataOnProfile;
+            entity.PlaySoundOnNewMessages = user.PlaySoundOnNewMessages;
+            entity.PlaySoundsOnNewMessagesInGame = user.PlaySoundsOnNewMessagesInGame;
+            entity.ShowTimeStampInChat = user.ShowTimeStampInChat;
+            entity.PlaySoundsOnLogOn = user.PlaySoundsOnLogOn;
+            entity.ShowFriendsOfFriends = user.ShowFriendsOfFriends;
+            entity.ShowOfflineFriends = user.ShowOfflineFriends;
+            entity.ShowNicknames = user.ShowNicknames;
+            entity.ShowVoiceChatServer = user.ShowVoiceChatServer;
+            entity.ShowTyping = user.ShowTyping;
+            entity.ShowTooltipOnLogOn = user.ShowTooltipOnLogOn;
+            entity.ShowTooltipOnDownload = user.ShowTooltipOnDownload;
+            entity.PlaySoundInChatrooms = user.PlaySoundInChatrooms;
+            entity.PlaySoundOnVoicecalls = user.PlaySoundOnVoicecalls;
+            entity.PlaySoundOnScreenshots = user.PlaySoundOnScreenshots;
 
             await databaseContext.SaveChanges();
         }
