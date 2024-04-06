@@ -27,6 +27,15 @@ namespace PFire.Core.Services
         Task UpdateNickname(UserModel user, string nickname);
         Task RemoveFriend(UserModel me, UserModel them);
         Task SaveUserPrefs(UserModel user);
+        Task<UserGroup> CreateUserGroup(UserModel user, string groupName);
+        Task<UserGroup> GetUserGroup(int groupId);
+        Task<UserGroup> GetUserGroup(string groupName);
+        Task<List<UserGroup>> GetAllUserGroups(UserModel user);
+        Task RemoveUserGroup(int groupId);
+        Task<List<int>> GetUserGroupMembers(int groupId);
+        Task RenameUserGroup(int groupId, string newName);
+        Task AddMemberToUserGroup(int groupId, int userId);
+        Task RemoveMemberFromUserGroup(int groupId, int userId);
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -427,6 +436,157 @@ namespace PFire.Core.Services
             entity.PlaySoundOnScreenshots = user.PlaySoundOnScreenshots;
 
             await databaseContext.SaveChanges();
+        }
+
+        async Task<UserGroup> IPFireDatabase.CreateUserGroup(UserModel user, string groupName)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var newGroup = new UserGroup
+            {
+                Name = groupName,
+                OwnerId = user.Id,
+                MemberIds = []
+            };
+
+            await databaseContext.Set<UserGroup>().AddAsync(newGroup);
+
+            await databaseContext.SaveChanges();
+
+            return newGroup;
+        }
+
+        async Task<UserGroup> IPFireDatabase.GetUserGroup(int groupId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            return await databaseContext.Set<UserGroup>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Id.Equals(groupId))
+                                        .Select(x => new UserGroup
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            OwnerId = x.OwnerId,
+                                            MemberIds = x.MemberIds
+                                        })
+                                        .FirstOrDefaultAsync();
+        }
+
+        async Task<List<UserGroup>> IPFireDatabase.GetAllUserGroups(UserModel user)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            return await databaseContext.Set<UserGroup>()
+                                        .AsNoTracking()
+                                        .Where(ug => ug.OwnerId == user.Id)
+                                        .Select(x => new UserGroup
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            OwnerId = x.OwnerId,
+                                            MemberIds = x.MemberIds
+                                        })
+                                        .ToListAsync();
+        }
+
+        async Task IPFireDatabase.RemoveUserGroup(int groupId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var entity = await databaseContext.Set<UserGroup>().FindAsync(groupId);
+            if (entity == null)
+            {
+                return;
+            }
+
+            databaseContext.Set<UserGroup>().Remove(entity);
+
+            await databaseContext.SaveChanges();
+        }
+
+        async Task<List<int>> IPFireDatabase.GetUserGroupMembers(int groupId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var memberIds = await databaseContext.Set<UserGroup>()
+                .AsNoTracking()
+                .Where(ug => ug.Id == groupId)
+                .Select(ug => ug.MemberIds)
+                .FirstOrDefaultAsync();
+
+            return memberIds;
+        }
+
+        async Task IPFireDatabase.RenameUserGroup(int groupId, string newName)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var entity = await databaseContext.Set<UserGroup>().FindAsync(groupId);
+            if (entity == null)
+            {
+                return;
+            }
+
+            entity.Name = newName;
+
+            await databaseContext.SaveChanges();
+        }
+
+        async Task IPFireDatabase.AddMemberToUserGroup(int groupId, int userId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var entity = await databaseContext.Set<UserGroup>().FindAsync(groupId);
+            if (entity == null)
+            {
+                return;
+            }
+
+            entity.MemberIds.Add(userId);
+
+            await databaseContext.SaveChanges();
+        }
+
+        async Task IPFireDatabase.RemoveMemberFromUserGroup(int groupId, int userId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var entity = await databaseContext.Set<UserGroup>().FindAsync(groupId);
+            if (entity == null)
+            {
+                return;
+            }
+
+            entity.MemberIds.Remove(userId);
+
+            await databaseContext.SaveChanges();
+        }
+
+        async Task<UserGroup> IPFireDatabase.GetUserGroup(string groupName)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            return await databaseContext.Set<UserGroup>()
+                                        .AsNoTracking()
+                                        .Where(a => a.Name.Equals(groupName))
+                                        .Select(x => new UserGroup
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            OwnerId = x.OwnerId,
+                                            MemberIds = x.MemberIds
+                                        })
+                                        .FirstOrDefaultAsync();
         }
     }
 }

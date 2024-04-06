@@ -28,6 +28,11 @@ namespace PFire.Core.Protocol
             Add(new ChatRooms());
             Add(new GameInformation());
             Add(new KeepAlive());
+            Add(new GroupCreate());
+            Add(new GroupMemberAdd());
+            Add(new GroupMemberRemove());
+            Add(new GroupRemove());
+            Add(new GroupRename());
             Add(new Did());
             Add(new ChatMessage());
             Add(new UserLookup());

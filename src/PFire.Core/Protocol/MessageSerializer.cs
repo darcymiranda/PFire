@@ -61,11 +61,20 @@ namespace PFire.Core.Protocol
 
         private static string GetAttributeName(BinaryReader reader, Type messageType)
         {
-            // TODO: Be brave enough to find an elegant fix for this
-            // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
-            // and breaks this code. Assume first byte after the attribute count as the attribute name
-            var count = (messageType == typeof(StatusChange) || messageType == typeof(GameServerFetchAll)) ? 1 : reader.ReadByte();
+            HashSet<Type> messageTypeSet = new HashSet<Type>
+            {
+                typeof(StatusChange),
+                typeof(GameServerFetchAll),
+                typeof(GroupCreate),
+                typeof(GroupMemberAdd),
+                typeof(GroupMemberRemove),
+                typeof(GroupRemove),
+                typeof(GroupRename)
+            };
 
+            byte count = messageTypeSet.Contains(messageType) ? (byte)1 : reader.ReadByte();
+
+            // Read the bytes for the attribute name
             var readBytes = reader.ReadBytes(count);
             return Encoding.UTF8.GetString(readBytes);
         }
