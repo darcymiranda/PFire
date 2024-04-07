@@ -21,15 +21,14 @@ namespace PFire.Core.Protocol.Messages.Inbound
             }
 
             await context.Server.Database.UpdateNickname(context.User, Nickname);
-
-            var updatedFriendsList = new FriendsList(context.User);
             var queryFriends = await context.Server.Database.QueryFriends(context.User);
+
             foreach (var friend in queryFriends)
             {
                 var friendSession = context.Server.GetSession(friend);
-                if (friendSession != null)
+                if (friendSession != null && friendSession.SessionId != context.SessionId)
                 {
-                    await friendSession.SendAndProcessMessage(updatedFriendsList);
+                    await friendSession.SendMessage(new FriendNameChange(Nickname, context.User.Id));
                 }
             }
         }

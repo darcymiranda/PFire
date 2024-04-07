@@ -49,6 +49,7 @@
         GroupCreateConfirmation = 153,
         FriendStatusChange = 154,
         ChatRooms = 155,
+        FriendNameChange = 161,
         SystemBroadcast = 169,
 
         Did = 400
