@@ -39,7 +39,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             var groupsFriends = new GroupsFriends();
             await context.SendAndProcessMessage(groupsFriends);
 
-            var serverList = new ServerList();
+            var serverList = new GameServerSendFavorites();
             await context.SendAndProcessMessage(serverList);
 
             var chatRooms = new ChatRooms();

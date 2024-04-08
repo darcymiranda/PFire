@@ -24,7 +24,7 @@ namespace PFire.Core.Protocol
             Add(new ConnectionInformation());
             Add(new Groups());
             Add(new GroupsFriends());
-            Add(new ServerList());
+            Add(new GameServerSendFavorites());
             Add(new ChatRooms());
             Add(new GameInformation());
             Add(new KeepAlive());
@@ -33,6 +33,8 @@ namespace PFire.Core.Protocol
             Add(new GroupMemberRemove());
             Add(new GroupRemove());
             Add(new GroupRename());
+            Add(new FavoriteServerAdd());
+            Add(new FavoriteServerRemove());
             Add(new Did());
             Add(new ChatMessage());
             Add(new UserLookup());

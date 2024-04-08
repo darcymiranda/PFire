@@ -39,6 +39,7 @@ namespace PFire.Infrastructure.Services
             modelBuilder.ApplyConfiguration(new FriendConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new UserGroupConfiguration());
+            modelBuilder.ApplyConfiguration(new UserServerListConfiguration());
         }
     }
 }

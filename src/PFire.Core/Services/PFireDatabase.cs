@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PFire.Core.Models;
+using PFire.Core.Protocol.Messages.Inbound;
 using PFire.Infrastructure.Entities;
 using PFire.Infrastructure.Services;
 
@@ -36,6 +37,10 @@ namespace PFire.Core.Services
         Task RenameUserGroup(int groupId, string newName);
         Task AddMemberToUserGroup(int groupId, int userId);
         Task RemoveMemberFromUserGroup(int groupId, int userId);
+        Task<List<UserServerList>> GetAllUserFavoriteServers (UserModel user);
+        Task AddUserFavoriteServer (int gameId, int gameIp, int gamePort, int userId);
+        Task RemoveUserFavoriteServer (int gameId, int gameIp, int gamePort, int userId);
+
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -587,6 +592,64 @@ namespace PFire.Core.Services
                                             MemberIds = x.MemberIds
                                         })
                                         .FirstOrDefaultAsync();
+        }
+
+        async Task<List<UserServerList>> IPFireDatabase.GetAllUserFavoriteServers(UserModel user)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            return await databaseContext.Set<UserServerList>()
+                                        .AsNoTracking()
+                                        .Where(ug => ug.UserId == user.Id)
+                                        .Select(x => new UserServerList
+                                        {
+                                            Id = x.Id,
+                                            UserId = x.UserId,
+                                            GameId = x.GameId,
+                                            GameIp = x.GameIp,
+                                            GamePort = x.GamePort
+                                        })
+                                        .ToListAsync();
+        }
+
+        async Task IPFireDatabase.AddUserFavoriteServer(int gameId, int gameIp, int gamePort, int userId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var newFavorite = new UserServerList
+            {
+                UserId = userId,
+                GameId = gameId,
+                GameIp = gameIp,
+                GamePort = gamePort
+            };
+
+            await databaseContext.Set<UserServerList>().AddAsync(newFavorite);
+
+            await databaseContext.SaveChanges();
+        }
+
+        async Task IPFireDatabase.RemoveUserFavoriteServer(int gameId, int gameIp, int gamePort, int userId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var entity = await databaseContext.Set<UserServerList>()
+                             .FirstOrDefaultAsync(usl => usl.UserId == userId
+                             && usl.GameId == gameId
+                             && usl.GameIp == gameIp
+                             && usl.GamePort == gamePort);
+
+            if (entity == null)
+            {
+                return;
+            }
+
+            databaseContext.Set<UserServerList>().Remove(entity);
+
+            await databaseContext.SaveChanges();
         }
     }
 }
