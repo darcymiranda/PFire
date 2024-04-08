@@ -169,6 +169,7 @@ namespace PFire.Core.Session
             var otherSession = _clientManager.GetSession(user);
             if (otherSession != null)
             {
+                otherSession.SendMessage(new LoggedInElseWhere(1, 20, 20));
                 _clientManager.RemoveSession(otherSession);
             }
         }

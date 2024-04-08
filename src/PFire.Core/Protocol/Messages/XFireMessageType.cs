@@ -41,6 +41,7 @@
         ClientPreferences = 141,
         UserLookupResult = 143,
         ServerPong = 144,
+        LoggedInElseWhere = 145,
         ServerList = 148,
         GameServerSendFriendsFavorites = 149,
         GameServerSendAll = 150,
