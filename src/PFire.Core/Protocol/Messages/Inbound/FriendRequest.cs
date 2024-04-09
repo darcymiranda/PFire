@@ -22,6 +22,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
             await context.Server.Database.InsertFriendRequest(context.User, recipient, Message);
 
+            await context.SendAndProcessMessage(new FriendInviteResponse(Username, 0));
+
             var recipientSession = context.Server.GetSession(recipient);
             if (recipientSession != null)
             {

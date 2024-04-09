@@ -38,6 +38,7 @@
         ServerChatMessage = 133,
         FriendsGameInfo = 135,
         FriendsOfFriendsInfo = 136,
+        FriendInviteResponse = 137,
         FriendInvite = 138,
         FriendRemoved = 139,
         ClientPreferences = 141,
