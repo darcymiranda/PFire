@@ -57,6 +57,7 @@
         FriendStatusChange = 154,
         ChatRooms = 155,
         FriendGameClientData = 156,
+        UserScreenshots = 157,
         FriendNameChange = 161,
         SystemBroadcast = 169,
 
