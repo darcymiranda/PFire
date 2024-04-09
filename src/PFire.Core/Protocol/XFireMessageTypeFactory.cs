@@ -46,6 +46,7 @@ namespace PFire.Core.Protocol
             Add(new GameServerFetchAll());
             Add(new GameServerFetchFriendsFavorites());
             Add(new NicknameChange());
+            Add(new VoiceStatusChange());
             Add(new StatusChange());
             Add(new Logout());
         }
