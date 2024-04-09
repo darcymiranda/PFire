@@ -69,7 +69,8 @@ namespace PFire.Core.Protocol
                 typeof(GroupMemberAdd),
                 typeof(GroupMemberRemove),
                 typeof(GroupRemove),
-                typeof(GroupRename)
+                typeof(GroupRename),
+                typeof(GameClientData)
             };
 
             byte count = messageTypeSet.Contains(messageType) ? (byte)1 : reader.ReadByte();

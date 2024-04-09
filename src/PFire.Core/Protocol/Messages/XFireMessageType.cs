@@ -29,8 +29,9 @@
         GroupMemberAdd = 29,
         GroupMemberRemove = 30,
         StatusChange = 32,
-        Unknown37 = 37,
+        GameClientData = 35,
         Logout = 36,
+        Unknown37 = 37,
         LoginChallenge = 128,
         LoginFailure = 129,
         LoginSuccess = 130,
@@ -55,6 +56,7 @@
         GroupCreateConfirmation = 153,
         FriendStatusChange = 154,
         ChatRooms = 155,
+        FriendGameClientData = 156,
         FriendNameChange = 161,
         SystemBroadcast = 169,
 
