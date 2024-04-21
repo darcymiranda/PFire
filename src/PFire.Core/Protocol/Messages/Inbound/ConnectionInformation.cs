@@ -42,7 +42,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             var serverList = new GameServerSendFavorites();
             await context.SendAndProcessMessage(serverList);
 
-            var chatRooms = new ChatRooms();
+            var chatRooms = new ChatroomListOnLogin();
             await context.SendAndProcessMessage(chatRooms);
 
 #if CHATROOMMODE

@@ -25,7 +25,7 @@ namespace PFire.Core.Protocol
             Add(new Groups());
             Add(new GroupsFriends());
             Add(new GameServerSendFavorites());
-            Add(new ChatRooms());
+            Add(new ChatroomListOnLogin());
             Add(new GameInformation());
             Add(new KeepAlive());
             Add(new GroupCreate());
@@ -49,6 +49,7 @@ namespace PFire.Core.Protocol
             Add(new VoiceStatusChange());
             Add(new StatusChange());
             Add(new GameClientData());
+            Add(new ChatroomInboundMessage());
             Add(new Logout());
         }
 

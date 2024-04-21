@@ -40,6 +40,7 @@ namespace PFire.Infrastructure.Services
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new UserGroupConfiguration());
             modelBuilder.ApplyConfiguration(new UserServerListConfiguration());
+            modelBuilder.ApplyConfiguration(new ChatroomConfiguration());
         }
     }
 }
