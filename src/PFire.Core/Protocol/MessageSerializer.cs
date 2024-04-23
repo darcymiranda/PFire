@@ -41,8 +41,26 @@ namespace PFire.Core.Protocol
 
                 var value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
 
-                var field = fieldInfo.Where(a => a.GetCustomAttribute<XMessageField>() != null)
-                                     .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
+                var field = fieldInfo
+                    .Where(a => a.GetCustomAttribute<XMessageField>() != null)
+                    .FirstOrDefault(a =>
+                    {
+                        var attribute = a.GetCustomAttribute<XMessageField>();
+                        if (attribute != null)
+                        {
+                            if (attributeName.Length == 1)
+                            {
+                                // If attributeName is a single byte, compare with the attribute's NameAsBytes
+                                return attribute.NameAsBytes.SequenceEqual(attributeName);
+                            }
+                            else
+                            {
+                                // If attributeName is a byte array with length > 1, compare with the attribute's Name converted to string
+                                return Encoding.UTF8.GetString(attributeName) == attribute.Name;
+                            }
+                        }
+                        return false;
+                    });
 
                 if (field != null)
                 {
@@ -59,7 +77,7 @@ namespace PFire.Core.Protocol
             return messageBase;
         }
 
-        private static string GetAttributeName(BinaryReader reader, Type messageType)
+        private static byte[] GetAttributeName(BinaryReader reader, Type messageType)
         {
             HashSet<Type> messageTypeSet = new HashSet<Type>
             {
@@ -75,9 +93,19 @@ namespace PFire.Core.Protocol
 
             byte count = messageTypeSet.Contains(messageType) ? (byte)1 : reader.ReadByte();
 
+            // Check if count is 1, indicating a single byte
+            if (count == 1)
+            {
+                // Read the single byte and treat it as a numeric value
+                byte numericValue = reader.ReadByte();
+                return [numericValue];
+            }
+            else
+            {
             // Read the bytes for the attribute name
             var readBytes = reader.ReadBytes(count);
-            return Encoding.UTF8.GetString(readBytes);
+                return readBytes;
+            }
         }
 
         public static byte[] Serialize(IMessage message)
