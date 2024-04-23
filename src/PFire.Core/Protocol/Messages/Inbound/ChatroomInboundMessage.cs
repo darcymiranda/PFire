@@ -485,17 +485,15 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         private async Task ChatroomMsg(IXFireClient context)
         {
-            var requiredKeys = new byte[] { 0x09, 0x04, 0x2E };
+            var requiredKeys = new byte[] { 0x04, 0x2E };
 
             if (!requiredKeys.All(key => MsgList.ContainsKey(key) &&
-                ((key == 0x09 && MsgList[key] != null) ||
-                (key == 0x04 && MsgList[key] is byte[]) ||
+                ((key == 0x04 && MsgList[key] is byte[]) ||
                 (key == 0x2E && MsgList[key] is string))))
             {
                 return;
             }
 
-            var messagePayload = MsgList[0x09];
             var Cid = (byte[])MsgList[0x04];
             var Message = (string)MsgList[0x2E];
 
