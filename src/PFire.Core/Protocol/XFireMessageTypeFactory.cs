@@ -48,6 +48,7 @@ namespace PFire.Core.Protocol
             Add(new NicknameChange());
             Add(new VoiceStatusChange());
             Add(new StatusChange());
+            Add(new UserRequestAdvancedInfo());
             Add(new GameClientData());
             Add(new ChatroomInboundMessage());
             Add(new Logout());

@@ -88,7 +88,8 @@ namespace PFire.Core.Protocol
                 typeof(GroupMemberRemove),
                 typeof(GroupRemove),
                 typeof(GroupRename),
-                typeof(GameClientData)
+                typeof(GameClientData),
+                typeof(UserRequestAdvancedInfo)
             };
 
             byte count = messageTypeSet.Contains(messageType) ? (byte)1 : reader.ReadByte();
@@ -102,8 +103,8 @@ namespace PFire.Core.Protocol
             }
             else
             {
-            // Read the bytes for the attribute name
-            var readBytes = reader.ReadBytes(count);
+                // Read the bytes for the attribute name
+                var readBytes = reader.ReadBytes(count);
                 return readBytes;
             }
         }
