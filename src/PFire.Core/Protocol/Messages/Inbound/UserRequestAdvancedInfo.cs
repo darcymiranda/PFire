@@ -21,7 +21,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             // 172 Friend's screenshots info
             // 174 Friend's avatar info
             // 182 Friend's videos
-            // TODO: 176 Friend's clan membership info  -- This will be done when the clan update is live.
+            // 176 Friend's clan membership info
 
             UserModel user = await context.Server.Database.QueryUser(UserId);
 
@@ -32,6 +32,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
                 await context.SendAndProcessMessage(new FriendScreenshots(user.Id, friendScreenshots)); //172
                 await context.SendAndProcessMessage(new FriendAvatarInfo(user)); //174
                 await context.SendAndProcessMessage(new FriendVideos(user.Id)); //182
+                await context.SendAndProcessMessage(new FriendClanInfo(user.Id));
             }
             
             
