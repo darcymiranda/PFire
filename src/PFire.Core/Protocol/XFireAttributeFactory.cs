@@ -9,9 +9,9 @@ namespace PFire.Core.Protocol
     {
         private static readonly XFireAttributeFactory instance = null;
 
-        private readonly Dictionary<byte, XFireAttribute> _attributeTypes = new Dictionary<byte, XFireAttribute>();
+        private readonly Dictionary<byte, XFireAttribute> _attributeTypes = [];
 
-        private static readonly byte[] IgnoreKnownUnimplementedTypes = {18};
+        private static readonly byte[] IgnoreKnownUnimplementedTypes = [18];
 
         private XFireAttributeFactory()
         {

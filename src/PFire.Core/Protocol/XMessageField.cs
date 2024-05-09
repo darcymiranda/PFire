@@ -13,11 +13,12 @@ namespace PFire.Core.Protocol
         public XMessageField(string name)
         {
             Name = name;
+            NameAsBytes = Encoding.UTF8.GetBytes(name);
         }
 
         public XMessageField(params byte[] name)
-               //: this(Encoding.UTF8.GetString(name))
         {
+            Name = Encoding.UTF8.GetString(name);
             NonTextualName = true;
             NameAsBytes = name;
         }

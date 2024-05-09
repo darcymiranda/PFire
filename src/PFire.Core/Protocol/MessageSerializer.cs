@@ -35,7 +35,7 @@ namespace PFire.Core.Protocol
 
             for (var i = 0; i < attributeCount; i++)
             {
-                var attributeName = GetAttributeName(reader, messageType);
+                var attributeNameAsBytes = GetAttributeNameAsBytes(reader, messageType);
 
                 var attributeType = reader.ReadByte();
 
@@ -43,24 +43,7 @@ namespace PFire.Core.Protocol
 
                 var field = fieldInfo
                     .Where(a => a.GetCustomAttribute<XMessageField>() != null)
-                    .FirstOrDefault(a =>
-                    {
-                        var attribute = a.GetCustomAttribute<XMessageField>();
-                        if (attribute != null)
-                        {
-                            if (attributeName.Length == 1)
-                            {
-                                // If attributeName is a single byte, compare with the attribute's NameAsBytes
-                                return attribute.NameAsBytes.SequenceEqual(attributeName);
-                            }
-                            else
-                            {
-                                // If attributeName is a byte array with length > 1, compare with the attribute's Name converted to string
-                                return Encoding.UTF8.GetString(attributeName) == attribute.Name;
-                            }
-                        }
-                        return false;
-                    });
+                    .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>().NameAsBytes.SequenceEqual(attributeNameAsBytes));
 
                 if (field != null)
                 {
@@ -68,7 +51,7 @@ namespace PFire.Core.Protocol
                 }
                 else
                 {
-                    Debug.WriteLine($"WARN: No attribute defined for {attributeName} on class {messageType.Name}");
+                    Debug.WriteLine($"WARN: No attribute defined for {attributeNameAsBytes} on class {messageType.Name}");
                 }
             }
 
@@ -77,9 +60,11 @@ namespace PFire.Core.Protocol
             return messageBase;
         }
 
-        private static byte[] GetAttributeName(BinaryReader reader, Type messageType)
+        private static byte[] GetAttributeNameAsBytes(BinaryReader reader, Type messageType)
         {
-            HashSet<Type> messageTypeSet = new HashSet<Type>
+            // These messages contain a single field represented by a byte value instead of
+            // the usual first byte representing the attribute name length.
+            var messagesWithoutAttributeNames = new HashSet<Type>
             {
                 typeof(StatusChange),
                 typeof(GameServerFetchAll),
@@ -92,21 +77,14 @@ namespace PFire.Core.Protocol
                 typeof(UserRequestAdvancedInfo)
             };
 
-            byte count = messageTypeSet.Contains(messageType) ? (byte)1 : reader.ReadByte();
 
-            // Check if count is 1, indicating a single byte
-            if (count == 1)
+            if (messagesWithoutAttributeNames.Contains(messageType))
             {
-                // Read the single byte and treat it as a numeric value
-                byte numericValue = reader.ReadByte();
-                return [numericValue];
+                return [reader.ReadByte()];
             }
-            else
-            {
-                // Read the bytes for the attribute name
-                var readBytes = reader.ReadBytes(count);
-                return readBytes;
-            }
+
+            var length = reader.ReadByte();
+            return reader.ReadBytes(length);
         }
 
         public static byte[] Serialize(IMessage message)
