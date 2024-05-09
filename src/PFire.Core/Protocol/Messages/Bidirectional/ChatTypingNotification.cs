@@ -8,9 +8,9 @@
         public ChatTypingNotification() : base(XFireMessageType.ServerChatMessage) {}
 
         [XMessageField("imindex")]
-        public int OrderIndex { get; set; }
+        public uint OrderIndex { get; set; }
 
         [XMessageField("typing")]
-        public int Typing { get; set; }
+        public uint Typing { get; set; }
     }
 }

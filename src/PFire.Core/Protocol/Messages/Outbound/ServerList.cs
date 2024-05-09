@@ -6,21 +6,21 @@ namespace PFire.Core.Protocol.Messages.Outbound
     {
         public ServerList() : base(XFireMessageType.ServerList)
         {
-            GameIds = new List<int>();
-            GameIPs = new List<int>();
-            GamePorts = new List<int>();
+            GameIds = new List<uint>();
+            GameIPs = new List<uint>();
+            GamePorts = new List<uint>();
         }
 
         [XMessageField("max")]
-        public int MaximumFavorites { get; set; }
+        public uint MaximumFavorites { get; set; }
 
         [XMessageField("gameid")]
-        public List<int> GameIds { get; }
+        public List<uint> GameIds { get; }
 
         [XMessageField("gip")]
-        public List<int> GameIPs { get; }
+        public List<uint> GameIPs { get; }
 
         [XMessageField("gport")]
-        public List<int> GamePorts { get; }
+        public List<uint> GamePorts { get; }
     }
 }

@@ -17,7 +17,7 @@ namespace PFire.Core.Util
             }
 
             var username = user?.Username ?? "unknown";
-            var userId = user?.Id ?? -1;
+            var userId = user?.Id ?? 0;
             
             logger.LogDebug($"Sent message[{username},{userId}]: {message}");
         }
