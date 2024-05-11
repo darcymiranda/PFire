@@ -20,9 +20,9 @@ namespace PFire.Core.Protocol.XFireAttributes
         public override void WriteValue(BinaryWriter writer, dynamic data)
         {
             var value = (string)data ?? string.Empty;
-
-            writer.Write((short)value.Length);
-            writer.Write(Encoding.UTF8.GetBytes(value));
+            var bytes = Encoding.UTF8.GetBytes(value);
+            writer.Write((short)bytes.Length);
+            writer.Write(bytes);
         }
     }
 }

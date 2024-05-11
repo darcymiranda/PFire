@@ -20,14 +20,21 @@ namespace PFire.Core.Protocol
             Add(new LoginFailure());
             Add(new LoginSuccess());
             Add(new ClientConfiguration());
-            Add(new Unknown10());
+            Add(new UserPreferences());
             Add(new ConnectionInformation());
             Add(new Groups());
             Add(new GroupsFriends());
-            Add(new ServerList());
-            Add(new ChatRooms());
+            Add(new GameServerSendFavorites());
+            Add(new ChatroomListOnLogin());
             Add(new GameInformation());
             Add(new KeepAlive());
+            Add(new GroupCreate());
+            Add(new GroupMemberAdd());
+            Add(new GroupMemberRemove());
+            Add(new GroupRemove());
+            Add(new GroupRename());
+            Add(new FavoriteServerAdd());
+            Add(new FavoriteServerRemove());
             Add(new Did());
             Add(new ChatMessage());
             Add(new UserLookup());
@@ -35,10 +42,15 @@ namespace PFire.Core.Protocol
             Add(new FriendRequestAccept());
             Add(new FriendRequestDecline());
             Add(new FriendRemoval());
+            Add(new FriendsOfFriendsRequest());
             Add(new GameServerFetchAll());
             Add(new GameServerFetchFriendsFavorites());
             Add(new NicknameChange());
+            Add(new VoiceStatusChange());
             Add(new StatusChange());
+            Add(new UserRequestAdvancedInfo());
+            Add(new GameClientData());
+            Add(new ChatroomInboundMessage());
             Add(new Logout());
         }
 

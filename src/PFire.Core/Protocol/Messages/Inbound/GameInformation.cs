@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using PFire.Core.Session;
-using PFire.Core.Protocol.Messages.Outbound;
 
 
 namespace PFire.Core.Protocol.Messages.Inbound
@@ -23,19 +22,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
             context.User.Game.Id = GameId;
             context.User.Game.Ip = GameIP;
             context.User.Game.Port = GamePort;
-            await SendGameInfoToFriends(context);
-        }
-        public async Task SendGameInfoToFriends(IXFireClient context)
-        {
-            var friends = await context.Server.Database.QueryFriends(context.User);
-            foreach (var friend in friends)
-            {
-                var otherSession = context.Server.GetSession(friend);
-                if (otherSession != null)
-                {
-                    await otherSession.SendAndProcessMessage(new FriendsGamesInfo(context.User));
-                }
-            }
+            await context.Server.SendGameInfoToFriends(context);
         }
     }
 }
