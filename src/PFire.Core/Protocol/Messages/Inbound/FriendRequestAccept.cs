@@ -27,6 +27,8 @@ namespace PFire.Core.Protocol.Messages.Inbound
             {
                 await friendSession.SendAndProcessMessage(new FriendsList(friend));
                 await friendSession.SendAndProcessMessage(new FriendsSessionAssign(friend));
+                await context.SendAndProcessMessage(new FriendsGamesInfo([friendSession.User]));
+                await friendSession.SendAndProcessMessage(new FriendsGamesInfo([context.User]));
             }
 
             var pendingRequests = await context.Server.Database.QueryPendingFriendRequests(context.User);

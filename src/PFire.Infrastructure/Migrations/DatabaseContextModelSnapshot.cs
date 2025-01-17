@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PFire.Infrastructure.Services;
 
+#nullable disable
+
 namespace PFire.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
@@ -13,8 +15,88 @@ namespace PFire.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
+
+            modelBuilder.Entity("PFire.Infrastructure.Entities.ChatroomEnt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Administrators")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Cid")
+                        .HasColumnType("BLOB");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DefaultPerms")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GameLobbyHost")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GameLobbyID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GameLobbyIP")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("GameLobbyPlayers")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("GameLobbyPort")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MOTD")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Moderators")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PowerUsers")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte>("SavedRoom")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("ShowJoinLeaveMessages")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Silenced")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SilencedUsers")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Users")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB");
+
+                    b.Property<int>("Visibility")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("ChatroomEnt", (string)null);
+                });
 
             modelBuilder.Entity("PFire.Infrastructure.Entities.Friend", b =>
                 {
@@ -49,7 +131,7 @@ namespace PFire.Infrastructure.Migrations
                     b.HasIndex("MeId", "ThemId")
                         .IsUnique();
 
-                    b.ToTable("Friend");
+                    b.ToTable("Friend", (string)null);
                 });
 
             modelBuilder.Entity("PFire.Infrastructure.Entities.User", b =>
@@ -72,9 +154,60 @@ namespace PFire.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("PlaySoundInChatrooms")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PlaySoundOnNewMessages")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PlaySoundOnScreenshots")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PlaySoundOnVoicecalls")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PlaySoundsOnLogOn")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PlaySoundsOnNewMessagesInGame")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Salt")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("ShowFriendsOfFriends")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowGameDataOnProfile")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowGameServerData")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowGameStatusToFriends")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowNicknames")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowOfflineFriends")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowTimeStampInChat")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowTooltipOnDownload")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowTooltipOnLogOn")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowTyping")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowVoiceChatServer")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -92,7 +225,80 @@ namespace PFire.Infrastructure.Migrations
 
                     b.HasIndex("Username");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("PFire.Infrastructure.Entities.UserGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MemberIds")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("UserGroup", (string)null);
+                });
+
+            modelBuilder.Entity("PFire.Infrastructure.Entities.UserServerList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GameIp")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GamePort")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("UserServerList", (string)null);
                 });
 
             modelBuilder.Entity("PFire.Infrastructure.Entities.Friend", b =>

@@ -35,14 +35,15 @@ namespace PFire.Core.Protocol
 
             for (var i = 0; i < attributeCount; i++)
             {
-                var attributeName = GetAttributeName(reader, messageType);
+                var attributeNameAsBytes = GetAttributeNameAsBytes(reader, messageType);
 
                 var attributeType = reader.ReadByte();
 
                 var value = XFireAttributeFactory.Instance.GetAttribute(attributeType).ReadValue(reader);
 
-                var field = fieldInfo.Where(a => a.GetCustomAttribute<XMessageField>() != null)
-                                     .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>()?.Name == attributeName);
+                var field = fieldInfo
+                    .Where(a => a.GetCustomAttribute<XMessageField>() != null)
+                    .FirstOrDefault(a => a.GetCustomAttribute<XMessageField>().NameAsBytes.SequenceEqual(attributeNameAsBytes));
 
                 if (field != null)
                 {
@@ -50,7 +51,7 @@ namespace PFire.Core.Protocol
                 }
                 else
                 {
-                    Debug.WriteLine($"WARN: No attribute defined for {attributeName} on class {messageType.Name}");
+                    Debug.WriteLine($"WARN: No attribute defined for {attributeNameAsBytes} on class {messageType.Name}");
                 }
             }
 
@@ -59,15 +60,31 @@ namespace PFire.Core.Protocol
             return messageBase;
         }
 
-        private static string GetAttributeName(BinaryReader reader, Type messageType)
+        private static byte[] GetAttributeNameAsBytes(BinaryReader reader, Type messageType)
         {
-            // TODO: Be brave enough to find an elegant fix for this
-            // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
-            // and breaks this code. Assume first byte after the attribute count as the attribute name
-            var count = (messageType == typeof(StatusChange) || messageType == typeof(GameServerFetchAll)) ? 1 : reader.ReadByte();
+            // These messages contain a single field represented by a byte value instead of
+            // the usual first byte representing the attribute name length.
+            var messagesWithoutAttributeNames = new HashSet<Type>
+            {
+                typeof(StatusChange),
+                typeof(GameServerFetchAll),
+                typeof(GroupCreate),
+                typeof(GroupMemberAdd),
+                typeof(GroupMemberRemove),
+                typeof(GroupRemove),
+                typeof(GroupRename),
+                typeof(GameClientData),
+                typeof(UserRequestAdvancedInfo)
+            };
 
-            var readBytes = reader.ReadBytes(count);
-            return Encoding.UTF8.GetString(readBytes);
+
+            if (messagesWithoutAttributeNames.Contains(messageType))
+            {
+                return [reader.ReadByte()];
+            }
+
+            var length = reader.ReadByte();
+            return reader.ReadBytes(length);
         }
 
         public static byte[] Serialize(IMessage message)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using PFire.Core.Models;
 using PFire.Core.Protocol.Messages;
@@ -97,7 +98,32 @@ namespace PFire.Core
 
         public void RemoveSession(IXFireClient session)
         {
+            RemoveGamingSession(session);
             _clientManager.RemoveSession(session);
+        }
+
+        public async void RemoveGamingSession(IXFireClient context)
+        {
+            context.User.Game.Id = 0;
+            context.User.Game.Ip = 0;
+            context.User.Game.Port = 0;
+
+            await context.Server.SendGameInfoToFriends(context);
+        }
+        internal async Task SendGameInfoToFriends(IXFireClient context)
+        {
+            var sessionsToSendTo = (await context.Server.Database.QueryFriends(context.User))
+                                    .Union(await context.Server.Database.QueryFriendsOfFriends(context.User))
+                                    .Distinct()
+                                    .Select(friendId => context.Server.GetSession(friendId))
+                                    .Where(session => session != null && context.User.Id != session.User.Id)
+                                    .ToList();
+
+            foreach (var session in sessionsToSendTo)
+            {
+                await session.SendAndProcessMessage(new FriendsGamesInfo([context.User]));
+            }
+
         }
     }
 }
