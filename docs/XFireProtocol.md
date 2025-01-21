@@ -142,9 +142,10 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | [143](#user-search-results-message)                     | User search results                     | `string` |     ❌     |      ✔      |        ❌        |
 | [147](#friend-voip-information-message)                 | Friend VoIP information                 | `string` |     ❌     |      ✔      |        ❌        |
 | 148                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
-| [154](#friend-status-message)                           | Friend status                           | `string` |     ❌     |      ✔      |        ❌        |
 | 151                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
 | 152                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
+| [153](#group-create-confirmation-message)               | Group Create Confirmation               | `string` |     ❌     |      ✔      |        ❌        |
+| [154](#friend-status-message)                           | Friend status                           | `string` |     ❌     |      ✔      |        ❌        |
 | 155                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
 | [156](#extra-friend-game-information-message)           | Extra friend game information           | `string` |     ❌     |      ✔      |        ❌        |
 | 157                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
@@ -648,6 +649,23 @@ This message is sent to the client by the server to notify them of any VoIP serv
 | sid            |  Session ID list  | The list of session ids for which VoIP information has been updated.                                                                                                      |
 | vid            | `32-bit int` list | The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client. |
 | vip            | IPv4 address list | The list of IP addresses of the VoIP servers for each user.                                                                                                               |
+
+### Group Create Confirmation Message
+
+This message is sent to the client by the server to notify it that the [create group message](#create-group-message) was successful.
+
+#### Properties
+
+| Message ID | Attribute Key Type |     Direction    |
+| :--------- | :----------------: | :--------------: |
+| 153        |      `string`      | Server to Client |
+
+#### Contents
+
+| Attribute Name |     Type     | Details               |
+| :------------- | :----------: | :-------------------- |
+| 0x19           | `32-bit int` | The id of the group   |
+| 0x1A           |   `string`   | The name of the group |
 
 ### Friend Status Message
 
