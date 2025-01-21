@@ -25,6 +25,7 @@ namespace PFire.Core.Services
         Task DeletePendingFriendRequest(UserModel me, params FriendRequestModel[] thems);
         Task UpdateNickname(UserModel user, string nickname);
         Task RemoveFriend(UserModel me, UserModel them);
+        Task<GroupModel> CreateGroup(UserModel user, string name);
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -322,6 +323,28 @@ namespace PFire.Core.Services
             }
 
             await databaseContext.SaveChanges();
+        }
+
+        public async Task<GroupModel> CreateGroup(UserModel user, string name)
+        {
+            using var score = _serviceProvider.CreateScope();
+            var databaseContext = score.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var newGroup = new Group
+            {
+                Name = name,
+                OwnerId = user.Id,
+                DateCreated = DateTime.UtcNow
+            };
+
+            await databaseContext.Set<Group>().AddAsync(newGroup);
+            await databaseContext.SaveChanges();
+
+            return new GroupModel
+            {
+                Id = newGroup.Id,
+                Name = name
+            };
         }
     }
 }

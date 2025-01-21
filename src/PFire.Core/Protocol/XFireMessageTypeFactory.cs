@@ -24,6 +24,7 @@ namespace PFire.Core.Protocol
             Add(new ConnectionInformation());
             Add(new Groups());
             Add(new GroupsFriends());
+            Add(new GroupCreate());
             Add(new ServerList());
             Add(new ChatRooms());
             Add(new GameInformation());

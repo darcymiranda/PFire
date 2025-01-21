@@ -37,6 +37,7 @@ namespace PFire.Infrastructure.Services
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new FriendConfiguration());
+            modelBuilder.ApplyConfiguration(new GroupConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
         }
     }

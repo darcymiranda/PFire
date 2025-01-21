@@ -125,6 +125,8 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | [18](#)                                                 | Client information                      | `string` |     ✔     |      ❌      |        ❌        |
 | 23                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
 | 24                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
+| 25                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
+| [26](#group-create-message)                             | Group Create                            | `string` |     ✔     |      ❌      |        ❌        |
 | [128](#login-challenge-message)                         | Login challenge                         | `string` |     ❌     |      ✔      |        ❌        |
 | [129](#login-failure-message)                           | Login failure                           | `string` |     ❌     |      ✔      |        ❌        |
 | [130](#login-success-message)                           | Login success                           | `string` |     ❌     |      ✔      |        ❌        |
@@ -387,6 +389,23 @@ This message is sent by the client to the server as the first message after the 
 | :------------- | :---------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | version        | `32-bit int` list | A version number, in 4 parts. As of writing, all observed messages have used the version number `3.2.0.0`. It appears this may have been made redundant by the version number transmitted in the client version message.                                                                                                             |
 | skin           |   `string` list   | The list of skins installed on the client. With a vanilla install of the XFire client, this contains the strings `Xfire`, `standard`, `Separator`, and `XF_URL`. This corresponds to the XFire client's `Tools -> Skin` menu, with string representations of the horizontal separator and the link to the XFire skins download page. |
+
+### Group Create Message
+
+This message is sent by the client to the server when creating a group, passing the name of the group.
+
+#### Properties
+
+| Message ID | Attribute Key Type |     Direction    |
+| :--------- | :----------------: | :--------------: |
+| 26         |      `string`      | Client to Server |
+
+#### Contents
+
+| Attribute Name |   Type   | Details               |
+| :------------- | :------: | :-------------------- |
+| 0x1A           | `string` | The name of the group |
+
 
 ### Login Challenge Message
 
