@@ -652,7 +652,7 @@ This message is sent to the client by the server to notify them of any VoIP serv
 
 ### Group Create Confirmation Message
 
-This message is sent to the client by the server to notify it that the [create group message](#create-group-message) was successful.
+This message is sent to the client by the server to notify it that the [group create message](#group-create-message) was successful.
 
 #### Properties
 
