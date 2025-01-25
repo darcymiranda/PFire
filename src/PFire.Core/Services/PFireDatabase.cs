@@ -327,8 +327,8 @@ namespace PFire.Core.Services
 
         public async Task<GroupModel> CreateGroup(UserModel user, string name)
         {
-            using var score = _serviceProvider.CreateScope();
-            var databaseContext = score.ServiceProvider.GetRequiredService<IDatabaseContext>();
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
             var newGroup = new Group
             {
