@@ -26,6 +26,7 @@ namespace PFire.Core.Services
         Task UpdateNickname(UserModel user, string nickname);
         Task RemoveFriend(UserModel me, UserModel them);
         Task<GroupModel> CreateGroup(UserModel user, string name);
+        Task<List<GroupModel>> GetGroupsByOwner(int ownerId);
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -345,6 +346,24 @@ namespace PFire.Core.Services
                 Id = newGroup.Id,
                 Name = name
             };
+        }
+
+        public async Task<List<GroupModel>> GetGroupsByOwner(int ownerId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var groups = await databaseContext.Set<Group>()
+                .Where(g => g.OwnerId == ownerId)
+                .ToListAsync();
+
+            var groupModels = groups.Select(groups => new GroupModel
+            {
+                Id = groups.Id,
+                Name = groups.Name
+            }).ToList();
+
+            return groupModels;
         }
     }
 }

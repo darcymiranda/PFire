@@ -14,12 +14,18 @@ namespace PFire.Core.Protocol.Messages.Outbound
         [XMessageField(0x1a)]
         public List<string> GroupNames { get; set; }
 
-        public override Task Process(IXFireClient context)
+        public override async Task Process(IXFireClient context)
         {
             GroupIds = new List<int>();
             GroupNames = new List<string>();
 
-            return Task.CompletedTask;
+            var groups = await context.Server.Database.GetGroupsByOwner(context.User.Id);
+            
+            foreach (var group in groups)
+            {
+                GroupIds.Add(group.Id);
+                GroupNames.Add(group.Name);
+            }
         }
     }
 }
