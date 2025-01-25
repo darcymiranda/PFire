@@ -125,6 +125,8 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | [18](#)                                                 | Client information                      | `string` |     ✔     |      ❌      |        ❌        |
 | 23                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
 | 24                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
+| 25                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
+| [26](#group-create-message)                             | Group Create                            | `string` |     ✔     |      ❌      |        ❌        |
 | [128](#login-challenge-message)                         | Login challenge                         | `string` |     ❌     |      ✔      |        ❌        |
 | [129](#login-failure-message)                           | Login failure                           | `string` |     ❌     |      ✔      |        ❌        |
 | [130](#login-success-message)                           | Login success                           | `string` |     ❌     |      ✔      |        ❌        |
@@ -140,9 +142,10 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | [143](#user-search-results-message)                     | User search results                     | `string` |     ❌     |      ✔      |        ❌        |
 | [147](#friend-voip-information-message)                 | Friend VoIP information                 | `string` |     ❌     |      ✔      |        ❌        |
 | 148                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
-| [154](#friend-status-message)                           | Friend status                           | `string` |     ❌     |      ✔      |        ❌        |
 | 151                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
 | 152                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
+| [153](#group-create-confirmation-message)               | Group Create Confirmation               | `string` |     ❌     |      ✔      |        ❌        |
+| [154](#friend-status-message)                           | Friend status                           | `string` |     ❌     |      ✔      |        ❌        |
 | 155                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
 | [156](#extra-friend-game-information-message)           | Extra friend game information           | `string` |     ❌     |      ✔      |        ❌        |
 | 157                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
@@ -388,6 +391,23 @@ This message is sent by the client to the server as the first message after the 
 | version        | `32-bit int` list | A version number, in 4 parts. As of writing, all observed messages have used the version number `3.2.0.0`. It appears this may have been made redundant by the version number transmitted in the client version message.                                                                                                             |
 | skin           |   `string` list   | The list of skins installed on the client. With a vanilla install of the XFire client, this contains the strings `Xfire`, `standard`, `Separator`, and `XF_URL`. This corresponds to the XFire client's `Tools -> Skin` menu, with string representations of the horizontal separator and the link to the XFire skins download page. |
 
+### Group Create Message
+
+This message is sent by the client to the server when creating a group, passing the name of the group.
+
+#### Properties
+
+| Message ID | Attribute Key Type |     Direction    |
+| :--------- | :----------------: | :--------------: |
+| 26         |      `string`      | Client to Server |
+
+#### Contents
+
+| Attribute Name |   Type   | Details               |
+| :------------- | :------: | :-------------------- |
+| 0x1A           | `string` | The name of the group |
+
+
 ### Login Challenge Message
 
 This message is sent by the server to the client to initiate the authentication process as part of the [initial handshake](#connection-handshake). It contains the salt that is to be used to obscure the user's password, preventing replay attacks.
@@ -629,6 +649,23 @@ This message is sent to the client by the server to notify them of any VoIP serv
 | sid            |  Session ID list  | The list of session ids for which VoIP information has been updated.                                                                                                      |
 | vid            | `32-bit int` list | The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client. |
 | vip            | IPv4 address list | The list of IP addresses of the VoIP servers for each user.                                                                                                               |
+
+### Group Create Confirmation Message
+
+This message is sent to the client by the server to notify it that the [group create message](#group-create-message) was successful.
+
+#### Properties
+
+| Message ID | Attribute Key Type |     Direction    |
+| :--------- | :----------------: | :--------------: |
+| 153        |      `string`      | Server to Client |
+
+#### Contents
+
+| Attribute Name |     Type     | Details               |
+| :------------- | :----------: | :-------------------- |
+| 0x19           | `32-bit int` | The id of the group   |
+| 0x1A           |   `string`   | The name of the group |
 
 ### Friend Status Message
 
