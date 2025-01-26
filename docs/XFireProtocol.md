@@ -652,7 +652,7 @@ This message is sent to the client by the server to notify them of any VoIP serv
 
 ### Group List Message
 
-This message is sent to the client by the server to notify it of the list of groups associated with that client.
+This message is sent to the client by the server to notify it of the list of groups the client has created.
 
 #### Properties
 
