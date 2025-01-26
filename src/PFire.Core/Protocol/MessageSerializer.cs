@@ -69,6 +69,7 @@ namespace PFire.Core.Protocol
                 typeof(StatusChange), 
                 typeof(GameServerFetchAll), 
                 typeof(GroupCreate),
+                typeof(GroupRemove),
                 typeof(GroupRename)
             ];
 
