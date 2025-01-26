@@ -127,6 +127,7 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | 24                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
 | 25                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
 | [26](#group-create-message)                             | Group Create                            | `string` |     ✔     |      ❌      |        ❌        |
+| [28](#group-rename-message)                             | Group Rename                            | `string` |     ✔     |      ❌      |        ❌        |
 | [128](#login-challenge-message)                         | Login challenge                         | `string` |     ❌     |      ✔      |        ❌        |
 | [129](#login-failure-message)                           | Login failure                           | `string` |     ❌     |      ✔      |        ❌        |
 | [130](#login-success-message)                           | Login success                           | `string` |     ❌     |      ✔      |        ❌        |
@@ -407,6 +408,22 @@ This message is sent by the client to the server when creating a group, passing 
 | :------------- | :------: | :-------------------- |
 | 0x1A           | `string` | The name of the group |
 
+### Group Rename Message
+
+This message is sent by the client to the server when renaming a group, passing the id and updated name of the group.
+
+#### Properties
+
+| Message ID | Attribute Key Type |     Direction    |
+| :--------- | :----------------: | :--------------: |
+| 28         |      `string`      | Client to Server |
+
+#### Contents
+
+| Attribute Name |     Type     | Details                       |
+| :------------- | :----------: | :---------------------------- |
+| 0x19           | `32-bit int` | The id of the group           |
+| 0x1A           |   `string`   | The updated name of the group |
 
 ### Login Challenge Message
 
