@@ -127,6 +127,7 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | 24                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
 | 25                                                      | ???                                     | `string` |     ✔     |      ❌      |        ❌        |
 | [26](#group-create-message)                             | Group Create                            | `string` |     ✔     |      ❌      |        ❌        |
+| [27](#group-remove-message)                             | Group Remove                            | `string` |     ✔     |      ❌      |        ❌        |
 | [28](#group-rename-message)                             | Group Rename                            | `string` |     ✔     |      ❌      |        ❌        |
 | [128](#login-challenge-message)                         | Login challenge                         | `string` |     ❌     |      ✔      |        ❌        |
 | [129](#login-failure-message)                           | Login failure                           | `string` |     ❌     |      ✔      |        ❌        |
@@ -408,6 +409,21 @@ This message is sent by the client to the server when creating a group, passing 
 | :------------- | :------: | :-------------------- |
 | 0x1A           | `string` | The name of the group |
 
+### Group Remove Message
+
+This message is sent by the client to the server when removing a group, passing the id of the group.
+
+#### Properties
+
+| Message ID | Attribute Key Type |     Direction    |
+| :--------- | :----------------: | :--------------: |
+| 27         |      `string`      | Client to Server |
+
+#### Contents
+
+| Attribute Name |     Type     | Details             |
+| :------------- | :----------: | :------------------ |
+| 0x19           | `32-bit int` | The id of the group |
 ### Group Rename Message
 
 This message is sent by the client to the server when renaming a group, passing the id and updated name of the group.
