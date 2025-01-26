@@ -20,6 +20,7 @@
         GameServerFetchFriendsFavorites = 21,
         GameServerFetchAll = 22,
         GroupCreate = 26,
+        GroupRename = 28,
         StatusChange = 32,
         Unknown37 = 37,
         Logout = 36,

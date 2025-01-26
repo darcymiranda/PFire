@@ -64,7 +64,13 @@ namespace PFire.Core.Protocol
             // TODO: Be brave enough to find an elegant fix for this
             // XFire decides not to follow its own rules. Message type 32 does not have a prefix byte for the length of the attribute name
             // and breaks this code. Assume first byte after the attribute count as the attribute name
-            List<Type> byteTypes = [typeof(StatusChange), typeof(GameServerFetchAll), typeof(GroupCreate)];
+            List<Type> byteTypes = 
+            [
+                typeof(StatusChange), 
+                typeof(GameServerFetchAll), 
+                typeof(GroupCreate),
+                typeof(GroupRename)
+            ];
 
             var count = byteTypes.Contains(messageType) ? 1 : reader.ReadByte();
             var readBytes = reader.ReadBytes(count);
