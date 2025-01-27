@@ -372,10 +372,10 @@ namespace PFire.Core.Services
             using var scope = _serviceProvider.CreateScope();
             var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
 
-            var group = await databaseContext.Set<Group>()
-                .FirstOrDefaultAsync(g => g.Id == groupId && g.OwnerId == ownerId);
+            var group = await databaseContext.Set<Group>().FindAsync(groupId);
 
-            if (group is not null)
+            if (group is not null
+                && group.OwnerId == ownerId)
             {
                 group.Name = name;
                 group.DateModified = DateTime.UtcNow;
