@@ -29,7 +29,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            var clientPrefs = new Unknown10();
+            var clientPrefs = new UserPreferences();
             await context.SendAndProcessMessage(clientPrefs);
 
             var groups = new Groups();

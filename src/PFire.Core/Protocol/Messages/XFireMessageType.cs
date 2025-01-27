@@ -11,7 +11,7 @@
         FriendRequestAccept = 7,
         FriendRequestDecline = 8,
         FriendRemoval = 9,
-        Unknown10 = 10,
+        UserPreferences = 10,
         UserLookup = 12,
         KeepAlive = 13,
         NicknameChange = 14,
