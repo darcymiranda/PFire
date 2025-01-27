@@ -142,7 +142,7 @@ Once a client has successfully logged in, the server will send a flurry of messa
 | [143](#user-search-results-message)                     | User search results                     | `string` |     ❌     |      ✔      |        ❌        |
 | [147](#friend-voip-information-message)                 | Friend VoIP information                 | `string` |     ❌     |      ✔      |        ❌        |
 | 148                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
-| 151                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
+| [151](#group-list-message)                              | Group List                              |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
 | 152                                                     | ???                                     |   `8-bit int`   |     ❌     |      ✔      |        ❌        |
 | [153](#group-create-confirmation-message)               | Group Create Confirmation               | `string` |     ❌     |      ✔      |        ❌        |
 | [154](#friend-status-message)                           | Friend status                           | `string` |     ❌     |      ✔      |        ❌        |
@@ -649,6 +649,23 @@ This message is sent to the client by the server to notify them of any VoIP serv
 | sid            |  Session ID list  | The list of session ids for which VoIP information has been updated.                                                                                                      |
 | vid            | `32-bit int` list | The IDs of the VoIP applications that are being used for each user. These relate to the IDs stored in the xfire_games.ini file that comes with the standard XFire client. |
 | vip            | IPv4 address list | The list of IP addresses of the VoIP servers for each user.                                                                                                               |
+
+### Group List Message
+
+This message is sent to the client by the server to notify it of the list of groups the client has created.
+
+#### Properties
+
+| Message ID | Attribute Key Type |     Direction    |
+| :--------- | :----------------: | :--------------: |
+| 151        |     `8-bit int`    | Server to Client |
+
+#### Contents
+
+| Attribute Name |       Type        | Details             |
+| :------------- |   :----------:    | :------------------ |
+| 0x19           | `32-bit int` list | List of group ids   |
+| 0x1A           |   `string` list   | List of group names |
 
 ### Group Create Confirmation Message
 
