@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PFire.Infrastructure.Entities;
 
@@ -26,6 +28,23 @@ namespace PFire.Infrastructure.Services
 
         Task IDatabaseContext.SaveChanges()
         {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is Entity && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+            foreach(var entry in entries)
+            {
+                var entity = (Entity)entry.Entity;
+
+                if (entry.State == EntityState.Added)
+                {
+                    entity.DateCreated = DateTime.UtcNow;
+                }
+                else if (entry.State == EntityState.Modified) 
+                { 
+                    entity.DateModified = DateTime.UtcNow; 
+                }
+            }
+
             return SaveChangesAsync();
         }
 
