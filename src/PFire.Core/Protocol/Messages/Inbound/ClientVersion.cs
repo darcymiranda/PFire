@@ -9,10 +9,10 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public ClientVersion() : base(XFireMessageType.ClientVersion) {}
 
         [XMessageField("version")]
-        public int Version { get; set; }
+        public uint Version { get; set; }
 
         [XMessageField("major_version")]
-        public int MajorVersion { get; set; }
+        public uint MajorVersion { get; set; }
 
         public override async Task Process(IXFireClient context)
         {

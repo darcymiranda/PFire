@@ -15,12 +15,12 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public FriendsSessionAssign(UserModel owner) : base(XFireMessageType.FriendsSessionAssign)
         {
             _ownerUser = owner;
-            UserIds = new List<int>();
+            UserIds = new List<uint>();
             SessionIds = new List<Guid>();
         }
 
         [XMessageField("userid")] 
-        public List<int> UserIds { get; }
+        public List<uint> UserIds { get; }
 
         [XMessageField("sid")] 
         public List<Guid> SessionIds { get; }

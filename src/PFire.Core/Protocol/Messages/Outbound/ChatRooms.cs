@@ -6,10 +6,10 @@ namespace PFire.Core.Protocol.Messages.Outbound
     {
         public ChatRooms() : base(XFireMessageType.ChatRooms)
         {
-            ChatIds = new List<int>();
+            ChatIds = new List<uint>();
         }
 
         [XMessageField(0x04)]
-        public List<int> ChatIds { get; }
+        public List<uint> ChatIds { get; }
     }
 }
