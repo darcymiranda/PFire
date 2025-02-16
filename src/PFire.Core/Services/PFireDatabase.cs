@@ -73,8 +73,7 @@ namespace PFire.Core.Services
             {
                 Username = username,
                 Password = password,
-                Salt = salt,
-                DateCreated = DateTime.Now
+                Salt = salt
             };
 
             await databaseContext.Set<User>().AddAsync(newUser);
@@ -104,14 +103,12 @@ namespace PFire.Core.Services
                     MeId = me.Id,
                     ThemId = them.Id,
                     Pending = false,
-                    DateCreated = DateTime.Now
                 });
             }
             else
             {
                 myFriend.Message = null;
                 myFriend.Pending = false;
-                myFriend.DateModified = DateTime.Now;
             }
 
             var friendOf = await friends.FindAsync(them.Id, me.Id);
@@ -122,14 +119,12 @@ namespace PFire.Core.Services
                     MeId = them.Id,
                     ThemId = me.Id,
                     Pending = false,
-                    DateCreated = DateTime.Now
                 });
             }
             else
             {
                 friendOf.Message = null;
                 friendOf.Pending = false;
-                friendOf.DateModified = DateTime.Now;
             }
 
             await databaseContext.SaveChanges();
@@ -145,7 +140,6 @@ namespace PFire.Core.Services
                 MeId = me.Id,
                 ThemId = them.Id,
                 Pending = true,
-                DateCreated = DateTime.Now,
                 Message = message
             };
 
@@ -337,7 +331,6 @@ namespace PFire.Core.Services
             {
                 Name = name,
                 OwnerId = user.Id,
-                DateCreated = DateTime.UtcNow
             };
 
             await databaseContext.Set<Group>().AddAsync(newGroup);
@@ -379,7 +372,6 @@ namespace PFire.Core.Services
                 && group.OwnerId == ownerId)
             {
                 group.Name = name;
-                group.DateModified = DateTime.UtcNow;
                 await databaseContext.SaveChanges();
             }
         }
