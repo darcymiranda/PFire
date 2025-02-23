@@ -20,7 +20,7 @@ namespace PFire.Core.Protocol
             Add(new LoginFailure());
             Add(new LoginSuccess());
             Add(new ClientConfiguration());
-            Add(new UserPreferences());
+            Add(new ClientPreferencesUpdate());
             Add(new ConnectionInformation());
             Add(new Groups());
             Add(new GroupsFriends());
