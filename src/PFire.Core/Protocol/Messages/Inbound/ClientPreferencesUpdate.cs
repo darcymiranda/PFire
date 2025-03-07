@@ -13,25 +13,33 @@ namespace PFire.Core.Protocol.Messages.Inbound
 
         public override async Task Process(IXFireClient context)
         {
-            //context.User.ShowGameStatusToFriends = !Prefs.ContainsKey(1);
-            //context.User.ShowGameServerData = !Prefs.ContainsKey(2);
-            //context.User.ShowGameDataOnProfile = !Prefs.ContainsKey(3);
-            //context.User.PlaySoundOnNewMessages = !Prefs.ContainsKey(4);
-            //context.User.PlaySoundsOnNewMessagesInGame = !Prefs.ContainsKey(5);
-            //context.User.ShowTimeStampInChat = Prefs.ContainsKey(6); //Per Zelaron's observations, this one has flipped true/false logic.
-            //context.User.PlaySoundsOnLogOn = !Prefs.ContainsKey(7);
-            //context.User.ShowFriendsOfFriends = !Prefs.ContainsKey(8);
-            //context.User.ShowOfflineFriends = !Prefs.ContainsKey(9);
-            //context.User.ShowNicknames = !Prefs.ContainsKey(10);
-            //context.User.ShowVoiceChatServer = !Prefs.ContainsKey(11);
-            //context.User.ShowTyping = !Prefs.ContainsKey(12);
-            //context.User.ShowTooltipOnLogOn = !Prefs.ContainsKey(16);
-            //context.User.ShowTooltipOnDownload = !Prefs.ContainsKey(17);
-            //context.User.PlaySoundInChatrooms = !Prefs.ContainsKey(18);
-            //context.User.PlaySoundOnVoicecalls = !Prefs.ContainsKey(19);
-            //context.User.PlaySoundOnScreenshots = !Prefs.ContainsKey(20);
+            //when "checked" in the client: Prefs does not contain the key
+            //when "unchecked" in the client: Prefs contains the key the value will be "0"
+            
+            //Exception key 6: 
+            //when "checked" in the client: Prefs contains the key with the value "1"
+            //when "unchecked" in the client: Prefs does not contain the key
 
-            //await context.Server.Database.SaveUserPrefs(context.User);
+            context.User.ClientPreferences.GameStatusShowMyFriends = !Prefs.ContainsKey((int)Enums.ClientPreferences.GameStatusShowMyFriends);
+            context.User.ClientPreferences.GameStatusShowMyGameServer = !Prefs.ContainsKey((int)Enums.ClientPreferences.GameStatusShowMyGameServer);
+            context.User.ClientPreferences.GameStatusShowMyProfile = !Prefs.ContainsKey((int)Enums.ClientPreferences.GameStatusShowMyProfile);
+            context.User.ClientPreferences.PlaySoundSendOrReceiveMessage = !Prefs.ContainsKey((int)Enums.ClientPreferences.PlaySoundSendOrReceiveMessage);
+            context.User.ClientPreferences.PlaySoundReceiveMessageWhileGaming = !Prefs.ContainsKey((int)Enums.ClientPreferences.PlaySoundReceiveMessageWhileGaming);
+            context.User.ClientPreferences.ChatShowTimestamps = Prefs.ContainsKey((int)Enums.ClientPreferences.ChatShowTimestamps); 
+            context.User.ClientPreferences.PlaySoundFriendLogsOnOff = !Prefs.ContainsKey((int)Enums.ClientPreferences.PlaySoundFriendLogsOnOff);
+            context.User.ClientPreferences.GameStatusShowFriendOfFriends = !Prefs.ContainsKey((int)Enums.ClientPreferences.GameStatusShowFriendOfFriends);
+            context.User.ClientPreferences.ShowOfflineFriends = !Prefs.ContainsKey((int)Enums.ClientPreferences.ShowOfflineFriends);
+            context.User.ClientPreferences.ShowNicknames = !Prefs.ContainsKey((int)Enums.ClientPreferences.ShowNicknames);
+            context.User.ClientPreferences.ShowVoiceChatServerToFriends = !Prefs.ContainsKey((int)Enums.ClientPreferences.ShowVoiceChatServerToFriends);
+            context.User.ClientPreferences.ShowWhenTyping = !Prefs.ContainsKey((int)Enums.ClientPreferences.ShowWhenTyping);
+            context.User.ClientPreferences.NotificationFriendLogsOnOff = !Prefs.ContainsKey((int)Enums.ClientPreferences.NotificationFriendLogsOnOff);
+            context.User.ClientPreferences.NotificationDownloadStartsFinishes = !Prefs.ContainsKey((int)Enums.ClientPreferences.NotificationDownloadStartsFinishes);
+            context.User.ClientPreferences.PlaySoundSomeoneJoinsLeaveChatroom = !Prefs.ContainsKey((int)Enums.ClientPreferences.PlaySoundSomeoneJoinsLeaveChatroom);
+            context.User.ClientPreferences.PlaySoundSendReceiveVoiceChatRequest = !Prefs.ContainsKey((int)Enums.ClientPreferences.PlaySoundSendReceiveVoiceChatRequest);
+            context.User.ClientPreferences.PlaySoundScreenshotWhileGaming = !Prefs.ContainsKey((int)Enums.ClientPreferences.PlaySoundScreenshotWhileGaming);
+            context.User.ClientPreferences.NotificationConnectionStateChanges = !Prefs.ContainsKey((int)Enums.ClientPreferences.NotificationConnectionStateChanges);
+
+            await context.Server.Database.SaveClientPreferences(context.User);
         }
     }
 }

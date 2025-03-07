@@ -29,6 +29,8 @@ namespace PFire.Core.Services
         Task<List<GroupModel>> GetGroupsByOwner(int ownerId);
         Task RenameGroup(int ownerId, int groupId, string name);
         Task RemoveGroup(int ownerId, int groupId);
+        Task<ClientPreferencesModel> GetClientPreferences(UserModel user);
+        Task SaveClientPreferences(UserModel user);
     }
 
     internal class PFireDatabase : IPFireDatabase
@@ -389,6 +391,80 @@ namespace PFire.Core.Services
                 databaseContext.Set<Group>().Remove(group);
                 await databaseContext.SaveChanges();
             }
+        }
+
+        public async Task<ClientPreferencesModel> GetClientPreferences(UserModel user)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var clientPreferences = await databaseContext.Set<ClientPreferences>()
+                .AsNoTracking()
+                .Where(c => c.UserId == user.Id)
+                .Select(c => new ClientPreferencesModel
+                {
+                    ChatShowTimestamps = c.ChatShowTimestamps,
+                    GameStatusShowFriendOfFriends = c.GameStatusShowFriendOfFriends,
+                    GameStatusShowMyFriends = c.GameStatusShowMyFriends,
+                    GameStatusShowMyGameServer = c.GameStatusShowMyGameServer,
+                    GameStatusShowMyProfile = c.GameStatusShowMyProfile,
+                    NotificationConnectionStateChanges = c.NotificationConnectionStateChanges,
+                    NotificationDownloadStartsFinishes = c.NotificationDownloadStartsFinishes,
+                    NotificationFriendLogsOnOff = c.NotificationFriendLogsOnOff,
+                    PlaySoundFriendLogsOnOff = c.PlaySoundFriendLogsOnOff,
+                    PlaySoundReceiveMessageWhileGaming = c.PlaySoundReceiveMessageWhileGaming,
+                    PlaySoundScreenshotWhileGaming = c.PlaySoundScreenshotWhileGaming,
+                    PlaySoundSendOrReceiveMessage = c.PlaySoundSendOrReceiveMessage,
+                    PlaySoundSendReceiveVoiceChatRequest = c.PlaySoundSendReceiveVoiceChatRequest,
+                    PlaySoundSomeoneJoinsLeaveChatroom = c.PlaySoundSomeoneJoinsLeaveChatroom,
+                    ShowNicknames = c.ShowNicknames,
+                    ShowOfflineFriends = c.ShowOfflineFriends,
+                    ShowVoiceChatServerToFriends = c.ShowVoiceChatServerToFriends,
+                    ShowWhenTyping = c.ShowWhenTyping
+                })
+                .FirstOrDefaultAsync();
+
+            if(clientPreferences is null)
+            {
+                //Set defaults if we want here
+                clientPreferences = new ClientPreferencesModel();
+            }
+
+            return clientPreferences;
+        }
+
+        public async Task SaveClientPreferences(UserModel user)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
+
+            var clientPreferences = await databaseContext.Set<ClientPreferences>().FirstOrDefaultAsync(p => p.UserId == user.Id);
+            if (clientPreferences is null)
+            {
+                clientPreferences = new ClientPreferences { UserId = user.Id };
+                await databaseContext.Set<ClientPreferences>().AddAsync(clientPreferences);
+            }
+
+            clientPreferences.GameStatusShowMyFriends = user.ClientPreferences.GameStatusShowMyFriends;
+            clientPreferences.GameStatusShowMyGameServer = user.ClientPreferences.GameStatusShowMyGameServer;
+            clientPreferences.GameStatusShowMyProfile = user.ClientPreferences.GameStatusShowMyProfile;
+            clientPreferences.PlaySoundSendOrReceiveMessage = user.ClientPreferences.PlaySoundSendOrReceiveMessage;
+            clientPreferences.PlaySoundReceiveMessageWhileGaming = user.ClientPreferences.PlaySoundReceiveMessageWhileGaming;
+            clientPreferences.ChatShowTimestamps = user.ClientPreferences.ChatShowTimestamps;
+            clientPreferences.PlaySoundFriendLogsOnOff = user.ClientPreferences.PlaySoundFriendLogsOnOff;
+            clientPreferences.GameStatusShowFriendOfFriends = user.ClientPreferences.GameStatusShowFriendOfFriends;
+            clientPreferences.ShowOfflineFriends = user.ClientPreferences.ShowOfflineFriends;
+            clientPreferences.ShowNicknames = user.ClientPreferences.ShowNicknames;
+            clientPreferences.ShowVoiceChatServerToFriends = user.ClientPreferences.ShowVoiceChatServerToFriends;
+            clientPreferences.ShowWhenTyping = user.ClientPreferences.ShowWhenTyping;
+            clientPreferences.NotificationFriendLogsOnOff = user.ClientPreferences.NotificationFriendLogsOnOff;
+            clientPreferences.NotificationDownloadStartsFinishes = user.ClientPreferences.NotificationDownloadStartsFinishes;
+            clientPreferences.PlaySoundSomeoneJoinsLeaveChatroom = user.ClientPreferences.PlaySoundSomeoneJoinsLeaveChatroom;
+            clientPreferences.PlaySoundSendReceiveVoiceChatRequest = user.ClientPreferences.PlaySoundSendReceiveVoiceChatRequest;
+            clientPreferences.PlaySoundScreenshotWhileGaming = user.ClientPreferences.PlaySoundScreenshotWhileGaming;
+            clientPreferences.NotificationConnectionStateChanges = user.ClientPreferences.NotificationConnectionStateChanges;
+
+            await databaseContext.SaveChanges();
         }
     }
 }
