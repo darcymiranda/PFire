@@ -13,6 +13,7 @@ namespace PFire.Infrastructure.Entities
         public string Nickname { get; set; }
         public List<Friend> MyFriends { get; set; }
         public List<Friend> FriendsOf { get; set; }
+        public ClientPreferences ClientPreferences { get; set; }
     }
 
     internal class UserConfiguration : EntityConfiguration<User>
