@@ -15,7 +15,7 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public string Password { get; set; }
 
         [XMessageField("flags")]
-        public int Flags { get; set; }
+        public uint Flags { get; set; }
 
         public override async Task Process(IXFireClient context)
         {

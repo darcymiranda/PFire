@@ -18,22 +18,22 @@ namespace PFire.Core.Protocol.Messages.Outbound
         {
             _ownerUser = owner;
             SessionIds = new List<Guid>();
-            GameID = new List<int>();
-            GameIP = new List<int>();
-            GamePort = new List<int>();
+            GameID = new List<uint>();
+            GameIP = new List<uint>();
+            GamePort = new List<uint>();
         }
 
         [XMessageField("sid")]
         public List<Guid> SessionIds { get; set; }
 
         [XMessageField("gameid")]
-        public List<int> GameID { get; set; }
+        public List<uint> GameID { get; set; }
 
         [XMessageField("gip")]
-        public List<int> GameIP { get; set; }
+        public List<uint> GameIP { get; set; }
 
         [XMessageField("gport")]
-        public List<int> GamePort { get; set; }
+        public List<uint> GamePort { get; set; }
 
         public override Task Process(IXFireClient client)
         {
