@@ -9,13 +9,13 @@ namespace PFire.Core.Protocol.XFireAttributes
 {
     public class MessageAttribute : XFireAttribute
     {
-        private static readonly Dictionary<int, IMessage> MESSAGE_TYPES = new Dictionary<int, IMessage>
+        private static readonly Dictionary<uint, IMessage> MESSAGE_TYPES = new Dictionary<uint, IMessage>
         {
             { 0, new ChatMessage() },
             { 1, new ChatAcknowledgement() }
         };
 
-        private IMessage CreateMessage(short type)
+        private IMessage CreateMessage(uint type)
         {
             if(!MESSAGE_TYPES.ContainsKey(type))
             {

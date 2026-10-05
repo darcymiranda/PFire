@@ -79,7 +79,7 @@ namespace PFire.Core.Protocol.Messages.Bidirectional
                 MessagePayload = new Dictionary<string, dynamic>
                 {
                     {"msgtyp", (byte)ChatMessageType.Acknowledgement},
-                    {"imindex", (int)MessagePayload["imindex"]}
+                    {"imindex", (uint)MessagePayload["imindex"]}
                 }
             };
         }

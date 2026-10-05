@@ -13,13 +13,13 @@ namespace PFire.Core.Protocol.Messages.Outbound
         {
             _ownerUser = owner;
 
-            UserIds = new List<int>();
+            UserIds = new List<uint>();
             Usernames = new List<string>();
             Nicks = new List<string>();
         }
 
         [XMessageField("userid")]
-        public List<int> UserIds { get; }
+        public List<uint> UserIds { get; }
 
         [XMessageField("friends")]
         public List<string> Usernames { get; }

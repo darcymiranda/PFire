@@ -10,19 +10,19 @@ namespace PFire.Core.Protocol.Messages.Inbound
         public ConnectionInformation() : base(XFireMessageType.ConnectionInformation) {}
 
         [XMessageField("conn")]
-        public int Connection { get; set; }
+        public uint Connection { get; set; }
 
         [XMessageField("nat")]
-        public int Nat { get; set; }
+        public uint Nat { get; set; }
 
         [XMessageField("naterr")]
-        public int NatError { get; set; }
+        public uint NatError { get; set; }
 
         [XMessageField("sec")]
-        public int Sec { get; set; }
+        public uint Sec { get; set; }
 
         [XMessageField("clientip")]
-        public int ClientIp { get; set; }
+        public uint ClientIp { get; set; }
 
         [XMessageField("upnpinfo")]
         public string UpnpInfo { get; set; }

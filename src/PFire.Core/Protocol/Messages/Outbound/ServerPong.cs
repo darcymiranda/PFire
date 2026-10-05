@@ -18,7 +18,7 @@ namespace PFire.Core.Protocol.Messages.Outbound
         public ServerPong() : base(XFireMessageType.ServerPong) { }
 
         [XMessageField("value")]
-        public int Value { get; set; } = 0;
+        public uint Value { get; set; } = 0;
 
         public override Task Process(IXFireClient context)
         {

@@ -6,7 +6,7 @@ namespace PFire.Infrastructure.Entities
 {
     public class User : Entity
     {
-        public int Id { get; set; }
+        public uint Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string Salt { get; set; }
